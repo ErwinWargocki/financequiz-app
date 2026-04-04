@@ -8,6 +8,7 @@ import '../models/models.dart';
 import '../database/database_helper.dart';
 import '../data/quiz_categories.dart';
 import 'quiz_screen.dart';
+import 'study_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -104,7 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
         slivers: [
           _buildAppBar(),
           SliverToBoxAdapter(child: _buildStatsRow()),
-          SliverToBoxAdapter(child: _buildContinueLearningSectionHeader()),
+          SliverToBoxAdapter(child: _buildSectionHeader('Study Time')),
+          SliverToBoxAdapter(child: _buildStudyTimeCard()),
+          SliverToBoxAdapter(child: _buildSectionHeader('Time to test yourself')),
           SliverToBoxAdapter(child: _buildFeaturedCarousel()),
           if (_recentResults.isNotEmpty) ...[
             SliverToBoxAdapter(child: _buildSectionHeader('Recent Activity')),
@@ -268,12 +271,106 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildContinueLearningSectionHeader() {
+  Widget _buildStudyTimeCard() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text('Continue Learning', style: AppTheme.titleLarge),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const StudyScreen()),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: SizedBox(
+            height: 120,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.accentBlue.withOpacity(0.88),
+                          AppTheme.accent.withOpacity(0.65),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: -20,
+                  top: -20,
+                  child: Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.05),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Center(
+                          child: Text('📖', style: TextStyle(fontSize: 26)),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Study Topics',
+                              style: GoogleFonts.spaceGrotesk(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Learn before you quiz',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.arrow_forward_rounded,
+                            color: Colors.white, size: 20),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
