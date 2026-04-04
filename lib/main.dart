@@ -18,21 +18,62 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final onboardingDone = prefs.getBool('onboardingDone') ?? false;
 
-  runApp(FinQuizApp(showHome: onboardingDone));
+  final isDarkMode = prefs.getBool('isDarkMode') ?? true;
+  runApp(FinQuizApp(showHome: onboardingDone, isDarkMode: isDarkMode));
 }
 
-class FinQuizApp extends StatelessWidget {
+class FinQuizApp extends StatefulWidget {
   final bool showHome;
+  final bool isDarkMode;
 
-  const FinQuizApp({super.key, required this.showHome});
+  const FinQuizApp({
+    super.key,
+    required this.showHome,
+    required this.isDarkMode,
+  });
+
+  static bool isDarkModeEnabled(BuildContext context) {
+    final state = context.findAncestorStateOfType<_FinQuizAppState>();
+    return state?.isDarkMode ?? true;
+  }
+
+  static Future<void> toggleThemeMode(BuildContext context) async {
+    final state = context.findAncestorStateOfType<_FinQuizAppState>();
+    await state?.toggleTheme();
+  }
+
+  @override
+  State<FinQuizApp> createState() => _FinQuizAppState();
+}
+
+class _FinQuizAppState extends State<FinQuizApp> {
+  late ThemeMode _themeMode;
+
+  bool get isDarkMode => _themeMode == ThemeMode.dark;
+
+  @override
+  void initState() {
+    super.initState();
+    _themeMode = widget.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  Future<void> toggleTheme() async {
+    final nextMode =
+        _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    setState(() => _themeMode = nextMode);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', nextMode == ThemeMode.dark);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FinQuiz',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: showHome ? const MainShell() : const WelcomeScreen(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: _themeMode,
+      home: widget.showHome ? const MainShell() : const WelcomeScreen(),
     );
   }
 }

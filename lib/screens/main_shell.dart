@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
 import 'explore_screen.dart';
+import 'all_categories_screen.dart';
 import 'profile_screen.dart';
 
 class MainShell extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MainShellState extends State<MainShell> {
   final List<Widget> _screens = const [
     HomeScreen(),
     ExploreScreen(),
+    AllCategoriesScreen(),
     ProfileScreen(),
   ];
 
@@ -49,7 +51,7 @@ class _MainShellState extends State<MainShell> {
           top: false,
           child: Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -66,10 +68,16 @@ class _MainShellState extends State<MainShell> {
                   onTap: () => setState(() => _selectedIndex = 1),
                 ),
                 _NavItem(
-                  icon: Icons.person_rounded,
-                  label: 'Profile',
+                  icon: Icons.quiz_outlined,
+                  label: 'Test',
                   selected: _selectedIndex == 2,
                   onTap: () => setState(() => _selectedIndex = 2),
+                ),
+                _NavItem(
+                  icon: Icons.person_rounded,
+                  label: 'Profile',
+                  selected: _selectedIndex == 3,
+                  onTap: () => setState(() => _selectedIndex = 3),
                 ),
               ],
             ),
@@ -101,7 +109,7 @@ class _NavItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: selected
               ? AppTheme.accent.withOpacity(0.12)

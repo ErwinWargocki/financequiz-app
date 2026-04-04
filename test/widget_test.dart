@@ -11,7 +11,7 @@ import 'package:finquiz/main.dart';
 
 void main() {
   testWidgets('App builds smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(const FinQuizApp(showHome: false));
+    await tester.pumpWidget(const FinQuizApp(showHome: false, isDarkMode: true));
     expect(find.byType(FinQuizApp), findsOneWidget);
   });
 }

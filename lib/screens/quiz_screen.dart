@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,6 +31,10 @@ class _QuizScreenState extends State<QuizScreen>
   int _correctCount = 0;
   int _score = 0;
   bool _loading = true;
+  int _attemptNumber = 1;
+  int? _firstAttemptSelection;
+  String? _attemptHint;
+  final List<QuestionReview> _questionReviews = [];
 
   // Timer
   late Timer _timer;
@@ -75,8 +80,10 @@ class _QuizScreenState extends State<QuizScreen>
   Future<void> _loadQuestions() async {
     final questions = await DatabaseHelper.instance
         .getQuestionsByCategory(widget.category.id, limit: 10);
+    final randomized = questions.map(_shuffleQuestionOptions).toList();
+    randomized.shuffle(Random());
     setState(() {
-      _questions = questions;
+      _questions = randomized;
       _loading = false;
     });
     _startTimer();
@@ -106,9 +113,23 @@ class _QuizScreenState extends State<QuizScreen>
   void _autoSubmit() {
     if (!_answered) {
       _stopTimer();
+      final question = _questions[_currentIndex];
+      _questionReviews.add(
+        QuestionReview(
+          question: question.question,
+          correctAnswer: question.options[question.correctIndex],
+          explanation: question.explanation,
+          firstAttemptAnswer: _firstAttemptSelection == null
+              ? null
+              : question.options[_firstAttemptSelection!],
+          secondAttemptAnswer: null,
+          answeredCorrectly: false,
+        ),
+      );
       setState(() {
         _answered = true;
         _selectedOption = -1;
+        _attemptHint = 'Time is up for this question.';
       });
       _shakeController.forward(from: 0);
       HapticFeedback.heavyImpact();
@@ -117,22 +138,50 @@ class _QuizScreenState extends State<QuizScreen>
 
   void _selectOption(int index) {
     if (_answered) return;
-    _stopTimer();
     HapticFeedback.selectionClick();
 
-    final isCorrect = index == _questions[_currentIndex].correctIndex;
+    final question = _questions[_currentIndex];
+    final isCorrect = index == question.correctIndex;
+
+    if (!isCorrect && _attemptNumber == 1) {
+      setState(() {
+        _firstAttemptSelection = index;
+        _attemptNumber = 2;
+        _attemptHint = 'Not correct. Try one more time.';
+      });
+      _shakeController.forward(from: 0);
+      HapticFeedback.heavyImpact();
+      return;
+    }
+
+    _stopTimer();
     if (isCorrect) {
       _correctCount++;
-      _score += 10 + (_timeLeft * 2); // time bonus
+      final baseScore = _attemptNumber == 1 ? 10 : 5;
+      _score += baseScore + (_timeLeft * 2);
       HapticFeedback.mediumImpact();
     } else {
       _shakeController.forward(from: 0);
       HapticFeedback.heavyImpact();
     }
 
+    _questionReviews.add(
+      QuestionReview(
+        question: question.question,
+        correctAnswer: question.options[question.correctIndex],
+        explanation: question.explanation,
+        firstAttemptAnswer:
+            _firstAttemptSelection == null ? question.options[index] : question.options[_firstAttemptSelection!],
+        secondAttemptAnswer:
+            _firstAttemptSelection == null ? null : question.options[index],
+        answeredCorrectly: isCorrect,
+      ),
+    );
+
     setState(() {
       _selectedOption = index;
       _answered = true;
+      _attemptHint = null;
     });
   }
 
@@ -143,10 +192,14 @@ class _QuizScreenState extends State<QuizScreen>
     }
 
     _slideController.reset();
+    _shakeController.reset();
     setState(() {
       _currentIndex++;
       _selectedOption = null;
       _answered = false;
+      _attemptNumber = 1;
+      _firstAttemptSelection = null;
+      _attemptHint = null;
     });
     _startTimer();
     _slideController.forward();
@@ -182,7 +235,11 @@ class _QuizScreenState extends State<QuizScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => ResultScreen(result: result, category: widget.category),
+          builder: (_) => ResultScreen(
+            result: result,
+            category: widget.category,
+            reviews: _questionReviews,
+          ),
         ),
       );
     }
@@ -257,6 +314,7 @@ class _QuizScreenState extends State<QuizScreen>
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                   child: Column(
+                    key: ValueKey<int>(_currentIndex),
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Timer bar
@@ -272,6 +330,16 @@ class _QuizScreenState extends State<QuizScreen>
                         return _buildOptionTile(
                             question, i, catColor);
                       }),
+
+                      if (!_answered && _attemptHint != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          _attemptHint!,
+                          style: AppTheme.bodyMedium.copyWith(
+                            color: AppTheme.accentWarm,
+                          ),
+                        ),
+                      ],
 
                       // Explanation
                       if (_answered) ...[
@@ -479,7 +547,10 @@ class _QuizScreenState extends State<QuizScreen>
     IconData? trailingIcon;
 
     if (showResult) {
-      if (isCorrect) {
+      if (_selectedOption == -1) {
+        borderColor = AppTheme.border;
+        bgColor = AppTheme.cardBg;
+      } else if (isCorrect) {
         borderColor = AppTheme.success;
         bgColor = AppTheme.success.withOpacity(0.1);
         trailingIcon = Icons.check_circle_rounded;
@@ -566,6 +637,25 @@ class _QuizScreenState extends State<QuizScreen>
           ),
         ),
       ),
+    );
+  }
+
+  QuizQuestion _shuffleQuestionOptions(QuizQuestion question) {
+    final random = Random();
+    final indexed = question.options.asMap().entries.toList();
+    indexed.shuffle(random);
+    final shuffledOptions = indexed.map((entry) => entry.value).toList();
+    final newCorrectIndex =
+        indexed.indexWhere((entry) => entry.key == question.correctIndex);
+
+    return QuizQuestion(
+      id: question.id,
+      category: question.category,
+      question: question.question,
+      options: shuffledOptions,
+      correctIndex: newCorrectIndex,
+      explanation: question.explanation,
+      difficulty: question.difficulty,
     );
   }
 

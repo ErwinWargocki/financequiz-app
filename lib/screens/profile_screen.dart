@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../models/models.dart';
 import '../database/database_helper.dart';
 import '../data/quiz_categories.dart';
+import '../main.dart';
 import 'welcome_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -278,44 +279,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         side: BorderSide(color: AppTheme.border),
       ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Settings', style: AppTheme.headlineMedium),
-            const SizedBox(height: 20),
-            _SettingsTile(
-              icon: Icons.person_outline_rounded,
-              label: 'Edit Profile',
-              onTap: () => Navigator.pop(context),
-            ),
-            _SettingsTile(
-              icon: Icons.info_outline_rounded,
-              label: 'About FinQuiz',
-              onTap: () => Navigator.pop(context),
-            ),
-            _SettingsTile(
-              icon: Icons.logout_rounded,
-              label: 'Sign Out',
-              color: AppTheme.danger,
-              onTap: () async {
-                Navigator.pop(context);
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.clear();
-                if (mounted) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const WelcomeScreen()),
-                    (_) => false,
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
+      builder: (_) => StatefulBuilder(
+        builder: (modalContext, setModalState) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Settings', style: AppTheme.headlineMedium),
+              const SizedBox(height: 20),
+              _ModeSwitcherTile(
+                isDarkMode: FinQuizApp.isDarkModeEnabled(context),
+                onPrevious: () async {
+                  await FinQuizApp.toggleThemeMode(context);
+                  setModalState(() {});
+                },
+                onNext: () async {
+                  await FinQuizApp.toggleThemeMode(context);
+                  setModalState(() {});
+                },
+              ),
+              _SettingsTile(
+                icon: Icons.person_outline_rounded,
+                label: 'Edit Profile',
+                onTap: () => Navigator.pop(context),
+              ),
+              _SettingsTile(
+                icon: Icons.info_outline_rounded,
+                label: 'About FinQuiz',
+                onTap: () => Navigator.pop(context),
+              ),
+              _SettingsTile(
+                icon: Icons.logout_rounded,
+                label: 'Sign Out',
+                color: AppTheme.danger,
+                onTap: () async {
+                  Navigator.pop(context);
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.clear();
+                  if (mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const WelcomeScreen()),
+                      (_) => false,
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );
@@ -569,6 +583,54 @@ class _SettingsTile extends StatelessWidget {
                 color: AppTheme.textMuted, size: 18),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ModeSwitcherTile extends StatelessWidget {
+  final bool isDarkMode;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+
+  const _ModeSwitcherTile({
+    required this.isDarkMode,
+    required this.onPrevious,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final modeLabel = isDarkMode ? 'Dark' : 'Light';
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppTheme.border, width: 0.5)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.brightness_6_outlined,
+              color: AppTheme.textPrimary, size: 20),
+          const SizedBox(width: 12),
+          Text('Theme Mode', style: AppTheme.bodyLarge),
+          const Spacer(),
+          IconButton(
+            onPressed: onPrevious,
+            icon: const Icon(Icons.chevron_left_rounded),
+            color: AppTheme.textSecondary,
+            visualDensity: VisualDensity.compact,
+          ),
+          Text(
+            modeLabel,
+            style: AppTheme.bodyLarge.copyWith(color: AppTheme.accent),
+          ),
+          IconButton(
+            onPressed: onNext,
+            icon: const Icon(Icons.chevron_right_rounded),
+            color: AppTheme.textSecondary,
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
       ),
     );
   }

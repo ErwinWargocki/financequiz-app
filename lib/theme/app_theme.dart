@@ -109,6 +109,43 @@ class AppTheme {
     );
   }
 
+  static ThemeData get lightTheme {
+    return ThemeData(
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: const Color(0xFFF7F8FA),
+      colorScheme: const ColorScheme.light(
+        primary: Color(0xFF1F7AE0),
+        secondary: Color(0xFF5C6BC0),
+        surface: Colors.white,
+        error: Color(0xFFD32F2F),
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: Color(0xFF1A1A1A),
+      ),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+        titleTextStyle: GoogleFonts.spaceGrotesk(
+          color: const Color(0xFF1A1A1A),
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.5,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFFE6E7EB), width: 1),
+        ),
+      ),
+    );
+  }
+
   // Text styles
   static TextStyle get displayLarge => GoogleFonts.spaceGrotesk(
         fontSize: 40,

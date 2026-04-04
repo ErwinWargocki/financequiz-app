@@ -183,3 +183,21 @@ class QuizResult {
     );
   }
 }
+
+class QuestionReview {
+  final String question;
+  final String correctAnswer;
+  final String explanation;
+  final String? firstAttemptAnswer;
+  final String? secondAttemptAnswer;
+  final bool answeredCorrectly;
+
+  const QuestionReview({
+    required this.question,
+    required this.correctAnswer,
+    required this.explanation,
+    required this.firstAttemptAnswer,
+    required this.secondAttemptAnswer,
+    required this.answeredCorrectly,
+  });
+}

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,11 +20,37 @@ class _HomeScreenState extends State<HomeScreen> {
   UserModel? _user;
   List<QuizResult> _recentResults = [];
   bool _loading = true;
+  final PageController _featuredPageController = PageController();
+  Timer? _featuredRotateTimer;
+  List<QuizCategory> _featuredCategories = [];
 
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _featuredRotateTimer?.cancel();
+    _featuredPageController.dispose();
+    super.dispose();
+  }
+
+  void _scheduleFeaturedRotation() {
+    _featuredRotateTimer?.cancel();
+    if (_featuredCategories.length <= 1) return;
+    _featuredRotateTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (!mounted) return;
+      if (!_featuredPageController.hasClients) return;
+      final cur = _featuredPageController.page?.round() ?? 0;
+      final next = (cur + 1) % _featuredCategories.length;
+      _featuredPageController.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeOutCubic,
+      );
+    });
   }
 
   Future<void> _loadData() async {
@@ -33,11 +61,29 @@ class _HomeScreenState extends State<HomeScreen> {
     final db = DatabaseHelper.instance;
     final user = await db.getUser(userId);
     final results = await db.getRecentResults(userId, limit: 3);
+    final allResults = await db.getResultsByUser(userId);
+    final attempted = allResults.map((r) => r.category).toSet();
+    var incomplete =
+        QuizCategories.all.where((c) => !attempted.contains(c.id)).toList();
+    if (incomplete.isEmpty) {
+      incomplete = List<QuizCategory>.from(QuizCategories.all);
+    }
 
     setState(() {
       _user = user;
       _recentResults = results;
+      _featuredCategories = incomplete;
       _loading = false;
+    });
+    _scheduleFeaturedRotation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_featuredPageController.hasClients && _featuredCategories.isNotEmpty) {
+        final idx = _featuredPageController.page?.round() ?? 0;
+        if (idx >= _featuredCategories.length) {
+          _featuredPageController.jumpToPage(0);
+        }
+      }
     });
   }
 
@@ -58,11 +104,8 @@ class _HomeScreenState extends State<HomeScreen> {
         slivers: [
           _buildAppBar(),
           SliverToBoxAdapter(child: _buildStatsRow()),
-          SliverToBoxAdapter(child: _buildSectionHeader('Continue Learning')),
-          SliverToBoxAdapter(child: _buildFeaturedCard()),
-          SliverToBoxAdapter(
-              child: _buildSectionHeader('All Categories', showSeeAll: true)),
-          _buildCategoryGrid(),
+          SliverToBoxAdapter(child: _buildContinueLearningSectionHeader()),
+          SliverToBoxAdapter(child: _buildFeaturedCarousel()),
           if (_recentResults.isNotEmpty) ...[
             SliverToBoxAdapter(child: _buildSectionHeader('Recent Activity')),
             SliverToBoxAdapter(child: _buildRecentActivity()),
@@ -216,6 +259,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildContinueLearningSectionHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text('Continue Learning', style: AppTheme.titleLarge),
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(String title, {bool showSeeAll = false}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
@@ -233,144 +286,167 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFeaturedCard() {
-    final featured = QuizCategories.all.first;
+  Widget _buildFeaturedCarousel() {
+    if (_featuredCategories.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GestureDetector(
-        onTap: () => _startQuiz(featured),
-        child: Container(
-          height: 160,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: [
-                Color(featured.color),
-                Color(featured.color).withOpacity(0.6),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Stack(
-            children: [
-              // Background pattern
-              Positioned(
-                right: -20,
-                top: -20,
-                child: Container(
-                  width: 160,
-                  height: 160,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.05),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 20,
-                bottom: -40,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.05),
-                  ),
-                ),
-              ),
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text('FEATURED',
-                          style: AppTheme.labelSmall.copyWith(
-                            color: Colors.white,
-                            letterSpacing: 1.5,
-                          )),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Text(featured.icon,
-                            style: const TextStyle(fontSize: 32)),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              featured.name,
-                              style: GoogleFonts.spaceGrotesk(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            Text(
-                              '${featured.totalQuestions} questions · ${featured.difficulty}',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.play_arrow_rounded,
-                              color: Colors.white, size: 22),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+      child: SizedBox(
+        height: 160,
+        child: PageView.builder(
+          controller: _featuredPageController,
+          itemCount: _featuredCategories.length,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (context, index) {
+            return _buildFeaturedPage(_featuredCategories[index]);
+          },
         ),
       ),
     );
   }
 
-  SliverGrid _buildCategoryGrid() {
-    return SliverGrid(
-      delegate: SliverChildBuilderDelegate(
-        (context, i) {
-          final cat = QuizCategories.all[i];
-          return Padding(
-            padding: EdgeInsets.only(
-              left: i.isEven ? 16 : 6,
-              right: i.isEven ? 6 : 16,
-              bottom: 12,
+  Widget _buildFeaturedPage(QuizCategory featured) {
+    final catColor = Color(featured.color);
+    return GestureDetector(
+        onTap: () => _startQuiz(featured),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: SizedBox(
+            height: 160,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Image.asset(
+                      'assets/images/continue_learning_bg.png',
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                      opacity: const AlwaysStoppedAnimation(0.22),
+                      errorBuilder: (_, __, ___) => Center(
+                        child: Opacity(
+                          opacity: 0.14,
+                          child: Text(
+                            featured.icon,
+                            style: TextStyle(
+                              fontSize: 140,
+                              height: 1,
+                              color: Colors.white.withOpacity(0.95),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          catColor.withOpacity(0.92),
+                          catColor.withOpacity(0.58),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: -20,
+                  top: -20,
+                  child: Container(
+                    width: 160,
+                    height: 160,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.05),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 20,
+                  bottom: -40,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.05),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text('FEATURED',
+                            style: AppTheme.labelSmall.copyWith(
+                              color: Colors.white,
+                              letterSpacing: 1.5,
+                            )),
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          Text(featured.icon,
+                              style: const TextStyle(fontSize: 32)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  featured.name,
+                                  style: GoogleFonts.spaceGrotesk(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  '${featured.totalQuestions} questions · ${featured.difficulty}',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.play_arrow_rounded,
+                                color: Colors.white, size: 22),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            child: _CategoryCard(
-              category: cat,
-              onTap: () => _startQuiz(cat),
-            ),
-          );
-        },
-        childCount: QuizCategories.all.length,
-      ),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisExtent: 152,
-      ),
-    );
+          ),
+        ),
+      );
   }
 
   Widget _buildRecentActivity() {
@@ -433,84 +509,6 @@ class _StatChip extends StatelessWidget {
             Text(label,
                 style: AppTheme.labelSmall
                     .copyWith(color: color.withOpacity(0.7))),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Category Card ─────────────────────────────────────────────────────────
-class _CategoryCard extends StatelessWidget {
-  final QuizCategory category;
-  final VoidCallback onTap;
-
-  const _CategoryCard({required this.category, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = Color(category.color);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.border, width: 1),
-        ),
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(category.icon,
-                        style: const TextStyle(fontSize: 20)),
-                  ),
-                ),
-                Icon(Icons.arrow_forward_ios_rounded,
-                    size: 14, color: AppTheme.textMuted),
-              ],
-            ),
-            const Spacer(),
-            Text(
-              category.name,
-              style: AppTheme.titleLarge.copyWith(fontSize: 15),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              '${category.totalQuestions} questions',
-              style: AppTheme.bodyMedium.copyWith(fontSize: 12),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                category.difficulty,
-                style: AppTheme.labelSmall.copyWith(
-                  color: color,
-                  fontSize: 10,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
           ],
         ),
       ),
