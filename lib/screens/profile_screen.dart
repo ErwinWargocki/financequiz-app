@@ -128,14 +128,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: AppTheme.primary,
               ),
               child: Center(
-                child: Text(
-                  initial,
-                  style: GoogleFonts.spaceGrotesk(
-                    color: AppTheme.textPrimary,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                child: (_user != null && _user!.profileIconIndex > 0)
+                    ? Text(
+                        _user!.profileIcon,
+                        style: const TextStyle(fontSize: 34),
+                      )
+                    : Text(
+                        initial,
+                        style: GoogleFonts.spaceGrotesk(
+                          color: AppTheme.textPrimary,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
               ),
             ),
           ),

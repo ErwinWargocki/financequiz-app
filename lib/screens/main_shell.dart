@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
-import 'explore_screen.dart';
+import 'study_screen.dart';
 import 'all_categories_screen.dart';
 import 'profile_screen.dart';
 
@@ -18,7 +18,7 @@ class _MainShellState extends State<MainShell> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    ExploreScreen(),
+    StudyScreen(),
     AllCategoriesScreen(),
     ProfileScreen(),
   ];
@@ -50,8 +50,7 @@ class _MainShellState extends State<MainShell> {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -62,8 +61,8 @@ class _MainShellState extends State<MainShell> {
                   onTap: () => setState(() => _selectedIndex = 0),
                 ),
                 _NavItem(
-                  icon: Icons.explore_rounded,
-                  label: 'Explore',
+                  icon: Icons.menu_book_rounded,
+                  label: 'Study',
                   selected: _selectedIndex == 1,
                   onTap: () => setState(() => _selectedIndex = 1),
                 ),
@@ -108,8 +107,7 @@ class _NavItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: selected
               ? AppTheme.accent.withOpacity(0.12)

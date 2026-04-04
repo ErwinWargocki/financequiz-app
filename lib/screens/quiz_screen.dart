@@ -706,9 +706,9 @@ class _QuizScreenState extends State<QuizScreen>
     final isLast = _currentIndex >= _questions.length - 1;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppTheme.primary,
-        border: const Border(
+        border: Border(
             top: BorderSide(color: AppTheme.border, width: 0.5)),
       ),
       child: SizedBox(

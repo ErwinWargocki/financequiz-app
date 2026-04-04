@@ -8,27 +8,32 @@ import 'screens/main_shell.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock to portrait mode
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Determine initial route
   final prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getInt('userId');
   final onboardingDone = prefs.getBool('onboardingDone') ?? false;
-
   final isDarkMode = prefs.getBool('isDarkMode') ?? true;
-  runApp(FinQuizApp(showHome: onboardingDone, isDarkMode: isDarkMode));
+
+  runApp(FinQuizApp(
+    isLoggedIn: userId != null,
+    onboardingDone: onboardingDone,
+    isDarkMode: isDarkMode,
+  ));
 }
 
 class FinQuizApp extends StatefulWidget {
-  final bool showHome;
+  final bool isLoggedIn;
+  final bool onboardingDone;
   final bool isDarkMode;
 
   const FinQuizApp({
     super.key,
-    required this.showHome,
+    required this.isLoggedIn,
+    required this.onboardingDone,
     required this.isDarkMode,
   });
 
@@ -73,7 +78,9 @@ class _FinQuizAppState extends State<FinQuizApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
-      home: widget.showHome ? const MainShell() : const WelcomeScreen(),
+      home: widget.isLoggedIn
+          ? const MainShell()
+          : WelcomeScreen(onboardingDone: widget.onboardingDone),
     );
   }
 }

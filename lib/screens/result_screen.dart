@@ -582,7 +582,7 @@ class _ReviewTile extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.lightbulb_outline_rounded,
+                  const Icon(Icons.lightbulb_outline_rounded,
                       color: AppTheme.accentWarm, size: 22),
                   const SizedBox(width: 8),
                   Expanded(

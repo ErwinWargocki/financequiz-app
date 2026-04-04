@@ -19,19 +19,23 @@ class DatabaseHelper {
     final path = join(dbPath, filePath);
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
   Future<void> _createDB(Database db, int version) async {
-    // Users table
     await db.execute('''
       CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         username TEXT NOT NULL UNIQUE,
         avatarInitial TEXT NOT NULL,
+        email TEXT,
+        passwordHash TEXT,
+        googleId TEXT,
+        profileIconIndex INTEGER DEFAULT 0,
         totalScore INTEGER DEFAULT 0,
         quizzesCompleted INTEGER DEFAULT 0,
         currentStreak INTEGER DEFAULT 0,
@@ -40,7 +44,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // Questions table
     await db.execute('''
       CREATE TABLE questions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,7 +59,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // Results table
     await db.execute('''
       CREATE TABLE results (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,13 +73,33 @@ class DatabaseHelper {
       )
     ''');
 
-    // Seed questions
     await _seedQuestions(db);
   }
 
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE users ADD COLUMN email TEXT');
+      await db.execute('ALTER TABLE users ADD COLUMN passwordHash TEXT');
+      await db.execute('ALTER TABLE users ADD COLUMN googleId TEXT');
+      await db.execute(
+          'ALTER TABLE users ADD COLUMN profileIconIndex INTEGER DEFAULT 0');
+
+      // Seed extra questions added in v2
+      await _seedExtraQuestionsV2(db);
+    }
+  }
+
   Future<void> _seedQuestions(Database db) async {
-    final questions = _getInitialQuestions();
-    for (final q in questions) {
+    for (final q in _baseQuestions()) {
+      await db.insert('questions', q.toMap());
+    }
+    for (final q in _extraQuestionsV2()) {
+      await db.insert('questions', q.toMap());
+    }
+  }
+
+  Future<void> _seedExtraQuestionsV2(Database db) async {
+    for (final q in _extraQuestionsV2()) {
       await db.insert('questions', q.toMap());
     }
   }
@@ -100,6 +122,14 @@ class DatabaseHelper {
     final db = await database;
     final maps =
         await db.query('users', where: 'username = ?', whereArgs: [username]);
+    if (maps.isEmpty) return null;
+    return UserModel.fromMap(maps.first);
+  }
+
+  Future<UserModel?> getUserByEmail(String email) async {
+    final db = await database;
+    final maps =
+        await db.query('users', where: 'email = ?', whereArgs: [email]);
     if (maps.isEmpty) return null;
     return UserModel.fromMap(maps.first);
   }
@@ -183,8 +213,7 @@ class DatabaseHelper {
     }
     final bestCategory =
         categoryCount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
-    final totalTime =
-        results.fold(0, (sum, r) => sum + r.timeTakenSeconds);
+    final totalTime = results.fold(0, (sum, r) => sum + r.timeTakenSeconds);
     return {
       'totalScore': totalScore,
       'avgScore': avgScore,
@@ -193,8 +222,13 @@ class DatabaseHelper {
     };
   }
 
-  // ─── Seed Data ─────────────────────────────────────────────────────────
-  List<QuizQuestion> _getInitialQuestions() {
+  Future<void> close() async {
+    final db = await database;
+    db.close();
+  }
+
+  // ─── Seed Data (base v1) ───────────────────────────────────────────────
+  List<QuizQuestion> _baseQuestions() {
     return [
       // ── BUDGETING ──────────────────────────────────────────────────
       QuizQuestion(
@@ -237,8 +271,7 @@ class DatabaseHelper {
       ),
       QuizQuestion(
         category: 'budgeting',
-        question:
-            'What is "lifestyle creep" in personal finance?',
+        question: 'What is "lifestyle creep" in personal finance?',
         options: [
           'Investing more as income rises',
           'Spending increasing as income grows',
@@ -294,8 +327,7 @@ class DatabaseHelper {
       ),
       QuizQuestion(
         category: 'budgeting',
-        question:
-            'What is a "sinking fund" in personal budgeting?',
+        question: 'What is a "sinking fund" in personal budgeting?',
         options: [
           'A fund for risky investments',
           'Saving gradually for a known future expense',
@@ -396,8 +428,7 @@ class DatabaseHelper {
       ),
       QuizQuestion(
         category: 'investing',
-        question:
-            'What is the "Rule of 72" used for in investing?',
+        question: 'What is the "Rule of 72" used for in investing?',
         options: [
           'Calculating tax on capital gains',
           'Estimating how long money takes to double at a given interest rate',
@@ -624,8 +655,7 @@ class DatabaseHelper {
       ),
       QuizQuestion(
         category: 'debt',
-        question:
-            'What does it mean to "consolidate" debt?',
+        question: 'What does it mean to "consolidate" debt?',
         options: [
           'Declare bankruptcy',
           'Combine multiple debts into one loan, ideally at a lower interest rate',
@@ -640,8 +670,284 @@ class DatabaseHelper {
     ];
   }
 
-  Future<void> close() async {
-    final db = await database;
-    db.close();
+  // ─── Extra Questions added in v2 ────────────────────────────────────────
+  List<QuizQuestion> _extraQuestionsV2() {
+    return [
+      // ── SAVINGS (extra) ───────────────────────────────────────────
+      QuizQuestion(
+        category: 'savings',
+        question: 'What is a "Certificate of Deposit" (CD)?',
+        options: [
+          'A government bond with variable interest',
+          'A time-deposit account that pays a fixed rate for a set term',
+          'A type of stocks-and-shares ISA',
+          'An insurance policy with cash value',
+        ],
+        correctIndex: 1,
+        explanation:
+            'A CD locks your money for a fixed period (e.g., 6 months, 1 year) in exchange for a guaranteed interest rate, usually higher than a regular savings account.',
+        difficulty: 'medium',
+      ),
+      QuizQuestion(
+        category: 'savings',
+        question: 'What does "liquidity" mean when talking about savings?',
+        options: [
+          'How much interest your savings earn',
+          'How quickly an asset can be converted to cash without losing value',
+          'The total amount saved over a lifetime',
+          'The interest rate offered by a bank',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Liquidity refers to how easily and quickly you can access your money. A current account is highly liquid; a fixed-term CD is not.',
+        difficulty: 'medium',
+      ),
+      QuizQuestion(
+        category: 'savings',
+        question: 'Why is it important to have savings separate from your current account?',
+        options: [
+          'To earn more credit card points',
+          'To reduce the temptation to spend and keep savings growing',
+          'Because banks require it by law',
+          'To avoid paying taxes on income',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Keeping savings in a separate account reduces the urge to dip into them and often earns better interest.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'savings',
+        question: 'What is the "latte factor" concept in saving?',
+        options: [
+          'A caffeine-driven productivity hack',
+          'Small daily expenses that add up to large amounts over time',
+          'Investing in commodity stocks',
+          'A method of compound interest calculation',
+        ],
+        correctIndex: 1,
+        explanation:
+            'The latte factor illustrates how small recurring expenses (e.g., a daily £4 coffee) can total thousands per year that could instead be saved.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'savings',
+        question: 'What is the purpose of a "rainy day" fund vs an emergency fund?',
+        options: [
+          'They are the same thing',
+          'A rainy day fund covers small, predictable expenses; an emergency fund covers large, unexpected ones',
+          'A rainy day fund is invested; an emergency fund is not',
+          'Rainy day funds are for businesses only',
+        ],
+        correctIndex: 1,
+        explanation:
+            'A rainy day fund (small buffer) handles minor surprises like a car service, while an emergency fund (3–6 months of expenses) covers major shocks like job loss.',
+        difficulty: 'medium',
+      ),
+
+      // ── TAXES (extra) ─────────────────────────────────────────────
+      QuizQuestion(
+        category: 'taxes',
+        question: 'What is income tax?',
+        options: [
+          'A tax on goods and services',
+          'A tax levied on an individual\'s earnings',
+          'A tax on company profits only',
+          'A flat fee paid annually',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Income tax is a percentage of earnings paid to the government. Most countries use a progressive system where higher earners pay a higher rate.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'taxes',
+        question: 'What does "tax-exempt" mean?',
+        options: [
+          'You pay tax at a reduced rate',
+          'Your income or asset is not subject to tax',
+          'You defer tax to a later date',
+          'The government refunds the tax you paid',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Tax-exempt means the income or investment is completely excluded from taxation. For example, interest earned in an ISA is tax-exempt.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'taxes',
+        question: 'What is VAT (Value Added Tax)?',
+        options: [
+          'A tax on personal savings',
+          'A consumption tax added to the price of goods and services',
+          'A corporate tax on profits',
+          'An investment gain tax',
+        ],
+        correctIndex: 1,
+        explanation:
+            'VAT is an indirect consumption tax charged at each stage of production and ultimately paid by the end consumer.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'taxes',
+        question: 'What is the purpose of a tax return?',
+        options: [
+          'To request a refund of all taxes paid',
+          'To report income, calculate tax owed, and settle any over/underpayment',
+          'To apply for tax-exempt status',
+          'To notify the government of new employment',
+        ],
+        correctIndex: 1,
+        explanation:
+            'A tax return is a form submitted to HMRC (or equivalent) to declare income, claim allowances, and reconcile how much tax you owe or are owed back.',
+        difficulty: 'medium',
+      ),
+      QuizQuestion(
+        category: 'taxes',
+        question: 'What is "tax avoidance" vs "tax evasion"?',
+        options: [
+          'Both are illegal',
+          'Avoidance is legal tax minimisation; evasion is illegal non-payment',
+          'Both are legal methods to reduce tax',
+          'Evasion is legal; avoidance is not',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Tax avoidance uses legal means (like ISAs, pensions) to reduce your bill. Tax evasion is deliberately hiding income or assets — it\'s a criminal offence.',
+        difficulty: 'medium',
+      ),
+
+      // ── DEBT (extra) ──────────────────────────────────────────────
+      QuizQuestion(
+        category: 'debt',
+        question: 'What is a credit score used for?',
+        options: [
+          'Tracking your savings history',
+          'Assessing your creditworthiness for loans and credit',
+          'Measuring your net worth',
+          'Calculating your income tax band',
+        ],
+        correctIndex: 1,
+        explanation:
+            'A credit score is a numerical rating of how reliably you repay borrowed money. Higher scores unlock better interest rates and loan terms.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'debt',
+        question: 'What is the difference between "good debt" and "bad debt"?',
+        options: [
+          'Good debt has lower interest; bad debt has higher interest',
+          'Good debt generates value or income; bad debt funds depreciating consumption',
+          'Good debt is government-issued; bad debt is private',
+          'There is no meaningful difference',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Good debt (e.g., a mortgage, student loan) can increase your earning potential or net worth. Bad debt (e.g., high-interest credit card for luxuries) costs money without building value.',
+        difficulty: 'medium',
+      ),
+      QuizQuestion(
+        category: 'debt',
+        question: 'What happens if you only make minimum payments on a credit card?',
+        options: [
+          'You pay off debt faster than with full payments',
+          'You pay much more in interest and take longer to clear the balance',
+          'Your credit score improves significantly',
+          'The remaining balance is forgiven after 12 months',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Minimum payments barely cover interest charges. The principal balance reduces very slowly, leading to years of debt and significantly more total interest paid.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'debt',
+        question: 'What is a "balance transfer" on a credit card?',
+        options: [
+          'Moving money from savings to pay a credit card',
+          'Transferring existing debt to a new card, often with a 0% introductory rate',
+          'Splitting a credit card limit between two users',
+          'Paying off a loan with a credit card',
+        ],
+        correctIndex: 1,
+        explanation:
+            'A balance transfer moves your credit card debt to a new card that often offers 0% interest for an introductory period, saving you money if you pay it off in time.',
+        difficulty: 'medium',
+      ),
+
+      // ── CRYPTO (extra) ─────────────────────────────────────────────
+      QuizQuestion(
+        category: 'crypto',
+        question: 'What is Bitcoin\'s maximum supply?',
+        options: [
+          '100 million BTC',
+          '21 million BTC',
+          '1 billion BTC',
+          'Unlimited',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Bitcoin has a hard-coded maximum supply of 21 million coins, making it deflationary by design as demand grows against fixed supply.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'crypto',
+        question: 'What is a "smart contract"?',
+        options: [
+          'A legal agreement between two crypto exchanges',
+          'Self-executing code on a blockchain that enforces agreement terms automatically',
+          'An AI-powered trading algorithm',
+          'A regulatory compliance document',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Smart contracts are programs stored on a blockchain that execute automatically when predefined conditions are met, removing the need for intermediaries.',
+        difficulty: 'hard',
+      ),
+      QuizQuestion(
+        category: 'crypto',
+        question: 'What is "DeFi"?',
+        options: [
+          'Decentralised Finance — financial services on blockchain without traditional banks',
+          'Default Finance — a government rescue scheme',
+          'Defensive Finance — a low-risk investment strategy',
+          'Digital Fiat — government digital currencies',
+        ],
+        correctIndex: 0,
+        explanation:
+            'DeFi (Decentralised Finance) uses blockchain and smart contracts to offer financial services like lending, borrowing, and trading without traditional intermediaries.',
+        difficulty: 'hard',
+      ),
+
+      // ── INVESTING (extra) ──────────────────────────────────────────
+      QuizQuestion(
+        category: 'investing',
+        question: 'What is a "bull market"?',
+        options: [
+          'A market with declining prices over a sustained period',
+          'A market with rising prices over a sustained period',
+          'A highly volatile market',
+          'A market dominated by large-cap stocks',
+        ],
+        correctIndex: 1,
+        explanation:
+            'A bull market is a period of rising asset prices, generally defined as a 20%+ rise from a recent low, often accompanied by investor optimism.',
+        difficulty: 'easy',
+      ),
+      QuizQuestion(
+        category: 'investing',
+        question: 'What does "asset allocation" mean?',
+        options: [
+          'Selecting individual stocks to buy',
+          'Dividing an investment portfolio across asset classes like stocks, bonds, and cash',
+          'Calculating the total value of your investments',
+          'Timing the market for maximum gains',
+        ],
+        correctIndex: 1,
+        explanation:
+            'Asset allocation is the strategy of spreading investments across different asset types to balance risk and return based on your goals and timeline.',
+        difficulty: 'medium',
+      ),
+    ];
   }
 }

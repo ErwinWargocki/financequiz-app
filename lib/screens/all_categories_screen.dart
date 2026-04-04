@@ -145,7 +145,7 @@ class _CategoryGridTile extends StatelessWidget {
                         style: const TextStyle(fontSize: 20)),
                   ),
                 ),
-                Icon(Icons.arrow_forward_ios_rounded,
+                const Icon(Icons.arrow_forward_ios_rounded,
                     size: 14, color: AppTheme.textMuted),
               ],
             ),

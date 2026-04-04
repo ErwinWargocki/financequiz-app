@@ -1,3 +1,18 @@
+// ─── Profile Icons ─────────────────────────────────────────────────────────
+class ProfileIcons {
+  static const List<String> all = [
+    '🦁', '🐯', '🦊', '🐺', '🦝',
+    '🐼', '🐨', '🦄', '🦋', '🐬',
+    '🦅', '🦉', '🦚', '🐲', '🦈',
+    '🚀', '⚡', '🔥', '💎', '🌟',
+  ];
+
+  static String get(int index) {
+    if (index < 0 || index >= all.length) return '🦁';
+    return all[index];
+  }
+}
+
 // ─── Quiz Question Model ───────────────────────────────────────────────────
 class QuizQuestion {
   final int? id;
@@ -78,6 +93,10 @@ class UserModel {
   final String name;
   final String username;
   final String avatarInitial;
+  final String? email;
+  final String? passwordHash;
+  final String? googleId;
+  int profileIconIndex;
   int totalScore;
   int quizzesCompleted;
   int currentStreak;
@@ -89,6 +108,10 @@ class UserModel {
     required this.name,
     required this.username,
     required this.avatarInitial,
+    this.email,
+    this.passwordHash,
+    this.googleId,
+    this.profileIconIndex = 0,
     this.totalScore = 0,
     this.quizzesCompleted = 0,
     this.currentStreak = 0,
@@ -96,12 +119,18 @@ class UserModel {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
+  String get profileIcon => ProfileIcons.get(profileIconIndex);
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
       'username': username,
       'avatarInitial': avatarInitial,
+      'email': email,
+      'passwordHash': passwordHash,
+      'googleId': googleId,
+      'profileIconIndex': profileIconIndex,
       'totalScore': totalScore,
       'quizzesCompleted': quizzesCompleted,
       'currentStreak': currentStreak,
@@ -115,11 +144,15 @@ class UserModel {
       id: map['id'],
       name: map['name'],
       username: map['username'],
-      avatarInitial: map['avatarInitial'],
-      totalScore: map['totalScore'],
-      quizzesCompleted: map['quizzesCompleted'],
-      currentStreak: map['currentStreak'],
-      longestStreak: map['longestStreak'],
+      avatarInitial: map['avatarInitial'] ?? '',
+      email: map['email'],
+      passwordHash: map['passwordHash'],
+      googleId: map['googleId'],
+      profileIconIndex: map['profileIconIndex'] ?? 0,
+      totalScore: map['totalScore'] ?? 0,
+      quizzesCompleted: map['quizzesCompleted'] ?? 0,
+      currentStreak: map['currentStreak'] ?? 0,
+      longestStreak: map['longestStreak'] ?? 0,
       createdAt: DateTime.parse(map['createdAt']),
     );
   }
@@ -200,4 +233,36 @@ class QuestionReview {
     required this.secondAttemptAnswer,
     required this.answeredCorrectly,
   });
+}
+
+// ─── Study Topic Models ────────────────────────────────────────────────────
+class StudyTopic {
+  final String id;
+  final String quizCategoryId; // links to QuizCategory
+  final String title;
+  final String icon;
+  final int color;
+  final String difficulty; // 'Beginner' | 'Intermediate' | 'Advanced'
+  final String summary;
+  final String readingTime;
+  final List<StudyLesson> lessons;
+
+  const StudyTopic({
+    required this.id,
+    required this.quizCategoryId,
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.difficulty,
+    required this.summary,
+    required this.readingTime,
+    required this.lessons,
+  });
+}
+
+class StudyLesson {
+  final String heading;
+  final String body;
+
+  const StudyLesson({required this.heading, required this.body});
 }

@@ -185,27 +185,36 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildAvatar({double size = 40}) {
-    final initial = _user?.avatarInitial ?? '?';
+    final hasIcon = _user != null && _user!.profileIconIndex > 0;
     return Container(
       width: size,
       height: size,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [AppTheme.accent, AppTheme.accentBlue],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: hasIcon
+            ? null
+            : const LinearGradient(
+                colors: [AppTheme.accent, AppTheme.accentBlue],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+        color: hasIcon ? AppTheme.surfaceLight : null,
+        border: Border.all(color: AppTheme.border, width: 1.5),
       ),
       child: Center(
-        child: Text(
-          initial,
-          style: GoogleFonts.spaceGrotesk(
-            color: AppTheme.primary,
-            fontSize: size * 0.4,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        child: hasIcon
+            ? Text(
+                _user!.profileIcon,
+                style: TextStyle(fontSize: size * 0.52),
+              )
+            : Text(
+                _user?.avatarInitial ?? '?',
+                style: GoogleFonts.spaceGrotesk(
+                  color: AppTheme.primary,
+                  fontSize: size * 0.4,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
       ),
     );
   }
