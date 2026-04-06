@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildAppBar(),
           SliverToBoxAdapter(child: _ProfileHeader(user: _user)),
           SliverToBoxAdapter(child: _StatsGrid(stats: _stats)),
-          SliverToBoxAdapter(child: _buildAchievements()),
+          //SliverToBoxAdapter(child: _buildAchievements()),
           if (_results.isNotEmpty) ...[
             SliverToBoxAdapter(
               child: Padding(
@@ -100,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAchievements() {
+  /*Widget _buildAchievements() {
     final quizzes = _user?.quizzesCompleted ?? 0;
     final achievements = [
       _Achievement('🎯', 'First Quiz', quizzes >= 1, 'Complete your first quiz'),
@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
-  }
+  }*/
 
   void _showSettings() {
     showModalBottomSheet(

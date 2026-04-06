@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../../theme/app_theme.dart';
 import '../../models/models.dart';
 import '../../database/database_helper.dart';
@@ -11,6 +12,7 @@ import '../all_categories_screen.dart';
 part 'home_featured_card.dart';
 part 'home_stat_chip.dart';
 part 'home_result_tile.dart';
+part 'home_weekly_chart.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   UserModel? _user;
   List<QuizResult> _recentResults = [];
+  List<int> _weeklyTestCounts = List.filled(7, 0); // Mon–Sun
   bool _loading = true;
 
   @override
@@ -39,9 +42,20 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = await db.getUser(userId);
     final results = await db.getRecentResults(userId, limit: 3);
 
+    // Current week Mon–Sun
+    final now = DateTime.now();
+    final monday = now.subtract(Duration(days: now.weekday - 1));
+    final weekStart = DateTime(monday.year, monday.month, monday.day);
+    final weekResults = await db.getResultsForWeek(userId, weekStart);
+    final counts = List<int>.filled(7, 0);
+    for (final r in weekResults) {
+      counts[r.completedAt.weekday - 1]++; // weekday: 1=Mon … 7=Sun
+    }
+
     setState(() {
       _user = user;
       _recentResults = results;
+      _weeklyTestCounts = counts;
       _loading = false;
     });
   }
@@ -78,6 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          SliverToBoxAdapter(child: _buildSectionHeader('Number of quizzes completed this week')),
+          SliverToBoxAdapter(child: _WeeklyProgressChart(counts: _weeklyTestCounts)),
           if (_recentResults.isNotEmpty) ...[
             SliverToBoxAdapter(child: _buildSectionHeader('Recent Activity')),
             SliverToBoxAdapter(child: _buildRecentActivity()),
@@ -101,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
             TextSpan(text: 'QUIZ', style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
           ])),
           const Spacer(),
-          Container(
+          /*Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               color: AppTheme.accentWarm.withValues(alpha: 0.12),
@@ -113,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 4),
               Text('${_user?.currentStreak ?? 0}', style: AppTheme.labelSmall.copyWith(color: AppTheme.accentWarm, fontWeight: FontWeight.w700)),
             ]),
-          ),
+          ),*/
           const SizedBox(width: 10),
           _buildAvatar(size: 36),
         ],

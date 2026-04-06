@@ -1,10 +1,33 @@
 part of 'welcome_screen.dart';
 
 // ─── Auth Choice Step ─────────────────────────────────────────────────────────
-class _AuthChoiceStep extends StatelessWidget {
+class _AuthChoiceStep extends StatefulWidget {
   final VoidCallback onRegister;
   final VoidCallback onLogin;
   const _AuthChoiceStep({required this.onRegister, required this.onLogin});
+
+  @override
+  State<_AuthChoiceStep> createState() => _AuthChoiceStepState();
+}
+
+class _AuthChoiceStepState extends State<_AuthChoiceStep> with SingleTickerProviderStateMixin {
+  late AnimationController _floatController;
+  late Animation<double> _floatAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatController = AnimationController(vsync: this, duration: const Duration(seconds: 3))
+      ..repeat(reverse: true);
+    _floatAnimation = Tween<double>(begin: -7, end: 7)
+        .animate(CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _floatController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,22 +36,37 @@ class _AuthChoiceStep extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 48),
-            Text.rich(TextSpan(children: [
-              TextSpan(text: 'FIN', style: GoogleFonts.spaceGrotesk(color: AppTheme.accent, fontSize: 28, fontWeight: FontWeight.w800)),
-              TextSpan(text: 'QUIZ', style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 28, fontWeight: FontWeight.w800)),
-            ])),
-            const SizedBox(height: 16),
-            Text('Your financial\nlearning journey\nstarts here.', style: AppTheme.displayLarge.copyWith(fontSize: 32)),
-            const SizedBox(height: 8),
-            Text('Quiz-based learning for real-world money skills.', style: AppTheme.bodyLarge.copyWith(color: AppTheme.textSecondary)),
+            const Spacer(),
+            AnimatedBuilder(
+              animation: _floatAnimation,
+              builder: (context, child) => Transform.translate(
+                offset: Offset(0, _floatAnimation.value),
+                child: child,
+              ),
+              child: Text.rich(TextSpan(children: [
+                TextSpan(text: 'FIN', style: GoogleFonts.spaceGrotesk(color: AppTheme.accent, fontSize: 42, fontWeight: FontWeight.w800)),
+                TextSpan(text: 'QUIZ', style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 42, fontWeight: FontWeight.w800)),
+              ])),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Your financial\nlearning journey\nstarts here.',
+              textAlign: TextAlign.center,
+              style: AppTheme.displayLarge.copyWith(fontSize: 32, height: 1.15),
+            ),
+            const SizedBox(height: 28),
+            Text(
+              'Quiz-based learning for real-world money skills.',
+              textAlign: TextAlign.center,
+              style: AppTheme.bodyLarge.copyWith(color: AppTheme.textSecondary),
+            ),
             const Spacer(),
             SizedBox(
               width: double.infinity, height: 56,
               child: ElevatedButton(
-                onPressed: onRegister,
+                onPressed: widget.onRegister,
                 style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accent, foregroundColor: AppTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                 child: Text('Create Account', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 16)),
               ),
@@ -37,7 +75,7 @@ class _AuthChoiceStep extends StatelessWidget {
             SizedBox(
               width: double.infinity, height: 56,
               child: OutlinedButton(
-                onPressed: onLogin,
+                onPressed: widget.onLogin,
                 style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.border, width: 1.5), foregroundColor: AppTheme.textPrimary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                 child: Text('Log In', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, fontSize: 16)),
               ),

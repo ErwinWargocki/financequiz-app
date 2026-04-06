@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/app_theme.dart';
-import 'screens/welcome/welcome_screen.dart';
-import 'screens/main_shell.dart';
+import 'screens/loading/loading_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,26 +13,16 @@ void main() async {
   ]);
 
   final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getInt('userId');
-  final onboardingDone = prefs.getBool('onboardingDone') ?? false;
   final isDarkMode = prefs.getBool('isDarkMode') ?? true;
 
-  runApp(FinQuizApp(
-    isLoggedIn: userId != null,
-    onboardingDone: onboardingDone,
-    isDarkMode: isDarkMode,
-  ));
+  runApp(FinQuizApp(isDarkMode: isDarkMode));
 }
 
 class FinQuizApp extends StatefulWidget {
-  final bool isLoggedIn;
-  final bool onboardingDone;
   final bool isDarkMode;
 
   const FinQuizApp({
     super.key,
-    required this.isLoggedIn,
-    required this.onboardingDone,
     required this.isDarkMode,
   });
 
@@ -77,9 +66,7 @@ class _FinQuizAppState extends State<FinQuizApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
-      home: widget.isLoggedIn
-          ? const MainShell()
-          : WelcomeScreen(onboardingDone: widget.onboardingDone),
+      home: const LoadingScreen(),
     );
   }
 }

@@ -181,6 +181,18 @@ class DatabaseHelper {
     return maps.map((m) => QuizResult.fromMap(m)).toList();
   }
 
+  /// Returns all results for [userId] within the 7-day window starting [weekStart].
+  Future<List<QuizResult>> getResultsForWeek(int userId, DateTime weekStart) async {
+    final weekEnd = weekStart.add(const Duration(days: 7));
+    final db = await database;
+    final maps = await db.query(
+      'results',
+      where: 'userId = ? AND completedAt >= ? AND completedAt < ?',
+      whereArgs: [userId, weekStart.toIso8601String(), weekEnd.toIso8601String()],
+    );
+    return maps.map((m) => QuizResult.fromMap(m)).toList();
+  }
+
   Future<List<QuizResult>> getRecentResults(int userId,
       {int limit = 5}) async {
     final db = await database;

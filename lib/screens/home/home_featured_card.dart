@@ -55,7 +55,7 @@ class _TestTimeCard extends StatelessWidget {
                         children: [
                           Text('Test Time', style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 20, fontWeight: FontWeight.w800)),
                           const SizedBox(height: 4),
-                          const Text('Time to turn notes into quiz questions.', style: TextStyle(color: AppTheme.textMuted, fontSize: 13)),
+                          const Text('Time to turn notes into quiz questions.', style: TextStyle(color: Color.fromARGB(187, 255, 255, 255), fontSize: 13)),
                         ],
                       ),
                     ),
