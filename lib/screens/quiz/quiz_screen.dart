@@ -248,8 +248,8 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                       const SizedBox(height: 20),
                       ...List.generate(question.options.length, (i) => _OptionTile(
                         question: question, index: i, catColor: catColor,
-                        selectedOption: _selectedOption, answered: _answered,
-                        shakeAnimation: _shakeAnimation, onSelect: _selectOption,
+                        selectedOption: _selectedOption, firstAttemptSelection: _firstAttemptSelection,
+                        answered: _answered, shakeAnimation: _shakeAnimation, onSelect: _selectOption,
                       )),
                       if (!_answered && _attemptHint != null) ...[
                         const SizedBox(height: 8),

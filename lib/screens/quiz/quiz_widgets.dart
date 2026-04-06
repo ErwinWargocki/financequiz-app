@@ -137,26 +137,29 @@ class _OptionTile extends StatelessWidget {
   final int index;
   final Color catColor;
   final int? selectedOption;
+  final int? firstAttemptSelection;
   final bool answered;
   final Animation<double> shakeAnimation;
   final ValueChanged<int> onSelect;
 
   const _OptionTile({
     required this.question, required this.index, required this.catColor,
-    required this.selectedOption, required this.answered,
-    required this.shakeAnimation, required this.onSelect,
+    required this.selectedOption, required this.firstAttemptSelection,
+    required this.answered, required this.shakeAnimation, required this.onSelect,
   });
 
   @override
   Widget build(BuildContext context) {
     final isSelected = selectedOption == index;
     final isCorrect = index == question.correctIndex;
+    final isWrongAttempt = firstAttemptSelection == index;
     final optionLetters = ['A', 'B', 'C', 'D'];
 
     Color borderColor = AppTheme.border;
     Color bgColor = AppTheme.cardBg;
     Color textColor = AppTheme.textPrimary;
     IconData? trailingIcon;
+    var textDecoration = TextDecoration.none;
 
     if (answered) {
       if (selectedOption != -1 && isCorrect) {
@@ -165,9 +168,24 @@ class _OptionTile extends StatelessWidget {
       } else if (isSelected && !isCorrect) {
         borderColor = AppTheme.danger; bgColor = AppTheme.danger.withOpacity(0.1);
         trailingIcon = Icons.cancel_rounded; textColor = AppTheme.danger;
+        textDecoration = TextDecoration.lineThrough;
+      } else if (isWrongAttempt && !isSelected) {
+        // first attempt was wrong, user then picked a different answer
+        borderColor = AppTheme.danger.withOpacity(0.35);
+        bgColor = AppTheme.danger.withOpacity(0.06);
+        textColor = AppTheme.textMuted;
+        textDecoration = TextDecoration.lineThrough;
       }
-    } else if (isSelected) {
-      borderColor = catColor; bgColor = catColor.withOpacity(0.1);
+    } else {
+      if (isWrongAttempt) {
+        // pending second attempt — show strikethrough on the dismissed wrong pick
+        borderColor = AppTheme.danger.withOpacity(0.4);
+        bgColor = AppTheme.danger.withOpacity(0.07);
+        textColor = AppTheme.textMuted;
+        textDecoration = TextDecoration.lineThrough;
+      } else if (isSelected) {
+        borderColor = catColor; bgColor = catColor.withOpacity(0.1);
+      }
     }
 
     return AnimatedBuilder(
@@ -190,19 +208,29 @@ class _OptionTile extends StatelessWidget {
                 width: 32, height: 32,
                 decoration: BoxDecoration(
                   color: answered && isCorrect ? AppTheme.success
-                      : answered && isSelected && !isCorrect ? AppTheme.danger
+                      : (answered && isSelected && !isCorrect) || isWrongAttempt ? AppTheme.danger.withOpacity(isWrongAttempt && !isSelected ? 0.5 : 1.0)
                       : isSelected ? catColor : AppTheme.surfaceLight,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Text(optionLetters[index], style: GoogleFonts.spaceGrotesk(
-                    color: isSelected || (answered && isCorrect) ? Colors.white : AppTheme.textSecondary,
+                    color: isSelected || (answered && isCorrect) || isWrongAttempt ? Colors.white : AppTheme.textSecondary,
                     fontWeight: FontWeight.w700, fontSize: 13,
+                    decoration: textDecoration,
+                    decorationColor: Colors.white,
                   )),
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(child: Text(question.options[index], style: AppTheme.bodyLarge.copyWith(color: textColor, fontSize: 15, height: 1.3))),
+              Expanded(child: Text(
+                question.options[index],
+                style: AppTheme.bodyLarge.copyWith(
+                  color: textColor, fontSize: 15, height: 1.3,
+                  decoration: textDecoration,
+                  decorationColor: textColor,
+                  decorationThickness: 2.0,
+                ),
+              )),
               if (trailingIcon != null) ...[const SizedBox(width: 8), Icon(trailingIcon, color: textColor, size: 20)],
             ],
           ),
