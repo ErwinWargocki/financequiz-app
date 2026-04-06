@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,8 +5,8 @@ import '../../theme/app_theme.dart';
 import '../../models/models.dart';
 import '../../database/database_helper.dart';
 import '../../data/quiz_categories.dart';
-import '../quiz/quiz_screen.dart';
 import '../study/study_screen.dart';
+import '../all_categories_screen.dart';
 
 part 'home_featured_card.dart';
 part 'home_stat_chip.dart';
@@ -24,32 +23,11 @@ class _HomeScreenState extends State<HomeScreen> {
   UserModel? _user;
   List<QuizResult> _recentResults = [];
   bool _loading = true;
-  final PageController _featuredPageController = PageController();
-  Timer? _featuredRotateTimer;
-  List<QuizCategory> _featuredCategories = [];
 
   @override
   void initState() {
     super.initState();
     _loadData();
-  }
-
-  @override
-  void dispose() {
-    _featuredRotateTimer?.cancel();
-    _featuredPageController.dispose();
-    super.dispose();
-  }
-
-  void _scheduleFeaturedRotation() {
-    _featuredRotateTimer?.cancel();
-    if (_featuredCategories.length <= 1) return;
-    _featuredRotateTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      if (!mounted || !_featuredPageController.hasClients) return;
-      final cur = _featuredPageController.page?.round() ?? 0;
-      final next = (cur + 1) % _featuredCategories.length;
-      _featuredPageController.animateToPage(next, duration: const Duration(milliseconds: 450), curve: Curves.easeOutCubic);
-    });
   }
 
   Future<void> _loadData() async {
@@ -60,23 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final db = DatabaseHelper.instance;
     final user = await db.getUser(userId);
     final results = await db.getRecentResults(userId, limit: 3);
-    final allResults = await db.getResultsByUser(userId);
-    final attempted = allResults.map((r) => r.category).toSet();
-    var incomplete = QuizCategories.all.where((c) => !attempted.contains(c.id)).toList();
-    if (incomplete.isEmpty) incomplete = List<QuizCategory>.from(QuizCategories.all);
 
     setState(() {
       _user = user;
       _recentResults = results;
-      _featuredCategories = incomplete;
       _loading = false;
-    });
-    _scheduleFeaturedRotation();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_featuredPageController.hasClients || _featuredCategories.isEmpty) return;
-      if ((_featuredPageController.page?.round() ?? 0) >= _featuredCategories.length) {
-        _featuredPageController.jumpToPage(0);
-      }
     });
   }
 
@@ -103,8 +69,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          SliverToBoxAdapter(child: _buildSectionHeader('Time to test yourself')),
-          SliverToBoxAdapter(child: _buildFeaturedCarousel()),
+          SliverToBoxAdapter(child: _buildSectionHeader('Test Time')),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _TestTimeCard(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllCategoriesScreen())),
+              ),
+            ),
+          ),
           if (_recentResults.isNotEmpty) ...[
             SliverToBoxAdapter(child: _buildSectionHeader('Recent Activity')),
             SliverToBoxAdapter(child: _buildRecentActivity()),
@@ -201,29 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
     child: Text(title, style: AppTheme.titleLarge),
   );
 
-  Widget _buildFeaturedCarousel() {
-    if (_featuredCategories.isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SizedBox(
-        height: 160,
-        child: PageView.builder(
-          controller: _featuredPageController,
-          itemCount: _featuredCategories.length,
-          physics: const BouncingScrollPhysics(),
-          itemBuilder: (_, i) => _FeaturedCard(category: _featuredCategories[i], onTap: () => _startQuiz(_featuredCategories[i])),
-        ),
-      ),
-    );
-  }
-
   Widget _buildRecentActivity() => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Column(children: _recentResults.map((r) => _ResultTile(result: r)).toList()),
   );
-
-  void _startQuiz(QuizCategory cat) async {
-    final result = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => QuizScreen(category: cat, userId: _user!.id!)));
-    if (result == true) _loadData();
-  }
 }

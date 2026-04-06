@@ -32,9 +32,9 @@ class _CategoryInfo {
 
 const _categories = [
   _CategoryInfo(label: 'All Topics',    difficulty: null,           color: Color(0xFF78909C), icon: '📚', subtitle: 'Browse everything'),
-  _CategoryInfo(label: 'Beginner',      difficulty: 'Beginner',     color: Color(0xFF4ADE80), icon: '🌱', subtitle: 'Start here'),
-  _CategoryInfo(label: 'Intermediate',  difficulty: 'Intermediate', color: Color(0xFFFB923C), icon: '🔥', subtitle: 'Level up'),
-  _CategoryInfo(label: 'Advanced',      difficulty: 'Advanced',     color: Color(0xFFFF4757), icon: '🚀', subtitle: 'Master it'),
+  _CategoryInfo(label: 'Beginner',      difficulty: 'Beginner',     color: Color(0xFF4ADE80), icon: '🌰', subtitle: 'Start here'),
+  _CategoryInfo(label: 'Intermediate',  difficulty: 'Intermediate', color: Color(0xFFFB923C), icon: '🌿', subtitle: 'Level up'),
+  _CategoryInfo(label: 'Advanced',      difficulty: 'Advanced',     color: Color(0xFFFF4757), icon: '🌳', subtitle: 'Master it'),
 ];
 
 // ─── Study Screen (category grid) ────────────────────────────────────────────

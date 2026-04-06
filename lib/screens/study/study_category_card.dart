@@ -27,13 +27,13 @@ class _CategoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: double.infinity,
+              height: 72,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.13),
+                color: color.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Center(child: Text(info.icon, style: const TextStyle(fontSize: 26))),
+              child: Center(child: Text(info.icon, style: const TextStyle(fontSize: 44))),
             ),
             const SizedBox(height: 12),
             Text(
