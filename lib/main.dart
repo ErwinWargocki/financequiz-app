@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/app_theme.dart';
-import 'screens/welcome_screen.dart';
+import 'screens/welcome/welcome_screen.dart';
 import 'screens/main_shell.dart';
 
 void main() async {
@@ -53,7 +53,6 @@ class FinQuizApp extends StatefulWidget {
 
 class _FinQuizAppState extends State<FinQuizApp> {
   late ThemeMode _themeMode;
-
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   @override

@@ -4,7 +4,7 @@ import '../theme/app_theme.dart';
 import '../data/quiz_categories.dart';
 import '../models/models.dart';
 import '../database/database_helper.dart';
-import 'quiz_screen.dart';
+import 'quiz/quiz_screen.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -198,7 +198,7 @@ class _ExploreCategoryTile extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha:0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
@@ -220,7 +220,7 @@ class _ExploreCategoryTile extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 7, vertical: 2),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.12),
+                          color: color.withValues(alpha:0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -240,7 +240,7 @@ class _ExploreCategoryTile extends StatelessWidget {
                   Text(
                     '${category.totalQuestions} questions',
                     style: AppTheme.labelSmall.copyWith(
-                      color: color.withOpacity(0.8),
+                      color: color.withValues(alpha:0.8),
                     ),
                   ),
                 ],
@@ -250,7 +250,7 @@ class _ExploreCategoryTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(Icons.play_arrow_rounded, color: color, size: 20),

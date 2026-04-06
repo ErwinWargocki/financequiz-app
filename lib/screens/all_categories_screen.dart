@@ -4,7 +4,7 @@ import '../theme/app_theme.dart';
 import '../models/models.dart';
 import '../database/database_helper.dart';
 import '../data/quiz_categories.dart';
-import 'quiz_screen.dart';
+import 'quiz/quiz_screen.dart';
 
 /// Full list of all quiz categories (moved from Home for the "Test" tab).
 class AllCategoriesScreen extends StatefulWidget {
@@ -137,7 +137,7 @@ class _CategoryGridTile extends StatelessWidget {
                   width: 42,
                   height: 42,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
+                    color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
@@ -167,7 +167,7 @@ class _CategoryGridTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(

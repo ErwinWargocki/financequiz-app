@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
-import 'home_screen.dart';
-import 'study_screen.dart';
+import 'home/home_screen.dart';
+import 'study/study_screen.dart';
 import 'all_categories_screen.dart';
-import 'profile_screen.dart';
+import 'profile/profile_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -110,7 +110,7 @@ class _NavItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? AppTheme.accent.withOpacity(0.12)
+              ? AppTheme.accent.withValues(alpha: 0.12)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
