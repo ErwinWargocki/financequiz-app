@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: AppTheme.accentWarm.withValues(alpha: 0.3)),
             ),
-            child: Row(children: [
+              child: Row(children: [
               const Text('🔥', style: TextStyle(fontSize: 14)),
               const SizedBox(width: 4),
               Text('${_user?.currentStreak ?? 0}', style: AppTheme.labelSmall.copyWith(color: AppTheme.accentWarm, fontWeight: FontWeight.w700)),
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 10),
             _StatChip(label: 'Points', value: '${_user?.totalScore ?? 0}', icon: '⭐', color: AppTheme.accentWarm),
             const SizedBox(width: 10),
-            _StatChip(label: 'Streak', value: '${_user?.currentStreak ?? 0} days', icon: '🔥', color: AppTheme.danger),
+            //_StatChip(label: 'Streak', value: '${_user?.currentStreak ?? 0} days', icon: '🔥', color: AppTheme.danger),
           ]),
         ],
       ),

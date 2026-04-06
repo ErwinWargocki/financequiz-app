@@ -55,7 +55,7 @@ class StudyScreen extends StatelessWidget {
             title: Text('Study Topics', style: AppTheme.headlineMedium),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(0.5),
-              child: Container(height: 0.5, color: AppTheme.border),
+              child: Container(height: 0.5, color: const Color.fromARGB(255, 58, 58, 58)),
             ),
           ),
           SliverToBoxAdapter(
@@ -65,7 +65,7 @@ class StudyScreen extends StatelessWidget {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
             sliver: SliverGrid(
               delegate: SliverChildBuilderDelegate(
                 (context, i) {
