@@ -48,7 +48,7 @@ class _QuizHeader extends StatelessWidget {
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(color: catColor.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: catColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
                 child: Text('⭐ $score', style: GoogleFonts.spaceGrotesk(color: catColor, fontWeight: FontWeight.w700, fontSize: 14)),
               ),
             ],
@@ -81,9 +81,9 @@ class _TimerBar extends StatelessWidget {
           duration: const Duration(milliseconds: 500),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: timerColor.withOpacity(0.12),
+            color: timerColor.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: timerColor.withOpacity(0.3)),
+            border: Border.all(color: timerColor.withValues(alpha: 0.3)),
           ),
           child: Row(children: [
             Icon(Icons.timer_outlined, size: 15, color: timerColor),
@@ -120,7 +120,7 @@ class _QuestionCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: diffColor.withOpacity(0.12), borderRadius: BorderRadius.circular(6)),
+            decoration: BoxDecoration(color: diffColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
             child: Text(question.difficulty.toUpperCase(), style: AppTheme.labelSmall.copyWith(color: diffColor, fontSize: 10)),
           ),
           const SizedBox(height: 12),
@@ -163,28 +163,28 @@ class _OptionTile extends StatelessWidget {
 
     if (answered) {
       if (selectedOption != -1 && isCorrect) {
-        borderColor = AppTheme.success; bgColor = AppTheme.success.withOpacity(0.1);
+        borderColor = AppTheme.success; bgColor = AppTheme.success.withValues(alpha: 0.1);
         trailingIcon = Icons.check_circle_rounded; textColor = AppTheme.success;
       } else if (isSelected && !isCorrect) {
-        borderColor = AppTheme.danger; bgColor = AppTheme.danger.withOpacity(0.1);
+        borderColor = AppTheme.danger; bgColor = AppTheme.danger.withValues(alpha: 0.1);
         trailingIcon = Icons.cancel_rounded; textColor = AppTheme.danger;
         textDecoration = TextDecoration.lineThrough;
       } else if (isWrongAttempt && !isSelected) {
         // first attempt was wrong, user then picked a different answer
-        borderColor = AppTheme.danger.withOpacity(0.35);
-        bgColor = AppTheme.danger.withOpacity(0.06);
+        borderColor = AppTheme.danger.withValues(alpha: 0.35);
+        bgColor = AppTheme.danger.withValues(alpha: 0.06);
         textColor = AppTheme.textMuted;
         textDecoration = TextDecoration.lineThrough;
       }
     } else {
       if (isWrongAttempt) {
         // pending second attempt — show strikethrough on the dismissed wrong pick
-        borderColor = AppTheme.danger.withOpacity(0.4);
-        bgColor = AppTheme.danger.withOpacity(0.07);
+        borderColor = AppTheme.danger.withValues(alpha: 0.4);
+        bgColor = AppTheme.danger.withValues(alpha: 0.07);
         textColor = AppTheme.textMuted;
         textDecoration = TextDecoration.lineThrough;
       } else if (isSelected) {
-        borderColor = catColor; bgColor = catColor.withOpacity(0.1);
+        borderColor = catColor; bgColor = catColor.withValues(alpha: 0.1);
       }
     }
 
@@ -208,7 +208,7 @@ class _OptionTile extends StatelessWidget {
                 width: 32, height: 32,
                 decoration: BoxDecoration(
                   color: answered && isCorrect ? AppTheme.success
-                      : (answered && isSelected && !isCorrect) || isWrongAttempt ? AppTheme.danger.withOpacity(isWrongAttempt && !isSelected ? 0.5 : 1.0)
+                      : (answered && isSelected && !isCorrect) || isWrongAttempt ? AppTheme.danger.withValues(alpha: isWrongAttempt && !isSelected ? 0.5 : 1.0)
                       : isSelected ? catColor : AppTheme.surfaceLight,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -252,7 +252,7 @@ class _ExplanationCard extends StatelessWidget {
     final color = isCorrect ? AppTheme.success : AppTheme.danger;
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withOpacity(0.2))),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withValues(alpha: 0.2))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -35,7 +35,7 @@ class _StudyTopicTile extends StatelessWidget {
               width: 54,
               height: 54,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha:0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(child: Text(topic.icon, style: const TextStyle(fontSize: 26))),
@@ -59,7 +59,7 @@ class _StudyTopicTile extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                         decoration: BoxDecoration(
-                          color: diffColor.withOpacity(0.12),
+                          color: diffColor.withValues(alpha:0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -79,14 +79,14 @@ class _StudyTopicTile extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.menu_book_outlined, size: 12, color: color.withOpacity(0.7)),
+                      Icon(Icons.menu_book_outlined, size: 12, color: color.withValues(alpha:0.7)),
                       const SizedBox(width: 4),
                       Text(
                         '${topic.lessons.length} lessons',
-                        style: AppTheme.labelSmall.copyWith(color: color.withOpacity(0.8), fontSize: 10),
+                        style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha:0.8), fontSize: 10),
                       ),
                       const SizedBox(width: 10),
-                      Icon(Icons.timer_outlined, size: 12, color: AppTheme.textMuted),
+                      const Icon(Icons.timer_outlined, size: 12, color: AppTheme.textMuted),
                       const SizedBox(width: 4),
                       Text(
                         topic.readingTime,
@@ -102,7 +102,7 @@ class _StudyTopicTile extends StatelessWidget {
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(Icons.chevron_right_rounded, color: color, size: 20),

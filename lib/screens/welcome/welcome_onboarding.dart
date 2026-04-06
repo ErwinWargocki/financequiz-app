@@ -42,9 +42,9 @@ class _OnboardingStep extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: page.accent.withOpacity(0.15),
+                    color: page.accent.withValues(alpha:0.15),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: page.accent.withOpacity(0.3)),
+                    border: Border.all(color: page.accent.withValues(alpha:0.3)),
                   ),
                   child: Row(children: [
                     Text('FIN', style: AppTheme.labelSmall.copyWith(color: page.accent, fontWeight: FontWeight.w800, letterSpacing: 2)),
@@ -72,10 +72,10 @@ class _OnboardingStep extends StatelessWidget {
                   child: Container(
                     width: 140, height: 140,
                     decoration: BoxDecoration(
-                      color: page.accent.withOpacity(0.1),
+                      color: page.accent.withValues(alpha:0.1),
                       shape: BoxShape.circle,
-                      border: Border.all(color: page.accent.withOpacity(0.2), width: 1.5),
-                      boxShadow: [BoxShadow(color: page.accent.withOpacity(0.2), blurRadius: 40, spreadRadius: 10)],
+                      border: Border.all(color: page.accent.withValues(alpha:0.2), width: 1.5),
+                      boxShadow: [BoxShadow(color: page.accent.withValues(alpha:0.2), blurRadius: 40, spreadRadius: 10)],
                     ),
                     child: Center(child: Text(page.emoji, style: const TextStyle(fontSize: 60))),
                   ),

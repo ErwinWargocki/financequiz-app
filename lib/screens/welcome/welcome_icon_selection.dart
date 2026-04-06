@@ -53,10 +53,10 @@ class _IconSelectionStep extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     decoration: BoxDecoration(
-                      color: selected ? AppTheme.accent.withOpacity(0.15) : AppTheme.cardBg,
+                      color: selected ? AppTheme.accent.withValues(alpha:0.15) : AppTheme.cardBg,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: selected ? AppTheme.accent : AppTheme.border, width: selected ? 2 : 1),
-                      boxShadow: selected ? [BoxShadow(color: AppTheme.accent.withOpacity(0.25), blurRadius: 12, spreadRadius: 2)] : [],
+                      boxShadow: selected ? [BoxShadow(color: AppTheme.accent.withValues(alpha:0.25), blurRadius: 12, spreadRadius: 2)] : [],
                     ),
                     child: Center(child: Text(ProfileIcons.all[i], style: const TextStyle(fontSize: 30))),
                   ),

@@ -38,7 +38,7 @@ class _LoginStep extends StatelessWidget {
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: AppTheme.accent.withOpacity(0.1), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.accent.withOpacity(0.2))),
+              decoration: BoxDecoration(color: AppTheme.accent.withValues(alpha:0.1), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.accent.withValues(alpha:0.2))),
               child: const Text('👋', style: TextStyle(fontSize: 28)),
             ),
             const SizedBox(height: 20),
@@ -132,7 +132,7 @@ class _RegisterStep extends StatelessWidget {
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: AppTheme.accentBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.accentBlue.withOpacity(0.2))),
+              decoration: BoxDecoration(color: AppTheme.accentBlue.withValues(alpha:0.1), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.accentBlue.withValues(alpha:0.2))),
               child: const Text('🚀', style: TextStyle(fontSize: 28)),
             ),
             const SizedBox(height: 20),

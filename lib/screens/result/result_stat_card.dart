@@ -24,9 +24,9 @@ class _GradeSection extends StatelessWidget {
             width: 120, height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: gradeColor.withOpacity(0.1),
+              color: gradeColor.withValues(alpha:0.1),
               border: Border.all(color: gradeColor, width: 3),
-              boxShadow: [BoxShadow(color: gradeColor.withOpacity(0.3), blurRadius: 30, spreadRadius: 5)],
+              boxShadow: [BoxShadow(color: gradeColor.withValues(alpha:0.3), blurRadius: 30, spreadRadius: 5)],
             ),
             child: Center(
               child: Text(grade, style: GoogleFonts.spaceGrotesk(color: gradeColor, fontSize: 52, fontWeight: FontWeight.w900)),
@@ -62,14 +62,14 @@ class _StatCard extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withOpacity(0.2))),
+        decoration: BoxDecoration(color: color.withValues(alpha:0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withValues(alpha:0.2))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(icon, style: const TextStyle(fontSize: 22)),
             const SizedBox(height: 8),
             Text(value, style: GoogleFonts.spaceGrotesk(color: color, fontSize: 22, fontWeight: FontWeight.w800)),
-            Text(label, style: AppTheme.labelSmall.copyWith(color: color.withOpacity(0.7))),
+            Text(label, style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha:0.7))),
           ],
         ),
       ),
@@ -90,7 +90,7 @@ class _ResultBreakdownCard extends StatelessWidget {
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(value: ratio, backgroundColor: color.withOpacity(0.12), valueColor: AlwaysStoppedAnimation(color), minHeight: 8),
+            child: LinearProgressIndicator(value: ratio, backgroundColor: color.withValues(alpha:0.12), valueColor: AlwaysStoppedAnimation(color), minHeight: 8),
           ),
         ),
         const SizedBox(width: 8),

@@ -229,7 +229,7 @@ class DatabaseHelper {
 
   // ─── Seed Data (base v1) ───────────────────────────────────────────────
   List<QuizQuestion> _baseQuestions() {
-    return [
+    return const [
       // ── BUDGETING ──────────────────────────────────────────────────
       QuizQuestion(
         category: 'budgeting',
@@ -672,7 +672,7 @@ class DatabaseHelper {
 
   // ─── Extra Questions added in v2 ────────────────────────────────────────
   List<QuizQuestion> _extraQuestionsV2() {
-    return [
+    return const [
       // ── SAVINGS (extra) ───────────────────────────────────────────
       QuizQuestion(
         category: 'savings',

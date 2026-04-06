@@ -104,9 +104,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: AppTheme.accentWarm.withOpacity(0.12),
+              color: AppTheme.accentWarm.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.accentWarm.withOpacity(0.3)),
+              border: Border.all(color: AppTheme.accentWarm.withValues(alpha: 0.3)),
             ),
             child: Row(children: [
               const Text('🔥', style: TextStyle(fontSize: 14)),

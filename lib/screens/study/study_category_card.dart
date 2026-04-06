@@ -19,7 +19,7 @@ class _CategoryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.25), width: 1.5),
+        border: Border.all(color: color.withValues(alpha:0.25), width: 1.5),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -30,7 +30,7 @@ class _CategoryCard extends StatelessWidget {
               width: double.infinity,
               height: 72,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.10),
+                color: color.withValues(alpha:0.10),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(child: Text(info.icon, style: const TextStyle(fontSize: 44))),
@@ -50,7 +50,7 @@ class _CategoryCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.13),
+                color: color.withValues(alpha:0.13),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

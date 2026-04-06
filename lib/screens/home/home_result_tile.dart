@@ -29,7 +29,7 @@ class _ResultTile extends StatelessWidget {
         children: [
           Container(
             width: 40, height: 40,
-            decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
             child: Center(child: Text(cat.icon, style: const TextStyle(fontSize: 18))),
           ),
           const SizedBox(width: 12),
@@ -47,7 +47,7 @@ class _ResultTile extends StatelessWidget {
             children: [
               Container(
                 width: 32, height: 32,
-                decoration: BoxDecoration(color: gradeColor.withOpacity(0.12), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: gradeColor.withValues(alpha: 0.12), shape: BoxShape.circle),
                 child: Center(child: Text(grade, style: GoogleFonts.spaceGrotesk(color: gradeColor, fontWeight: FontWeight.w800, fontSize: 14))),
               ),
               const SizedBox(height: 2),

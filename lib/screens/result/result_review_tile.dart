@@ -51,7 +51,7 @@ class _ReviewTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: statusColor.withOpacity(0.08), borderRadius: BorderRadius.circular(12), border: Border.all(color: statusColor.withOpacity(0.2))),
+      decoration: BoxDecoration(color: statusColor.withValues(alpha:0.08), borderRadius: BorderRadius.circular(12), border: Border.all(color: statusColor.withValues(alpha:0.2))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -88,7 +88,7 @@ class _ReviewTile extends StatelessWidget {
                               decoration: TextDecoration.underline, decorationColor: AppTheme.success,
                             )),
                           ),
-                          Icon(Icons.info_outline_rounded, size: 18, color: AppTheme.success.withOpacity(0.9)),
+                          Icon(Icons.info_outline_rounded, size: 18, color: AppTheme.success.withValues(alpha:0.9)),
                         ],
                       ),
                       const SizedBox(height: 4),

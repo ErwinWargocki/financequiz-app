@@ -46,7 +46,7 @@ class _TopicDetailSheet extends StatelessWidget {
                           width: 56,
                           height: 56,
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.12),
+                            color: color.withValues(alpha:0.12),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Center(child: Text(topic.icon, style: const TextStyle(fontSize: 28))),
@@ -63,7 +63,7 @@ class _TopicDetailSheet extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: diffColor.withOpacity(0.12),
+                                      color: diffColor.withValues(alpha:0.12),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
@@ -84,9 +84,9 @@ class _TopicDetailSheet extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.07),
+                        color: color.withValues(alpha:0.07),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: color.withOpacity(0.15)),
+                        border: Border.all(color: color.withValues(alpha:0.15)),
                       ),
                       child: Text(
                         topic.summary,
@@ -165,7 +165,7 @@ class _LessonCardState extends State<_LessonCard> {
           color: AppTheme.cardBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _expanded ? widget.color.withOpacity(0.4) : AppTheme.border,
+            color: _expanded ? widget.color.withValues(alpha:0.4) : AppTheme.border,
             width: _expanded ? 1.5 : 1,
           ),
         ),
@@ -178,7 +178,7 @@ class _LessonCardState extends State<_LessonCard> {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: widget.color.withOpacity(0.12),
+                    color: widget.color.withValues(alpha:0.12),
                     borderRadius: BorderRadius.circular(7),
                   ),
                   child: Center(

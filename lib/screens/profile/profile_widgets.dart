@@ -129,14 +129,14 @@ class _BigStatCard extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withOpacity(0.2))),
+        decoration: BoxDecoration(color: color.withValues(alpha:0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withValues(alpha:0.2))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(icon, style: const TextStyle(fontSize: 22)),
             const SizedBox(height: 8),
             Text(value, style: GoogleFonts.spaceGrotesk(color: color, fontSize: 20, fontWeight: FontWeight.w800), overflow: TextOverflow.ellipsis),
-            Text(label, style: AppTheme.labelSmall.copyWith(color: color.withOpacity(0.7), fontSize: 11)),
+            Text(label, style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha:0.7), fontSize: 11)),
           ],
         ),
       ),
@@ -164,9 +164,9 @@ class _AchievementBadge extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: achievement.unlocked ? AppTheme.accentWarm.withOpacity(0.1) : AppTheme.cardBg,
+          color: achievement.unlocked ? AppTheme.accentWarm.withValues(alpha: 0.1) : AppTheme.cardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: achievement.unlocked ? AppTheme.accentWarm.withOpacity(0.4) : AppTheme.border),
+          border: Border.all(color: achievement.unlocked ? AppTheme.accentWarm.withValues(alpha: 0.4) : AppTheme.border),
         ),
         child: Column(
           children: [
