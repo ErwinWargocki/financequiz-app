@@ -1,24 +1,33 @@
 # 💰 FinQuiz — Financial Literacy App
 
-A clean, production-ready Flutter app for financial education through interactive quizzes.
-Works on **Android** and **iOS** with a local SQLite database.
+FinQuiz is a clean, production-ready full-stack application designed to make financial education genuinely engaging through interactive quizzes. Built entirely within the Dart ecosystem, it leverages Flutter for a seamless cross-platform mobile experience and Dart Frog for a lightweight, performant backend.
+
+Currently, the app is undergoing an exciting data-layer evolution. While it still utilizes local SQLite for legacy and temporary on-device storage, the primary source of truth is now a robust Neon (PostgreSQL-based) database connected via our custom Dart Frog APIs.
+
+---
+
+## 🧱 Tech stack
+Frontend: Flutter (Dart)
+Backend: Dart Frog (Dart)
+Database: Neon (PostgreSQL)
+Local storage (temporary): SQLite
 
 ---
 
 ## ✨ Features
 
-| Feature | Details |
-|---|---|
-| 🎨 Design | Dark minimal UI inspired by Instagram's clean feed |
-| 🗃️ Local DB | SQLite via `sqflite` — no backend required |
-| 📱 Cross-platform | Android & iOS |
-| 🧠 6 Quiz Categories | Budgeting, Investing, Crypto, Savings, Taxes, Debt |
-| ⏱️ Timed Questions | 20s per question with time-bonus scoring |
-| 📊 Grade System | S / A / B / C / D grading with visual breakdowns |
-| 🔥 Streaks | Daily streak tracking per user |
-| 🏆 Achievements | Unlockable badge system |
-| 👤 User Profiles | Local profile with persistent stats |
-| 🔄 Onboarding | 3-step welcome flow |
+Here is a quick look at the tech stack and features that make the app tick:
+
+  ⚡ Full-Stack Dart: Share models and logic across both the frontend (Flutter) and backend (Dart Frog) for a unified developer experience.
+  ☁️ Cloud Database: Powered by a PostgreSQL database hosted on Neon, allowing for scalable user data and real-time API integrations.
+  🗃️ Local Storage: Utilizes SQLite for temporary local caching and legacy offline support (currently being refactored/reduced).
+  📱 Cross-Platform: Works right out of the box natively on Android and iOS.
+  🎨 Design: A dark, minimal interface heavily inspired by the clean aesthetics of an Instagram feed.
+  🧠 6 Quiz Categories: Covers practical topics like Budgeting, Investing, Crypto, Savings, Taxes, and Debt.
+  ⏱️ Timed Questions: Keeps users on their toes with 20 seconds per question, plus time-bonus scoring for quick thinkers.
+  📊 Grade System: Grades performance visually from an S rank down to a D.
+  🔥 Streaks & Achievements: Encourages daily habits by tracking user streaks and offering a fun, unlockable badge system.
+  🔄 Onboarding: A smooth, 3-step welcome flow to get new users set up and their profiles synced with the backend without friction.
 
 ---
 
@@ -28,25 +37,40 @@ Works on **Android** and **iOS** with a local SQLite database.
 finquiz/
 ├── lib/
 │   ├── main.dart                   # Entry point
-│   ├── theme/
-│   │   └── app_theme.dart          # Colors, typography, ThemeData
-│   ├── models/
-│   │   └── models.dart             # QuizQuestion, UserModel, QuizResult
-│   ├── database/
-│   │   └── database_helper.dart    # SQLite CRUD + seed data
-│   ├── data/
-│   │   └── quiz_categories.dart    # Category definitions
-│   └── screens/
-│       ├── welcome_screen.dart     # Onboarding + profile setup
-│       ├── main_shell.dart         # Bottom nav shell
-│       ├── home_screen.dart        # Instagram-style home feed
-│       ├── explore_screen.dart     # Search & filter categories
-│       ├── quiz_screen.dart        # Active quiz with timer
-│       ├── result_screen.dart      # Animated results + grade
-│       └── profile_screen.dart     # Stats, history, achievements
+│   │ 
+│   ├── theme/                      # Colors, typography, ThemeData
+│   │                               
+│   ├── models/                     # QuizQuestion, UserModel, QuizResult
+│   │                               
+│   ├── database/                   # Local DB (legacy / temporary)
+│   │                               
+│   ├── data/                       # Category definitions
+│   │                               
+│   ├── screens/                    # 
+│   │ 
+│   └── theme
+│
+├── app_theme.dart
+├── backend/                        # Dart Frog API
 ├── pubspec.yaml
 └── README.md
 ```
+
+---
+
+## 🔌 API & data flow
+
+Typical flow when loading a quiz:
+- Flutter calls an API 
+- Dart Frog handles the request
+- Backend queries Neon (PostgreSQL)
+- Data is returned as JSON
+- Flutter maps it into models and renders the UI
+
+Same idea applies for:
+- submitting results
+- loading user stats
+- tracking streaks
 
 ---
 
@@ -56,6 +80,7 @@ finquiz/
 
 - Flutter SDK ≥ 3.0.0 installed
 - VS Code with the **Flutter** and **Dart** extensions
+- Dart Frog CLI
 - Android Studio (for Android emulator) or Xcode (for iOS simulator)
 
 ### Step 1 — Create the Flutter project
@@ -105,56 +130,36 @@ flutter run -d <device>  # Run on specific device
 ## 📦 Dependencies
 
 ```yaml
-sqflite: ^2.3.0           # Local SQLite database
-path: ^1.8.3              # File path utilities
-shared_preferences: ^2.2.2 # Lightweight key-value storage
-google_fonts: ^6.1.0      # Space Grotesk + Inter + JetBrains Mono
-fl_chart: ^0.66.0         # Charts (ready for use)
-animate_do: ^3.3.4        # Animation utilities
-cupertino_icons: ^1.0.6   # iOS-style icons
-percent_indicator: ^4.2.3  # Progress indicators
-flutter_staggered_animations: ^1.1.1 # List animations
+sqflite: ^2.3.0                       # Local SQLite database
+path: ^1.8.3                          # File path utilities
+shared_preferences: ^2.2.2            # Lightweight key-value storage
+google_fonts: ^6.1.0                  # Space Grotesk + Inter + JetBrains Mono
+fl_chart: ^0.66.0                     # Charts (ready for use)
+animate_do: ^3.3.4                    # Animation utilities
+cupertino_icons: ^1.0.6               # iOS-style icons
+percent_indicator: ^4.2.3             # Progress indicators
+flutter_staggered_animations: ^1.1.1  # List animations
 ```
 
 ---
 
-## 🗃️ Database Schema
+## 🗄️ Database (PostgreSQL / Neon)
 
-### `users`
-| Column | Type | Description |
-|---|---|---|
-| id | INTEGER PK | Auto-increment |
-| name | TEXT | Display name |
-| username | TEXT UNIQUE | @username |
-| avatarInitial | TEXT | First letter of name |
-| totalScore | INTEGER | Cumulative score |
-| quizzesCompleted | INTEGER | Quiz count |
-| currentStreak | INTEGER | Active streak |
-| longestStreak | INTEGER | Best streak |
-| createdAt | TEXT | ISO8601 timestamp |
+- Main tables:
 
-### `questions`
-| Column | Type | Description |
-|---|---|---|
-| id | INTEGER PK | Auto-increment |
-| category | TEXT | budgeting/investing/crypto/savings/taxes/debt |
-| question | TEXT | Question text |
-| option0–3 | TEXT | Answer options |
-| correctIndex | INTEGER | 0–3 |
-| explanation | TEXT | Explanation shown after answering |
-| difficulty | TEXT | easy/medium/hard |
-
-### `results`
-| Column | Type | Description |
-|---|---|---|
-| id | INTEGER PK | Auto-increment |
-| userId | INTEGER FK | References users.id |
-| category | TEXT | Quiz category |
-| score | INTEGER | Points earned |
-| totalQuestions | INTEGER | Question count |
-| correctAnswers | INTEGER | Correct count |
-| timeTakenSeconds | INTEGER | Time used |
-| completedAt | TEXT | ISO8601 timestamp |
+  - users
+   basic profile info
+   total score
+   streak tracking
+  - questions
+   category
+   question + options
+   correct answer
+   explanation
+  - results
+   quiz results
+   score + timing
+   history
 
 ---
 
@@ -178,46 +183,41 @@ cardBg:        #1A1A1A  // Card backgrounds
 
 ---
 
-## 🔧 Adding More Questions
+## 🗃️ Backend (Dart Frog)
 
-In `database_helper.dart`, add entries to `_getInitialQuestions()`:
+The backend is responsible for:
 
-```dart
-QuizQuestion(
-  category: 'investing',  // Must match a category id
-  question: 'Your question here?',
-  options: ['Option A', 'Option B', 'Option C', 'Option D'],
-  correctIndex: 1,        // 0-indexed
-  explanation: 'Why this answer is correct...',
-  difficulty: 'medium',   // easy | medium | hard
-),
-```
+serving quiz questions
+handling user data
+storing results
+managing streak logic
 
-> Note: After adding questions, delete and reinstall the app to trigger a fresh DB seed,
-> or implement a migration by incrementing the database version.
+Typical structure:
 
----
-
-## 📱 Screenshots Overview
-
-| Screen | Description |
-|---|---|
-| Welcome | 3-step onboarding + profile creation |
-| Home | Instagram-style feed with stats, featured card, category grid |
-| Explore | Searchable + filterable category list |
-| Quiz | Timed questions with animated feedback + explanations |
-| Results | Animated grade reveal, breakdown, score summary |
-| Profile | Stats grid, achievements, full quiz history |
+backend/
+├── routes/
+│   ├── questions/
+│   ├── users/
+│   └── results/
+├── services/
+├── models/
+└── db/
 
 ---
 
 ## 🔮 Extending the App
 
 Ideas for future development:
-- 📅 Daily challenge (one new quiz per day)
-- 🌐 Cloud sync with Firebase
-- 📣 Push notifications for streak reminders
-- 📈 Charts showing score progression over time
-- 🎭 Multiple themes (light mode, high contrast)
-- 🌍 Multilingual support
-- 🔊 Sound effects and haptic patterns
+- Full removal of SQLite
+- Multiplayer / competitive modes
+- Cloud sync with Firebase
+- Push notifications for streak reminders
+- Multilingual support
+- Sound effects and haptic patterns
+
+---
+
+## 👀 Final notes
+
+This project started as a local-first Flutter app and is now evolving into a more complete, API-driven architecture.
+It’s still simple enough to understand quickly, but structured in a way that can scale into a real product.
