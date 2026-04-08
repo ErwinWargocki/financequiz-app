@@ -5,7 +5,8 @@ This document defines the structure, architecture, and development guidelines fo
 
 The project is already in development, so this document also serves as a revision and standardization guide for improving the current codebase.
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
+
 
 ## 2. Core Technologies
 
@@ -14,7 +15,8 @@ The project is already in development, so this document also serves as a revisio
 - **Database:** Neon (PostgreSQL-based)
 - **Local Storage (temporary/legacy):** SQLite (to be refactored/reduced)
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
+
 
 ## 3. Project Structure
 
@@ -32,7 +34,8 @@ Responsible for UI, user interaction, state management, and API communication.
 ### 3.2 Backend (Dart Frog)
 Responsible for authentication, data persistence, business logic, and API endpoints.
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
+
 
 ## 4. Architecture Principles
 
@@ -42,7 +45,8 @@ Responsible for authentication, data persistence, business logic, and API endpoi
 - Readable and intuitive code
 - Consistent naming conventions
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
+
 
 ## 5. Frontend Requirements
 
@@ -86,7 +90,8 @@ A personal dashboard with statistics and settings.
 **Functionality Description (≥20 words):**
 This dashboard displays user achievements, completed lessons, quiz results, and progress metrics, while also allowing profile customization, theme switching, and account management features.
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
+
 
 ## 6. Authentication System
 
@@ -105,7 +110,8 @@ The authentication system securely manages user credentials, supports multiple l
 ### 6.3 Profile Icon Selection
 During the first login, users must select a profile icon from 20 random images.
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
+
 
 ## 7. Backend Requirements
 
@@ -127,7 +133,7 @@ Use Dart Frog to implement REST APIs.
 **Functionality Description (≥20 words):**
 The backend must handle all persistent data operations, including user data, authentication tokens, learning progress, and quiz results, ensuring consistency, scalability, and secure storage.
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
 
 ## 8. Data Models
 
@@ -160,7 +166,7 @@ The backend must handle all persistent data operations, including user data, aut
 - answers
 - correctAnswers
 
----
+-------------------------------------------------------------------------------------------------------------------------------------
 
 ## 9. API Design
 
@@ -176,7 +182,7 @@ The backend must handle all persistent data operations, including user data, aut
 - `GET /user/profile`
 - `PUT /user/profile`
 
----
+----------------------------------------------------------------------------------------------------------------------------------------
 
 ## 10. UI/UX Guidelines
 
@@ -185,17 +191,9 @@ The backend must handle all persistent data operations, including user data, aut
 - Responsive design
 - Dark/Light mode toggle
 
----
+----------------------------------------------------------------------------------------------------------------------------------------
 
-## 11. Theme System
-
-Users must be able to switch between:
-- Light mode
-- Dark mode
-
----
-
-## 12. Daily Learning System
+## 11. Daily Learning System
 
 - Daily updated topics
 - Daily quizzes
@@ -206,7 +204,7 @@ The daily learning system ensures continuous engagement by delivering fresh cont
 
 ---
 
-## 13. Code Guidelines
+## 12. Code Guidelines
 
 - Keep functions small and focused
 - Use meaningful variable names
@@ -215,7 +213,7 @@ The daily learning system ensures continuous engagement by delivering fresh cont
 
 ---
 
-## 14. Integration Requirements
+## 13. Integration Requirements
 
 - Frontend and backend MUST be connected via HTTP APIs
 - Use JSON for communication
@@ -223,7 +221,7 @@ The daily learning system ensures continuous engagement by delivering fresh cont
 
 ---
 
-## 15. Final Notes
+## 14. Final Notes
 
 This document must be used as a base for:
 - Code refactoring

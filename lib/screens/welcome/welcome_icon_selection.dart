@@ -81,7 +81,7 @@ class _IconSelectionStep extends StatelessWidget {
                         : Row(mainAxisSize: MainAxisSize.min, children: [
                             Text(ProfileIcons.all[selectedIconIndex], style: const TextStyle(fontSize: 20)),
                             const SizedBox(width: 10),
-                            const Text('Start Learning →'),
+                            const Text('Continue →'),
                           ]),
                   ),
                 ),

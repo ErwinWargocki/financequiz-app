@@ -145,15 +145,14 @@ class _BigStatCard extends StatelessWidget {
 }
 
 // ─── Achievement ──────────────────────────────────────────────────────────────
-class _Achievement {
+/*class _Achievement {
   final String icon;
   final String name;
   final bool unlocked;
   final String description;
   const _Achievement(this.icon, this.name, this.unlocked, this.description);
 }
-
-class _AchievementBadge extends StatelessWidget {
+  class _AchievementBadge extends StatelessWidget {
   final _Achievement achievement;
   const _AchievementBadge({required this.achievement});
 
@@ -182,4 +181,4 @@ class _AchievementBadge extends StatelessWidget {
       ),
     );
   }
-}
+}*/

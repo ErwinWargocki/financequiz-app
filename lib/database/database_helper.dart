@@ -19,7 +19,7 @@ class DatabaseHelper {
     final path = join(dbPath, filePath);
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -73,6 +73,16 @@ class DatabaseHelper {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE security_answers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId INTEGER NOT NULL,
+        questionIndex INTEGER NOT NULL,
+        answerHash TEXT NOT NULL,
+        FOREIGN KEY (userId) REFERENCES users (id)
+      )
+    ''');
+
     await _seedQuestions(db);
   }
 
@@ -84,8 +94,18 @@ class DatabaseHelper {
       await db.execute(
           'ALTER TABLE users ADD COLUMN profileIconIndex INTEGER DEFAULT 0');
 
-      // Seed extra questions added in v2
       await _seedExtraQuestionsV2(db);
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS security_answers (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          userId INTEGER NOT NULL,
+          questionIndex INTEGER NOT NULL,
+          answerHash TEXT NOT NULL,
+          FOREIGN KEY (userId) REFERENCES users (id)
+        )
+      ''');
     }
   }
 
@@ -142,6 +162,33 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [user.id],
     );
+  }
+
+  Future<int> updateUserPassword(int userId, String passwordHash) async {
+    final db = await database;
+    return await db.update(
+      'users',
+      {'passwordHash': passwordHash},
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+  }
+
+  // ─── Security Answers CRUD ─────────────────────────────────────────────
+  Future<void> saveSecurityAnswers(int userId, List<int> questionIndices, List<String> answerHashes) async {
+    final db = await database;
+    for (int i = 0; i < questionIndices.length; i++) {
+      await db.insert('security_answers', {
+        'userId': userId,
+        'questionIndex': questionIndices[i],
+        'answerHash': answerHashes[i],
+      });
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getSecurityAnswers(int userId) async {
+    final db = await database;
+    return await db.query('security_answers', where: 'userId = ?', whereArgs: [userId]);
   }
 
   // ─── Questions CRUD ────────────────────────────────────────────────────
