@@ -4,7 +4,7 @@ FinQuiz is a clean, production-ready full-stack application designed to make fin
 
 Currently, the app is undergoing an exciting data-layer evolution. While it still utilizes local SQLite for legacy and temporary on-device storage, the primary source of truth is now a robust Neon (PostgreSQL-based) database connected via our custom Dart Frog APIs.
 
----
+
 
 ## 🧱 Tech stack
 Frontend: Flutter (Dart)
