@@ -194,8 +194,8 @@ managing streak logic
 
 Typical structure:
 
-```
-backend/
+
+```backend/
 ├── routes/
 │   ├── questions/
 │   ├── users/
