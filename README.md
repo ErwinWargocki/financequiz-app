@@ -12,7 +12,7 @@ Backend: Dart Frog (Dart)
 Database: Neon (PostgreSQL)
 Local storage (temporary): SQLite
 
----
+
 
 ## ✨ Features
 
@@ -29,7 +29,7 @@ Here is a quick look at the tech stack and features that make the app tick:
   🔥 Streaks & Achievements: Encourages daily habits by tracking user streaks and offering a fun, unlockable badge system.
   🔄 Onboarding: A smooth, 3-step welcome flow to get new users set up and their profiles synced with the backend without friction.
 
----
+
 
 ## 📁 Project Structure
 
@@ -56,7 +56,7 @@ finquiz/
 └── README.md
 ```
 
----
+
 
 ## 🔌 API & data flow
 
@@ -72,7 +72,7 @@ Same idea applies for:
 - loading user stats
 - tracking streaks
 
----
+
 
 ## 🚀 Setup Instructions
 
@@ -125,7 +125,7 @@ flutter devices          # List connected devices
 flutter run -d <device>  # Run on specific device
 ```
 
----
+
 
 ## 📦 Dependencies
 
@@ -141,7 +141,7 @@ percent_indicator: ^4.2.3             # Progress indicators
 flutter_staggered_animations: ^1.1.1  # List animations
 ```
 
----
+
 
 ## 🗄️ Database (PostgreSQL / Neon)
 
@@ -161,7 +161,7 @@ flutter_staggered_animations: ^1.1.1  # List animations
    score + timing
    history
 
----
+
 
 ## 🎨 Design System
 
@@ -181,7 +181,7 @@ cardBg:        #1A1A1A  // Card backgrounds
 - **Body**: Inter (readable, neutral)
 - **Monospace/Numbers**: JetBrains Mono
 
----
+
 
 ## 🗃️ Backend (Dart Frog)
 
@@ -203,7 +203,7 @@ backend/
 ├── models/
 └── db/
 
----
+
 
 ## 🔮 Extending the App
 
@@ -215,7 +215,7 @@ Ideas for future development:
 - Multilingual support
 - Sound effects and haptic patterns
 
----
+
 
 ## 👀 Final notes
 
