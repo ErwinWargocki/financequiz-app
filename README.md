@@ -194,6 +194,7 @@ managing streak logic
 
 Typical structure:
 
+```
 backend/
 ├── routes/
 │   ├── questions/
@@ -202,7 +203,7 @@ backend/
 ├── services/
 ├── models/
 └── db/
-
+```
 
 
 ## 🔮 Extending the App
