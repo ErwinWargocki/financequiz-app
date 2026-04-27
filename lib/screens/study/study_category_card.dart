@@ -15,11 +15,12 @@ class _CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = info.color;
+    final p = AppTheme.palette(context);
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.cardBg,
+        color: p.card,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha:0.25), width: 1.5),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -30,7 +31,7 @@ class _CategoryCard extends StatelessWidget {
               width: double.infinity,
               height: 72,
               decoration: BoxDecoration(
-                color: color.withValues(alpha:0.10),
+                color: color.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(child: Text(info.icon, style: const TextStyle(fontSize: 44))),
@@ -39,7 +40,7 @@ class _CategoryCard extends StatelessWidget {
             Text(
               info.label,
               style: GoogleFonts.spaceGrotesk(
-                color: AppTheme.textPrimary,
+                color: p.text,
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
               ),
@@ -50,7 +51,7 @@ class _CategoryCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: color.withValues(alpha:0.13),
+                color: color.withValues(alpha: 0.13),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

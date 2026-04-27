@@ -92,8 +92,8 @@ class _LoginStep extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: isLoading ? null : onLogin,
                 child: isLoading
-                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppTheme.primary))
-                    : const Text('Log In →'),
+                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppTheme.primary))
+                      : Text('Log In →', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 20),

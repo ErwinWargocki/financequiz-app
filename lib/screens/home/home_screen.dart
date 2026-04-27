@@ -1,169 +1,196 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../theme/app_theme.dart';
 import '../../models/models.dart';
-import '../../database/database_helper.dart';
 import '../../data/quiz_categories.dart';
-import '../study/study_screen.dart';
-import '../all_categories_screen.dart';
+import '../../providers/app_providers.dart';
+import '../../widgets/stat_display.dart';
 
 part 'home_featured_card.dart';
 part 'home_stat_chip.dart';
 part 'home_result_tile.dart';
 part 'home_weekly_chart.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(currentUserProvider);
+
+    return userAsync.when(
+      loading: () => const _HomeLoadingScaffold(),
+      error: (_, __) => const _HomeLoadingScaffold(),
+      data: (user) {
+        if (user == null) return const _HomeLoadingScaffold();
+        final recentAsync = ref.watch(recentResultsProvider(user.id!));
+        final weeklyAsync = ref.watch(weeklyResultsProvider(user.id!));
+        return recentAsync.when(
+          loading: () => const _HomeLoadingScaffold(),
+          error: (_, __) => const _HomeLoadingScaffold(),
+          data: (recent) => weeklyAsync.when(
+            loading: () => const _HomeLoadingScaffold(),
+            error: (_, __) => const _HomeLoadingScaffold(),
+            data: (weekly) => _HomeContent(
+              user: user,
+              recentResults: recent,
+              weeklyTestCounts: weekly,
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  UserModel? _user;
-  List<QuizResult> _recentResults = [];
-  List<int> _weeklyTestCounts = List.filled(7, 0); // Mon–Sun
-  bool _loading = true;
+class _HomeLoadingScaffold extends StatelessWidget {
+  const _HomeLoadingScaffold();
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: AppTheme.palette(context).bg,
+        body: const Center(
+            child: CircularProgressIndicator(color: AppTheme.accent)),
+      );
+}
 
-  Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
-    if (userId == null) return;
+class _HomeContent extends StatelessWidget {
+  final UserModel user;
+  final List<QuizResult> recentResults;
+  final List<int> weeklyTestCounts;
 
-    final db = DatabaseHelper.instance;
-    final user = await db.getUser(userId);
-    final results = await db.getRecentResults(userId, limit: 3);
-
-    // Current week Mon–Sun
-    final now = DateTime.now();
-    final monday = now.subtract(Duration(days: now.weekday - 1));
-    final weekStart = DateTime(monday.year, monday.month, monday.day);
-    final weekResults = await db.getResultsForWeek(userId, weekStart);
-    final counts = List<int>.filled(7, 0);
-    for (final r in weekResults) {
-      counts[r.completedAt.weekday - 1]++; // weekday: 1=Mon … 7=Sun
-    }
-
-    setState(() {
-      _user = user;
-      _recentResults = results;
-      _weeklyTestCounts = counts;
-      _loading = false;
-    });
-  }
+  const _HomeContent({
+    required this.user,
+    required this.recentResults,
+    required this.weeklyTestCounts,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(
-        backgroundColor: AppTheme.primary,
-        body: Center(child: CircularProgressIndicator(color: AppTheme.accent)),
-      );
-    }
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: AppTheme.palette(context).bg,
       body: CustomScrollView(
         slivers: [
-          _buildAppBar(),
-          SliverToBoxAdapter(child: _buildStatsRow()),
-          SliverToBoxAdapter(child: _buildSectionHeader('Study Time')),
+          _HomeAppBar(user: user),
+          SliverToBoxAdapter(child: _HomeStatsRow(user: user)),
+          const SliverToBoxAdapter(child: _HomeSectionHeader(title: 'Study Time')),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _StudyTimeCard(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StudyScreen())),
+                onTap: () => Navigator.pushNamed(context, '/study'),
               ),
             ),
           ),
-          SliverToBoxAdapter(child: _buildSectionHeader('Test Time')),
+          const SliverToBoxAdapter(child: _HomeSectionHeader(title: 'Test Time')),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _TestTimeCard(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllCategoriesScreen())),
+                onTap: () => Navigator.pushNamed(context, '/categories'),
               ),
             ),
           ),
-          SliverToBoxAdapter(child: _buildSectionHeader('Number of quizzes completed this week')),
-          SliverToBoxAdapter(child: _WeeklyProgressChart(counts: _weeklyTestCounts)),
-          if (_recentResults.isNotEmpty) ...[
-            SliverToBoxAdapter(child: _buildSectionHeader('Recent Activity')),
-            SliverToBoxAdapter(child: _buildRecentActivity()),
+          const SliverToBoxAdapter(
+              child: _HomeSectionHeader(
+                  title: 'Number of quizzes completed this week')),
+          SliverToBoxAdapter(
+              child: _WeeklyProgressChart(counts: weeklyTestCounts)),
+          if (recentResults.isNotEmpty) ...[
+            const SliverToBoxAdapter(
+                child: _HomeSectionHeader(title: 'Recent Activity')),
+            SliverToBoxAdapter(
+                child: _HomeRecentActivity(results: recentResults)),
           ],
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
     );
   }
+}
 
-  SliverAppBar _buildAppBar() {
+// ─── AppBar ───────────────────────────────────────────────────────────────────
+class _HomeAppBar extends StatelessWidget {
+  final UserModel user;
+  const _HomeAppBar({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    const double avatarSize = 36;
+    final hasIcon = user.profileIconIndex > 0;
+    final p = AppTheme.palette(context);
     return SliverAppBar(
       pinned: true,
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       elevation: 0,
       expandedHeight: 0,
       title: Row(
         children: [
           Text.rich(TextSpan(children: [
-            TextSpan(text: 'FIN', style: GoogleFonts.spaceGrotesk(color: AppTheme.accent, fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
-            TextSpan(text: 'QUIZ', style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+            TextSpan(
+                text: 'FIN',
+                style: GoogleFonts.spaceGrotesk(
+                    color: AppTheme.accent,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5)),
+            TextSpan(
+                text: 'QUIZ',
+                style: GoogleFonts.spaceGrotesk(
+                    color: p.text,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5)),
           ])),
           const Spacer(),
-          /*Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: AppTheme.accentWarm.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.accentWarm.withValues(alpha: 0.3)),
-            ),
-              child: Row(children: [
-              const Text('🔥', style: TextStyle(fontSize: 14)),
-              const SizedBox(width: 4),
-              Text('${_user?.currentStreak ?? 0}', style: AppTheme.labelSmall.copyWith(color: AppTheme.accentWarm, fontWeight: FontWeight.w700)),
-            ]),
-          ),*/
           const SizedBox(width: 10),
-          _buildAvatar(size: 36),
+          Container(
+            width: avatarSize,
+            height: avatarSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: hasIcon
+                  ? null
+                  : const LinearGradient(
+                      colors: [AppTheme.accent, AppTheme.accentBlue],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight),
+              color: hasIcon ? p.surface : null,
+              border: Border.all(color: p.border, width: 1.5),
+            ),
+            child: Center(
+              child: hasIcon
+                  ? Text(user.profileIcon,
+                      style: const TextStyle(fontSize: avatarSize * 0.52))
+                  : Text(user.avatarInitial,
+                      style: GoogleFonts.spaceGrotesk(
+                          color: p.bg,
+                          fontSize: avatarSize * 0.4,
+                          fontWeight: FontWeight.w800)),
+            ),
+          ),
         ],
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(0.5),
-        child: Container(height: 0.5, color: AppTheme.border),
+        child: Container(height: 0.5, color: p.border),
       ),
     );
   }
+}
 
-  Widget _buildAvatar({double size = 40}) {
-    final hasIcon = _user != null && _user!.profileIconIndex > 0;
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: hasIcon ? null : const LinearGradient(colors: [AppTheme.accent, AppTheme.accentBlue], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        color: hasIcon ? AppTheme.surfaceLight : null,
-        border: Border.all(color: AppTheme.border, width: 1.5),
-      ),
-      child: Center(
-        child: hasIcon
-            ? Text(_user!.profileIcon, style: TextStyle(fontSize: size * 0.52))
-            : Text(_user?.avatarInitial ?? '?', style: GoogleFonts.spaceGrotesk(color: AppTheme.primary, fontSize: size * 0.4, fontWeight: FontWeight.w800)),
-      ),
-    );
-  }
+// ─── Stats Row ────────────────────────────────────────────────────────────────
+class _HomeStatsRow extends StatelessWidget {
+  final UserModel user;
+  const _HomeStatsRow({required this.user});
 
-  Widget _buildStatsRow() {
-    final firstName = (_user == null || _user!.name.trim().isEmpty)
+  @override
+  Widget build(BuildContext context) {
+    final firstName = user.name.trim().isEmpty
         ? 'there'
-        : _user!.name.trim().split(' ').first;
+        : user.name.trim().split(' ').first;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(
@@ -171,27 +198,50 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text('Hey $firstName 👋', style: AppTheme.headlineMedium),
           const SizedBox(height: 4),
-          Text('Ready to level up your finances?', style: AppTheme.bodyMedium),
+          Text('Ready to level up your finances?',
+              style: AppTheme.bodyMedium),
           const SizedBox(height: 16),
           Row(children: [
-            _StatChip(label: 'Quizzes', value: '${_user?.quizzesCompleted ?? 0}', icon: '📝', color: AppTheme.accentBlue),
+            _StatChip(
+                label: 'Quizzes',
+                value: '${user.quizzesCompleted}',
+                icon: '📝',
+                color: AppTheme.accentBlue),
             const SizedBox(width: 10),
-            _StatChip(label: 'Points', value: '${_user?.totalScore ?? 0}', icon: '⭐', color: AppTheme.accentWarm),
+            _StatChip(
+                label: 'Points',
+                value: '${user.totalScore}',
+                icon: '⭐',
+                color: AppTheme.accentWarm),
             const SizedBox(width: 10),
-            //_StatChip(label: 'Streak', value: '${_user?.currentStreak ?? 0} days', icon: '🔥', color: AppTheme.danger),
           ]),
         ],
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader(String title) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-    child: Text(title, style: AppTheme.titleLarge),
-  );
+// ─── Section Header ───────────────────────────────────────────────────────────
+class _HomeSectionHeader extends StatelessWidget {
+  final String title;
+  const _HomeSectionHeader({required this.title});
 
-  Widget _buildRecentActivity() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: Column(children: _recentResults.map((r) => _ResultTile(result: r)).toList()),
-  );
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+        child: Text(title, style: AppTheme.titleLarge),
+      );
+}
+
+// ─── Recent Activity ──────────────────────────────────────────────────────────
+class _HomeRecentActivity extends StatelessWidget {
+  final List<QuizResult> results;
+  const _HomeRecentActivity({required this.results});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+            children: results.map((r) => _ResultTile(result: r)).toList()),
+      );
 }

@@ -11,16 +11,17 @@ class _TopicDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Color(topic.color);
     final diffColor = _difficultyColor(topic.difficulty);
+    final p = AppTheme.palette(context);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.92,
       maxChildSize: 0.95,
       minChildSize: 0.5,
-      builder: (_, scrollController) => Container(
-        decoration: const BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          border: Border(top: BorderSide(color: AppTheme.border)),
+      builder: (ctx, scrollController) => Container(
+        decoration: BoxDecoration(
+          color: p.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border(top: BorderSide(color: p.border)),
         ),
         child: Column(
           children: [
@@ -29,7 +30,7 @@ class _TopicDetailSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppTheme.border,
+                color: p.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -46,7 +47,7 @@ class _TopicDetailSheet extends StatelessWidget {
                           width: 56,
                           height: 56,
                           decoration: BoxDecoration(
-                            color: color.withValues(alpha:0.12),
+                            color: color.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Center(child: Text(topic.icon, style: const TextStyle(fontSize: 28))),
@@ -63,7 +64,7 @@ class _TopicDetailSheet extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: diffColor.withValues(alpha:0.12),
+                                      color: diffColor.withValues(alpha: 0.12),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
@@ -84,13 +85,13 @@ class _TopicDetailSheet extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: color.withValues(alpha:0.07),
+                        color: color.withValues(alpha: 0.07),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: color.withValues(alpha:0.15)),
+                        border: Border.all(color: color.withValues(alpha: 0.15)),
                       ),
                       child: Text(
                         topic.summary,
-                        style: AppTheme.bodyLarge.copyWith(color: AppTheme.textPrimary, height: 1.5),
+                        style: AppTheme.bodyLarge.copyWith(height: 1.5),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -155,6 +156,7 @@ class _LessonCardState extends State<_LessonCard> {
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
     return GestureDetector(
       onTap: () => setState(() => _expanded = !_expanded),
       child: AnimatedContainer(
@@ -162,10 +164,10 @@ class _LessonCardState extends State<_LessonCard> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.cardBg,
+          color: p.card,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _expanded ? widget.color.withValues(alpha:0.4) : AppTheme.border,
+            color: _expanded ? widget.color.withValues(alpha: 0.4) : p.border,
             width: _expanded ? 1.5 : 1,
           ),
         ),
@@ -178,7 +180,7 @@ class _LessonCardState extends State<_LessonCard> {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: widget.color.withValues(alpha:0.12),
+                    color: widget.color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(7),
                   ),
                   child: Center(
@@ -198,22 +200,18 @@ class _LessonCardState extends State<_LessonCard> {
                 ),
                 Icon(
                   _expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                  color: AppTheme.textMuted,
+                  color: p.textMuted,
                   size: 20,
                 ),
               ],
             ),
             if (_expanded) ...[
               const SizedBox(height: 12),
-              Container(height: 1, color: AppTheme.border),
+              Container(height: 1, color: p.border),
               const SizedBox(height: 12),
               Text(
                 widget.lesson.body,
-                style: AppTheme.bodyMedium.copyWith(
-                  color: AppTheme.textPrimary,
-                  height: 1.6,
-                  fontSize: 14,
-                ),
+                style: AppTheme.bodyMedium.copyWith(height: 1.6, fontSize: 14),
               ),
             ],
           ],

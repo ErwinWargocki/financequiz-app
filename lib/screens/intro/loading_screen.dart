@@ -9,18 +9,19 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../providers/auth_provider.dart';
 import '../main_shell.dart';
 import '../welcome/welcome_screen.dart';
 
-class LoadingScreen extends StatefulWidget {
+class LoadingScreen extends ConsumerStatefulWidget {
   const LoadingScreen({super.key});
   @override
-  State<LoadingScreen> createState() => _LoadingScreenState();
+  ConsumerState<LoadingScreen> createState() => _LoadingScreenState();
 }
 
-class _LoadingScreenState extends State<LoadingScreen>
+class _LoadingScreenState extends ConsumerState<LoadingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
 
@@ -58,7 +59,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     _wI2 = _mw('I', _quizStyle);
     _wZ  = _mw('Z', _quizStyle);
     _textH = (TextPainter(
-            text: TextSpan(text: 'F', style: _finStyle),
+            text: TextSpan(text: 'F', style: _finStyle ),
             textDirection: TextDirection.ltr)
           ..layout())
         .height;
@@ -74,13 +75,12 @@ class _LoadingScreenState extends State<LoadingScreen>
 
   Future<void> _navigate() async {
     if (!mounted) return;
-    final prefs  = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final user = await ref.read(authProvider.future);
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (_, __, ___) =>
-            userId != null ? const MainShell() : const WelcomeScreen(),
+            user != null ? const MainShell() : const WelcomeScreen(),
         transitionsBuilder: (_, anim, __, child) =>
             FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 400),

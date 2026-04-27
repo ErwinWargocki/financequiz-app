@@ -1,34 +1,59 @@
 part of 'profile_screen.dart';
 
 // ─── Profile Header ───────────────────────────────────────────────────────────
-class _ProfileHeader extends StatelessWidget {
+class _ProfileHeader extends ConsumerWidget {
   final UserModel? user;
   const _ProfileHeader({required this.user});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final name = user?.name ?? 'User';
     final username = user?.username ?? 'user';
     final initial = user?.avatarInitial ?? '?';
+    final p = AppTheme.palette(context);
 
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(colors: [AppTheme.accent, AppTheme.accentBlue], begin: Alignment.topLeft, end: Alignment.bottomRight),
-            ),
-            child: Container(
-              width: 70, height: 70,
-              decoration: const BoxDecoration(shape: BoxShape.circle, color: AppTheme.primary),
-              child: Center(
-                child: (user != null && user!.profileIconIndex > 0)
-                    ? Text(user!.profileIcon, style: const TextStyle(fontSize: 34))
-                    : Text(initial, style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 28, fontWeight: FontWeight.w800)),
-              ),
+          GestureDetector(
+            onTap: user != null ? () => _showIconPicker(context, ref, user!) : null,
+            child: Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [AppTheme.accent, AppTheme.accentBlue],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Container(
+                    width: 70, height: 70,
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: p.bg),
+                    child: Center(
+                      child: (user != null && user!.profileIconIndex > 0)
+                          ? Text(user!.profileIcon, style: const TextStyle(fontSize: 34))
+                          : Text(initial, style: GoogleFonts.spaceGrotesk(color: p.text, fontSize: 28, fontWeight: FontWeight.w800)),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    width: 22, height: 22,
+                    decoration: BoxDecoration(
+                      color: AppTheme.accent,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: p.bg, width: 2),
+                    ),
+                    child: const Icon(Icons.edit_rounded, size: 11, color: AppTheme.primary),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 16),
@@ -42,7 +67,7 @@ class _ProfileHeader extends StatelessWidget {
                 Row(children: [
                   _MiniStat(label: 'Quizzes', value: '${user?.quizzesCompleted ?? 0}'),
                   const SizedBox(width: 16),
-                  _MiniStat(label: 'Streak', value: '🔥 ${user?.currentStreak ?? 0}'),
+                  _MiniStat(label: 'Streak', value: ' ${user?.currentStreak ?? 0}'),
                   const SizedBox(width: 16),
                   _MiniStat(label: 'Best', value: '${user?.longestStreak ?? 0} days'),
                 ]),
@@ -50,6 +75,74 @@ class _ProfileHeader extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showIconPicker(BuildContext context, WidgetRef ref, UserModel user) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Consumer(
+        builder: (ctx, innerRef, _) {
+          final ip = AppTheme.palette(ctx);
+          return Container(
+            decoration: BoxDecoration(
+              color: ip.card,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              border: Border.all(color: ip.border),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Choose Avatar', style: AppTheme.headlineMedium),
+                  const SizedBox(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 1,
+                    ),
+                    itemCount: ProfileIcons.all.length,
+                    itemBuilder: (ctx, i) {
+                      final selected = i == user.profileIconIndex;
+                      return GestureDetector(
+                        onTap: () async {
+                          Navigator.pop(ctx);
+                          await DatabaseHelper.instance
+                              .updateUser(user.copyWith(profileIconIndex: i));
+                          ref.invalidate(currentUserProvider);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: selected
+                                ? AppTheme.accent.withValues(alpha: 0.15)
+                                : ip.surface,
+                            border: Border.all(
+                              color: selected ? AppTheme.accent : ip.border,
+                              width: selected ? 2 : 1,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(ProfileIcons.all[i], style: const TextStyle(fontSize: 26)),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -106,11 +199,12 @@ class _MiniStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w700)),
-        Text(label, style: AppTheme.labelSmall.copyWith(fontSize: 10)),
+        Text(value, style: GoogleFonts.spaceGrotesk(color: p.text, fontSize: 14, fontWeight: FontWeight.w700)),
+        Text(label, style: AppTheme.labelSmall.copyWith(fontSize: 10, color: p.textMuted)),
       ],
     );
   }

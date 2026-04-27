@@ -156,9 +156,14 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     await db.insertResult(result);
     final user = await db.getUser(widget.userId);
     if (user != null) {
-      user..totalScore += _score..quizzesCompleted += 1..currentStreak += 1;
-      if (user.currentStreak > user.longestStreak) user.longestStreak = user.currentStreak;
-      await db.updateUser(user);
+      final newStreak = user.currentStreak + 1;
+      final updated = user.copyWith(
+        totalScore: user.totalScore + _score,
+        quizzesCompleted: user.quizzesCompleted + 1,
+        currentStreak: newStreak,
+        longestStreak: newStreak > user.longestStreak ? newStreak : user.longestStreak,
+      );
+      await db.updateUser(updated);
     }
     if (mounted) {
       Navigator.pushReplacement(context, MaterialPageRoute(

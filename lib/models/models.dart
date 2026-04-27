@@ -96,11 +96,11 @@ class UserModel {
   final String? email;
   final String? passwordHash;
   final String? googleId;
-  int profileIconIndex;
-  int totalScore;
-  int quizzesCompleted;
-  int currentStreak;
-  int longestStreak;
+  final int profileIconIndex;
+  final int totalScore;
+  final int quizzesCompleted;
+  final int currentStreak;
+  final int longestStreak;
   final DateTime createdAt;
 
   UserModel({
@@ -154,6 +154,38 @@ class UserModel {
       currentStreak: map['currentStreak'] ?? 0,
       longestStreak: map['longestStreak'] ?? 0,
       createdAt: DateTime.parse(map['createdAt']),
+    );
+  }
+
+  UserModel copyWith({
+    int? id,
+    String? name,
+    String? username,
+    String? avatarInitial,
+    String? email,
+    String? passwordHash,
+    String? googleId,
+    int? profileIconIndex,
+    int? totalScore,
+    int? quizzesCompleted,
+    int? currentStreak,
+    int? longestStreak,
+    DateTime? createdAt,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      username: username ?? this.username,
+      avatarInitial: avatarInitial ?? this.avatarInitial,
+      email: email ?? this.email,
+      passwordHash: passwordHash ?? this.passwordHash,
+      googleId: googleId ?? this.googleId,
+      profileIconIndex: profileIconIndex ?? this.profileIconIndex,
+      totalScore: totalScore ?? this.totalScore,
+      quizzesCompleted: quizzesCompleted ?? this.quizzesCompleted,
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

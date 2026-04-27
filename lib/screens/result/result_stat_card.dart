@@ -55,24 +55,20 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatCard({required this.icon, required this.label, required this.value, required this.color});
+  const _StatCard(
+      {required this.icon,
+      required this.label,
+      required this.value,
+      required this.color});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: color.withValues(alpha:0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withValues(alpha:0.2))),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(icon, style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 8),
-            Text(value, style: GoogleFonts.spaceGrotesk(color: color, fontSize: 22, fontWeight: FontWeight.w800)),
-            Text(label, style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha:0.7))),
-          ],
-        ),
-      ),
+    return StatDisplay(
+      icon: icon,
+      value: value,
+      label: label,
+      color: color,
+      size: StatDisplaySize.large,
     );
   }
 }

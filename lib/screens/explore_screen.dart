@@ -1,38 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import '../data/quiz_categories.dart';
 import '../models/models.dart';
-import '../database/database_helper.dart';
+import '../providers/app_providers.dart';
 import 'quiz/quiz_screen.dart';
 
-class ExploreScreen extends StatefulWidget {
+class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});
 
   @override
-  State<ExploreScreen> createState() => _ExploreScreenState();
+  ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
 }
 
-class _ExploreScreenState extends State<ExploreScreen> {
+class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedDifficulty = 'All';
-  UserModel? _user;
 
   final difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
   @override
-  void initState() {
-    super.initState();
-    _loadUser();
-  }
-
-  Future<void> _loadUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
-    if (userId == null) return;
-    final user = await DatabaseHelper.instance.getUser(userId);
-    setState(() => _user = user);
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   List<QuizCategory> get _filtered {
@@ -49,19 +40,20 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
-            backgroundColor: AppTheme.primary,
+            backgroundColor: p.bg,
             elevation: 0,
             expandedHeight: 0,
             title: Text('Explore', style: AppTheme.headlineMedium),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(0.5),
-              child: Container(height: 0.5, color: AppTheme.border),
+              child: Container(height: 0.5, color: p.border),
             ),
           ),
           SliverToBoxAdapter(
@@ -76,16 +68,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     onChanged: (v) => setState(() => _searchQuery = v),
                     decoration: InputDecoration(
                       hintText: 'Search topics...',
-                      prefixIcon: const Icon(Icons.search_rounded,
-                          color: AppTheme.textMuted),
+                      prefixIcon: Icon(Icons.search_rounded, color: p.textMuted),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? GestureDetector(
                               onTap: () {
                                 _searchController.clear();
                                 setState(() => _searchQuery = '');
                               },
-                              child: const Icon(Icons.close_rounded,
-                                  color: AppTheme.textMuted, size: 18),
+                              child: Icon(Icons.close_rounded,
+                                  color: p.textMuted, size: 18),
                             )
                           : null,
                     ),
@@ -97,7 +88,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: difficulties.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(width: 8),
                       itemBuilder: (context, i) {
                         final diff = difficulties[i];
                         final selected = _selectedDifficulty == diff;
@@ -109,21 +101,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 14, vertical: 6),
                             decoration: BoxDecoration(
-                              color:
-                                  selected ? AppTheme.accent : AppTheme.cardBg,
+                              color: selected ? AppTheme.accent : p.card,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: selected
-                                    ? AppTheme.accent
-                                    : AppTheme.border,
+                                color: selected ? AppTheme.accent : p.border,
                               ),
                             ),
                             child: Text(
                               diff,
                               style: AppTheme.labelSmall.copyWith(
-                                color: selected
-                                    ? AppTheme.primary
-                                    : AppTheme.textSecondary,
+                                color: selected ? Colors.black87 : p.textSub,
                                 fontSize: 12,
                                 letterSpacing: 0.5,
                                 fontWeight: selected
@@ -163,11 +150,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
   }
 
   void _startQuiz(QuizCategory cat) async {
-    if (_user == null) return;
+    final user = ref.read(currentUserProvider).asData?.value;
+    if (user == null) return;
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => QuizScreen(category: cat, userId: _user!.id!),
+        builder: (_) => QuizScreen(category: cat, userId: user.id!),
       ),
     );
   }
@@ -182,15 +170,16 @@ class _ExploreCategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Color(category.color);
+    final p = AppTheme.palette(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.cardBg,
+          color: p.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.border, width: 1),
+          border: Border.all(color: p.border, width: 1),
         ),
         child: Row(
           children: [
@@ -198,12 +187,12 @@ class _ExploreCategoryTile extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: color.withValues(alpha:0.12),
+                color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
-                child:
-                    Text(category.icon, style: const TextStyle(fontSize: 26)),
+                child: Text(category.icon,
+                    style: const TextStyle(fontSize: 26)),
               ),
             ),
             const SizedBox(width: 14),
@@ -214,13 +203,14 @@ class _ExploreCategoryTile extends StatelessWidget {
                   Row(
                     children: [
                       Text(category.name,
-                          style: AppTheme.titleLarge.copyWith(fontSize: 16)),
+                          style:
+                              AppTheme.titleLarge.copyWith(fontSize: 16)),
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 7, vertical: 2),
                         decoration: BoxDecoration(
-                          color: color.withValues(alpha:0.12),
+                          color: color.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -240,7 +230,7 @@ class _ExploreCategoryTile extends StatelessWidget {
                   Text(
                     '${category.totalQuestions} questions',
                     style: AppTheme.labelSmall.copyWith(
-                      color: color.withValues(alpha:0.8),
+                      color: color.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -253,7 +243,8 @@ class _ExploreCategoryTile extends StatelessWidget {
                 color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(Icons.play_arrow_rounded, color: color, size: 20),
+              child:
+                  Icon(Icons.play_arrow_rounded, color: color, size: 20),
             ),
           ],
         ),

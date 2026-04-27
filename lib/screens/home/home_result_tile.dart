@@ -16,14 +16,15 @@ class _ResultTile extends StatelessWidget {
     final gradeColor = grade == 'S' || grade == 'A'
         ? AppTheme.success
         : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : AppTheme.danger;
+    final p = AppTheme.palette(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.cardBg,
+        color: p.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: p.border),
       ),
       child: Row(
         children: [
@@ -51,7 +52,7 @@ class _ResultTile extends StatelessWidget {
                 child: Center(child: Text(grade, style: GoogleFonts.spaceGrotesk(color: gradeColor, fontWeight: FontWeight.w800, fontSize: 14))),
               ),
               const SizedBox(height: 2),
-              Text('${result.score} pts', style: AppTheme.labelSmall.copyWith(color: AppTheme.textMuted)),
+              Text('${result.score} pts', style: AppTheme.labelSmall.copyWith(color: p.textMuted)),
             ],
           ),
         ],

@@ -14,14 +14,15 @@ class _WeeklyProgressChart extends StatelessWidget {
     final maxY = (counts.reduce((a, b) => a > b ? a : b) + 1).toDouble().clamp(3.0, double.infinity);
     final spots = List.generate(7, (i) => FlSpot(i.toDouble(), counts[i].toDouble()));
     final today = DateTime.now().weekday - 1; // 0 = Mon
+    final p = AppTheme.palette(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.fromLTRB(12, 20, 16, 12),
       decoration: BoxDecoration(
-        color: AppTheme.cardBg,
+        color: p.card,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: p.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,12 +36,12 @@ class _WeeklyProgressChart extends StatelessWidget {
                 minY: 0,
                 maxY: maxY,
                 clipData: const FlClipData.all(),
-                gridData: FlGridData (
+                gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
                   horizontalInterval: 1,
-                  getDrawingHorizontalLine: (_) => const FlLine(
-                    color:  AppTheme.border,
+                  getDrawingHorizontalLine: (_) => FlLine(
+                    color: p.border,
                     strokeWidth: 0.8,
                   ),
                 ),
@@ -57,7 +58,7 @@ class _WeeklyProgressChart extends StatelessWidget {
                         if (value != value.roundToDouble()) return const SizedBox.shrink();
                         return Text(
                           value.toInt().toString(),
-                          style: AppTheme.labelSmall.copyWith(fontSize: 10, color: AppTheme.textMuted),
+                          style: AppTheme.labelSmall.copyWith(fontSize: 10, color: p.textMuted),
                         );
                       },
                     ),
@@ -77,7 +78,7 @@ class _WeeklyProgressChart extends StatelessWidget {
                             _days[i],
                             style: AppTheme.labelSmall.copyWith(
                               fontSize: 10,
-                              color: isToday ? AppTheme.accent : AppTheme.textMuted,
+                              color: isToday ? AppTheme.accent : p.textMuted,
                               fontWeight: isToday ? FontWeight.w700 : FontWeight.w400,
                             ),
                           ),
@@ -101,9 +102,9 @@ class _WeeklyProgressChart extends StatelessWidget {
                         final hasActivity = spot.y > 0;
                         return FlDotCirclePainter(
                           radius: isToday ? 5 : (hasActivity ? 3.5 : 2.5),
-                          color: isToday ? AppTheme.accent : (hasActivity ? AppTheme.accent : AppTheme.border),
+                          color: isToday ? AppTheme.accent : (hasActivity ? AppTheme.accent : p.border),
                           strokeWidth: isToday ? 2 : 0,
-                          strokeColor: AppTheme.primary,
+                          strokeColor: p.bg,
                         );
                       },
                     ),
@@ -122,8 +123,8 @@ class _WeeklyProgressChart extends StatelessWidget {
                 ],
                 lineTouchData: LineTouchData(
                   touchTooltipData: LineTouchTooltipData(
-                    tooltipBgColor: AppTheme.cardBg,
-                    tooltipBorder: const BorderSide(color: AppTheme.border),
+                    tooltipBgColor: p.card,
+                    tooltipBorder: BorderSide(color: p.border),
                     getTooltipItems: (spots) => spots.map((s) {
                       final day = _days[s.x.toInt()];
                       final count = s.y.toInt();

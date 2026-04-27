@@ -16,6 +16,7 @@ class _HistoryTile extends StatelessWidget {
     final gradeColor = grade == 'S' || grade == 'A'
         ? AppTheme.success
         : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : AppTheme.danger;
+    final p = AppTheme.palette(context);
 
     final date = result.completedAt;
     final dateStr = '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
@@ -24,9 +25,9 @@ class _HistoryTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.cardBg,
+        color: p.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: p.border),
       ),
       child: Row(
         children: [
@@ -41,7 +42,7 @@ class _HistoryTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(cat.name, style: AppTheme.titleLarge.copyWith(fontSize: 14)),
-                Text(dateStr, style: AppTheme.bodyMedium.copyWith(fontSize: 11)),
+                Text(dateStr, style: AppTheme.bodyMedium.copyWith(fontSize: 11, color: p.textSub)),
               ],
             ),
           ),
@@ -54,7 +55,7 @@ class _HistoryTile extends StatelessWidget {
                 child: Center(child: Text(grade, style: GoogleFonts.spaceGrotesk(color: gradeColor, fontWeight: FontWeight.w800, fontSize: 13))),
               ),
               const SizedBox(height: 2),
-              Text('${result.correctAnswers}/${result.totalQuestions}', style: AppTheme.labelSmall.copyWith(color: AppTheme.textMuted)),
+              Text('${result.correctAnswers}/${result.totalQuestions}', style: AppTheme.labelSmall.copyWith(color: p.textMuted)),
             ],
           ),
         ],

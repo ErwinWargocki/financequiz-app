@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/shell_provider.dart';
+import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import 'home/home_screen.dart';
 import 'study/study_screen.dart';
 import 'all_categories_screen.dart';
 import 'profile/profile_screen.dart';
 
-class MainShell extends StatefulWidget {
+class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  ConsumerState<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _screens = const [
+class _MainShellState extends ConsumerState<MainShell> {
+  static const List<Widget> _screens = [
     HomeScreen(),
     StudyScreen(),
     AllCategoriesScreen(),
@@ -36,16 +37,19 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = ref.watch(shellIndexProvider);
+    final p = AppTheme.palette(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       body: IndexedStack(
-        index: _selectedIndex,
+        index: selectedIndex,
         children: _screens,
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppTheme.surface,
-          border: Border(top: BorderSide(color: AppTheme.border, width: 0.5)),
+        decoration: BoxDecoration(
+          color: p.surface,
+          border: Border(top: BorderSide(color: p.border, width: 0.5)),
         ),
         child: SafeArea(
           top: false,
@@ -57,26 +61,37 @@ class _MainShellState extends State<MainShell> {
                 _NavItem(
                   icon: Icons.home_rounded,
                   label: 'Home',
-                  selected: _selectedIndex == 0,
-                  onTap: () => setState(() => _selectedIndex = 0),
+                  selected: selectedIndex == 0,
+                  onTap: () {
+                    if (selectedIndex != 0) {
+                      final userId =
+                          ref.read(currentUserIdProvider).asData?.value;
+                      if (userId != null) {
+                        ref.invalidate(currentUserProvider);
+                        ref.invalidate(recentResultsProvider(userId));
+                        ref.invalidate(weeklyResultsProvider(userId));
+                      }
+                    }
+                    ref.read(shellIndexProvider.notifier).setIndex(0);
+                  },
                 ),
                 _NavItem(
                   icon: Icons.menu_book_rounded,
                   label: 'Study',
-                  selected: _selectedIndex == 1,
-                  onTap: () => setState(() => _selectedIndex = 1),
+                  selected: selectedIndex == 1,
+                  onTap: () => ref.read(shellIndexProvider.notifier).setIndex(1),
                 ),
                 _NavItem(
                   icon: Icons.quiz_outlined,
                   label: 'Test',
-                  selected: _selectedIndex == 2,
-                  onTap: () => setState(() => _selectedIndex = 2),
+                  selected: selectedIndex == 2,
+                  onTap: () => ref.read(shellIndexProvider.notifier).setIndex(2),
                 ),
                 _NavItem(
                   icon: Icons.person_rounded,
                   label: 'Profile',
-                  selected: _selectedIndex == 3,
-                  onTap: () => setState(() => _selectedIndex = 3),
+                  selected: selectedIndex == 3,
+                  onTap: () => ref.read(shellIndexProvider.notifier).setIndex(3),
                 ),
               ],
             ),
@@ -102,6 +117,7 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final muted = AppTheme.palette(context).textMuted;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -119,14 +135,14 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: selected ? AppTheme.accent : AppTheme.textMuted,
+              color: selected ? AppTheme.accent : muted,
               size: 24,
             ),
             const SizedBox(height: 2),
             Text(
               label,
               style: AppTheme.labelSmall.copyWith(
-                color: selected ? AppTheme.accent : AppTheme.textMuted,
+                color: selected ? AppTheme.accent : muted,
                 letterSpacing: 0.5,
                 fontSize: 10,
               ),

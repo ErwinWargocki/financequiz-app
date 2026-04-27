@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import '../../models/models.dart';
-import '../main_shell.dart';
+import '../../providers/app_providers.dart';
+import '../../providers/shell_provider.dart';
+import '../../widgets/stat_display.dart';
 
 part 'result_stat_card.dart';
 part 'result_review_tile.dart';
 
-class ResultScreen extends StatefulWidget {
+class ResultScreen extends ConsumerStatefulWidget {
   final QuizResult result;
   final QuizCategory category;
   final List<QuestionReview> reviews;
@@ -15,10 +18,10 @@ class ResultScreen extends StatefulWidget {
   const ResultScreen({super.key, required this.result, required this.category, this.reviews = const []});
 
   @override
-  State<ResultScreen> createState() => _ResultScreenState();
+  ConsumerState<ResultScreen> createState() => _ResultScreenState();
 }
 
-class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMixin {
+class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProviderStateMixin {
   late AnimationController _scoreController;
   late AnimationController _cardController;
   late Animation<double> _scoreAnimation;
@@ -136,7 +139,17 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                   SizedBox(
                     width: double.infinity, height: 52,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const MainShell()), (_) => false),
+                      onPressed: () {
+                        final userId = ref.read(currentUserIdProvider).asData?.value;
+                        if (userId != null) {
+                          ref.invalidate(currentUserProvider);
+                          ref.invalidate(recentResultsProvider(userId));
+                          ref.invalidate(weeklyResultsProvider(userId));
+                          ref.invalidate(userStatsProvider(userId));
+                        }
+                        ref.read(shellIndexProvider.notifier).setIndex(0);
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                      },
                       style: ElevatedButton.styleFrom(backgroundColor: catColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                       child: const Text('Back to Home'),
                     ),

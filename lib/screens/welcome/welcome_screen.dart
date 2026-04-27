@@ -17,8 +17,10 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../database/database_helper.dart';
 import '../../models/models.dart';
@@ -61,14 +63,14 @@ const List<String> _kSecurityQuestions = [
   'What was the name of your primary school?',
 ];
 
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends ConsumerStatefulWidget {
   const WelcomeScreen({super.key});
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
+  ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen>
+class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
     with TickerProviderStateMixin {
   // ── Current step ────────────────────────────────────────────────────────
   late _AuthStep _step;

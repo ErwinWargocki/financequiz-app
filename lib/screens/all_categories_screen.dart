@@ -28,10 +28,12 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId');
     if (userId == null) {
+      if (!mounted) return;
       setState(() => _loading = false);
       return;
     }
     final user = await DatabaseHelper.instance.getUser(userId);
+    if (!mounted) return;
     setState(() {
       _user = user;
       _loading = false;
@@ -51,27 +53,29 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
+
     if (_loading) {
-      return const Scaffold(
-        backgroundColor: AppTheme.primary,
-        body: Center(
+      return Scaffold(
+        backgroundColor: p.bg,
+        body: const Center(
           child: CircularProgressIndicator(color: AppTheme.accent),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
-            backgroundColor: AppTheme.primary,
+            backgroundColor: p.bg,
             elevation: 0,
             title: Text('All Categories', style: AppTheme.headlineMedium),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(0.5),
-              child: Container(height: 0.5, color: AppTheme.border),
+              child: Container(height: 0.5, color: p.border),
             ),
           ),
           SliverPadding(
@@ -118,13 +122,14 @@ class _CategoryGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Color(category.color);
+    final p = AppTheme.palette(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.cardBg,
+          color: p.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.border),
+          border: Border.all(color: p.border),
         ),
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -145,8 +150,8 @@ class _CategoryGridTile extends StatelessWidget {
                         style: const TextStyle(fontSize: 20)),
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios_rounded,
-                    size: 14, color: AppTheme.textMuted),
+                Icon(Icons.arrow_forward_ios_rounded,
+                    size: 14, color: p.textMuted),
               ],
             ),
             const Spacer(),

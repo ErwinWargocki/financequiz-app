@@ -53,10 +53,9 @@ extension _AuthActions on _WelcomeScreenState {
         return;
       }
 
-      // Persist the userId so SplashScreen can detect the logged-in state on
-      // future app opens and skip the welcome flow entirely.
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('userId', user.id!);
+      // Persist the session and notify authProvider so dependent providers
+      // (homeProvider, profileProvider) rebuild automatically.
+      await ref.read(authProvider.notifier).login(user.id!);
 
       _navigateToApp();
     } catch (e) {
@@ -171,10 +170,9 @@ extension _AuthActions on _WelcomeScreenState {
       final hashes  = _secAnswerCtrls.map((c) => _hashPassword(c.text)).toList();
       await db.saveSecurityAnswers(userId, indices, hashes);
 
-      // Persist the userId so the app knows the user is logged in on future
-      // opens. From here on SplashScreen will jump straight to MainShell.
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('userId', userId);
+      // Persist the session and notify authProvider so dependent providers
+      // (homeProvider, profileProvider) rebuild automatically.
+      await ref.read(authProvider.notifier).login(userId);
 
       setState(() { _isLoading = false; _currentPage = 0; });
 

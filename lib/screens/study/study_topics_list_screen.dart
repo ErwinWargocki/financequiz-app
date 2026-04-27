@@ -54,6 +54,7 @@ class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
     final color = widget.category.color;
     final grouped = _grouped;
     final totalTopics = _topics.length;
+    final p = AppTheme.palette(context);
 
     // Build a flat list: [header, tile, tile, header, tile, ...]
     final items = <_ListItem>[];
@@ -65,16 +66,16 @@ class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
-            backgroundColor: AppTheme.primary,
+            backgroundColor: p.bg,
             elevation: 0,
             expandedHeight: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary, size: 20),
+              icon: Icon(Icons.arrow_back_ios_new_rounded, color: p.text, size: 20),
               onPressed: () => Navigator.pop(context),
             ),
             title: Row(
@@ -86,7 +87,7 @@ class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(0.5),
-              child: Container(height: 0.5, color: AppTheme.border),
+              child: Container(height: 0.5, color: p.border),
             ),
           ),
           SliverToBoxAdapter(
@@ -187,6 +188,7 @@ class _FolderHeader extends StatelessWidget {
     final meta = _folderMeta[categoryId];
     final label = meta?.$1 ?? categoryId[0].toUpperCase() + categoryId.substring(1);
     final icon  = meta?.$2 ?? '📁';
+    final p = AppTheme.palette(context);
 
     return Padding(
       padding: const EdgeInsets.only(top: 18, bottom: 8),
@@ -205,13 +207,13 @@ class _FolderHeader extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.spaceGrotesk(
-              color: AppTheme.textPrimary,
+              color: p.text,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Container(height: 1, color: AppTheme.border)),
+          Expanded(child: Container(height: 1, color: p.border)),
         ],
       ),
     );

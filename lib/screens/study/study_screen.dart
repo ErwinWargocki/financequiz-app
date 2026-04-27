@@ -43,19 +43,20 @@ class StudyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
-            backgroundColor: AppTheme.primary,
+            backgroundColor: p.bg,
             elevation: 0,
             expandedHeight: 0,
             title: Text('Study Topics', style: AppTheme.headlineMedium),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(0.5),
-              child: Container(height: 0.5, color: const Color.fromARGB(255, 58, 58, 58)),
+              child: Container(height: 0.5, color: p.border),
             ),
           ),
           SliverToBoxAdapter(
