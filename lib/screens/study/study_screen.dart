@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 import '../../data/study_topics.dart';
 import '../../data/quiz_categories.dart';
 import '../../models/models.dart';
@@ -31,10 +32,10 @@ class _CategoryInfo {
 }
 
 const _categories = [
-  _CategoryInfo(label: 'All Topics',    difficulty: null,           color: Color(0xFF78909C), icon: '📚', subtitle: 'Browse everything'),
-  _CategoryInfo(label: 'Beginner',      difficulty: 'Beginner',     color: Color(0xFF4ADE80), icon: '🌰', subtitle: 'Start here'),
-  _CategoryInfo(label: 'Intermediate',  difficulty: 'Intermediate', color: Color(0xFFFB923C), icon: '🌿', subtitle: 'Level up'),
-  _CategoryInfo(label: 'Advanced',      difficulty: 'Advanced',     color: Color(0xFFFF4757), icon: '🌳', subtitle: 'Master it'),
+  _CategoryInfo(label: 'All Topics',    difficulty: null,           color: AppTheme.diffAll,          icon: '📚', subtitle: 'Browse everything'),
+  _CategoryInfo(label: 'Beginner',      difficulty: 'Beginner',     color: AppTheme.diffBeginner,     icon: '🌰', subtitle: 'Start here'),
+  _CategoryInfo(label: 'Intermediate',  difficulty: 'Intermediate', color: AppTheme.diffIntermediate, icon: '🌿', subtitle: 'Level up'),
+  _CategoryInfo(label: 'Advanced',      difficulty: 'Advanced',     color: AppTheme.diffAdvanced,     icon: '🌳', subtitle: 'Master it'),
 ];
 
 // ─── Study Screen (category grid) ────────────────────────────────────────────
@@ -95,7 +96,7 @@ class StudyScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const SliverToBoxAdapter(child: AppSpacing.xl),
         ],
       ),
     );

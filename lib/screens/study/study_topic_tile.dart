@@ -2,9 +2,9 @@ part of 'study_screen.dart';
 
 // ─── Shared helper ────────────────────────────────────────────────────────────
 Color _difficultyColor(String difficulty) => switch (difficulty) {
-  'Beginner'     => const Color(0xFF4ADE80),
-  'Intermediate' => const Color(0xFFFB923C),
-  _              => const Color(0xFFFF4757),
+  'Beginner'     => AppTheme.diffBeginner,
+  'Intermediate' => AppTheme.diffIntermediate,
+  _              => AppTheme.diffAdvanced,
 };
 
 // ─── Study Topic List Tile ────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ class _StudyTopicTile extends StatelessWidget {
               ),
               child: Center(child: Text(topic.icon, style: const TextStyle(fontSize: 26))),
             ),
-            const SizedBox(width: 14),
+            AppSpacing.w14,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +56,7 @@ class _StudyTopicTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      AppSpacing.w6,
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                         decoration: BoxDecoration(
@@ -70,25 +70,25 @@ class _StudyTopicTile extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.h4,
                   Text(
                     topic.summary,
                     style: AppTheme.bodyMedium.copyWith(fontSize: 12),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
+                  AppSpacing.h6,
                   Row(
                     children: [
                       Icon(Icons.menu_book_outlined, size: 12, color: color.withValues(alpha: 0.7)),
-                      const SizedBox(width: 4),
+                      AppSpacing.w4,
                       Text(
                         '${topic.lessons.length} lessons',
                         style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha: 0.8), fontSize: 10),
                       ),
-                      const SizedBox(width: 10),
+                      AppSpacing.w10,
                       Icon(Icons.timer_outlined, size: 12, color: p.textMuted),
-                      const SizedBox(width: 4),
+                      AppSpacing.w4,
                       Text(
                         topic.readingTime,
                         style: AppTheme.labelSmall.copyWith(color: p.textMuted, fontSize: 10),
@@ -98,7 +98,7 @@ class _StudyTopicTile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            AppSpacing.w8,
             Container(
               width: 34,
               height: 34,

@@ -11,6 +11,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../main_shell.dart';
 import '../welcome/welcome_screen.dart';
@@ -38,11 +39,11 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen>
 
   TextStyle get _finStyle => GoogleFonts.spaceGrotesk(
         fontSize: _fontSize, fontWeight: FontWeight.w900,
-        fontStyle: FontStyle.italic, color: const Color(0xFF059669), height: 1);
+        fontStyle: FontStyle.italic, color: AppTheme.loadingAccent, height: 1);
 
   TextStyle get _quizStyle => GoogleFonts.spaceGrotesk(
         fontSize: _fontSize, fontWeight: FontWeight.w900,
-        fontStyle: FontStyle.italic, color: const Color(0xFF047857), height: 1);
+        fontStyle: FontStyle.italic, color: AppTheme.loadingAccentDark, height: 1);
 
   double _mw(String ch, TextStyle s) =>
       (TextPainter(text: TextSpan(text: ch, style: s), textDirection: TextDirection.ltr)
@@ -122,7 +123,7 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen>
         (sw / _wF! > sh / _textH! ? sw / _wF! : sh / _textH!) * 1.2;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFDCFCE7),
+      backgroundColor: AppTheme.loadingBg,
       body: AnimatedBuilder(
         animation: _ctrl,
         builder: (_, __) {

@@ -129,7 +129,7 @@ class _TestTimeCard extends StatelessWidget {
       subtitle: 'Time to turn notes into quiz questions.',
       emoji: '📝',
       color: AppTheme.danger,
-      titleColor: AppTheme.textPrimary,
+      titleColor: Colors.white,
       subtitleColor: const Color.fromARGB(187, 255, 255, 255),
       onTap: onTap,
     );

@@ -36,7 +36,7 @@ class _CategoryCard extends StatelessWidget {
               ),
               child: Center(child: Text(info.icon, style: const TextStyle(fontSize: 44))),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.h12,
             Text(
               info.label,
               style: GoogleFonts.spaceGrotesk(
@@ -63,7 +63,7 @@ class _CategoryCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            AppSpacing.h10,
             SizedBox(
               width: double.infinity,
               height: 38,

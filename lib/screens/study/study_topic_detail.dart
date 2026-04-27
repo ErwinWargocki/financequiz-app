@@ -52,13 +52,13 @@ class _TopicDetailSheet extends StatelessWidget {
                           ),
                           child: Center(child: Text(topic.icon, style: const TextStyle(fontSize: 28))),
                         ),
-                        const SizedBox(width: 14),
+                        AppSpacing.w14,
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(topic.title, style: AppTheme.headlineMedium.copyWith(fontSize: 20)),
-                              const SizedBox(height: 4),
+                              AppSpacing.h4,
                               Row(
                                 children: [
                                   Container(
@@ -72,7 +72,7 @@ class _TopicDetailSheet extends StatelessWidget {
                                       style: AppTheme.labelSmall.copyWith(color: diffColor, fontSize: 10),
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  AppSpacing.w8,
                                   Text('· ${topic.readingTime}', style: AppTheme.bodyMedium.copyWith(fontSize: 12)),
                                 ],
                               ),
@@ -81,7 +81,7 @@ class _TopicDetailSheet extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    AppSpacing.h20,
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
@@ -94,13 +94,13 @@ class _TopicDetailSheet extends StatelessWidget {
                         style: AppTheme.bodyLarge.copyWith(height: 1.5),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.h24,
                     Text("What you'll learn", style: AppTheme.titleLarge.copyWith(fontSize: 16)),
-                    const SizedBox(height: 14),
+                    AppSpacing.h14,
                     ...topic.lessons.indexed.map(
                       (e) => _LessonCard(index: e.$1 + 1, lesson: e.$2, color: color),
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.h24,
                   ],
                 ),
               ),
@@ -122,7 +122,7 @@ class _TopicDetailSheet extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.quiz_outlined, size: 20),
-                        const SizedBox(width: 8),
+                        AppSpacing.w8,
                         Text(
                           'Take Quiz →',
                           style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 16),
@@ -194,7 +194,7 @@ class _LessonCardState extends State<_LessonCard> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                AppSpacing.w10,
                 Expanded(
                   child: Text(widget.lesson.heading, style: AppTheme.titleLarge.copyWith(fontSize: 14)),
                 ),
@@ -206,9 +206,9 @@ class _LessonCardState extends State<_LessonCard> {
               ],
             ),
             if (_expanded) ...[
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Container(height: 1, color: p.border),
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Text(
                 widget.lesson.body,
                 style: AppTheme.bodyMedium.copyWith(height: 1.6, fontSize: 14),

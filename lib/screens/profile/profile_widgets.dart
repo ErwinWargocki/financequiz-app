@@ -50,7 +50,7 @@ class _ProfileHeader extends ConsumerWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: p.bg, width: 2),
                     ),
-                    child: const Icon(Icons.edit_rounded, size: 11, color: AppTheme.primary),
+                    child: const Icon(Icons.edit_rounded, size: 11, color: Color(0xFF0A0A0A)),
                   ),
                 ),
               ],

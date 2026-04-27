@@ -126,7 +126,7 @@ class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          const SliverToBoxAdapter(child: AppSpacing.h24),
         ],
       ),
     );
@@ -203,7 +203,7 @@ class _FolderHeader extends StatelessWidget {
             ),
             child: Center(child: Text(icon, style: const TextStyle(fontSize: 16))),
           ),
-          const SizedBox(width: 10),
+          AppSpacing.w10,
           Text(
             label,
             style: GoogleFonts.spaceGrotesk(
