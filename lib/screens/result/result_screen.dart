@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/shell_provider.dart';
@@ -77,7 +78,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(children: [
                 Text(widget.category.icon, style: const TextStyle(fontSize: 22)),
-                const SizedBox(width: 8),
+                AppSpacing.smH,
                 Text('${widget.category.name} Results', style: AppTheme.titleLarge),
               ]),
             ),
@@ -87,29 +88,29 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    const SizedBox(height: 8),
+                    AppSpacing.sm,
                     _GradeSection(grade: grade, gradeColor: gradeColor, scaleAnimation: _scaleAnimation, scoreAnimation: _scoreAnimation, message: _getGradeMessage(grade)),
-                    const SizedBox(height: 28),
+                    AppSpacing.h28,
                     FadeTransition(
                       opacity: _cardAnimation,
                       child: Column(children: [
                         Row(children: [
                           _StatCard(icon: '✅', label: 'Correct', value: '${widget.result.correctAnswers}/${widget.result.totalQuestions}', color: AppTheme.success),
-                          const SizedBox(width: 10),
+                          AppSpacing.w10,
                           _StatCard(icon: '⭐', label: 'Score', value: '${widget.result.score}', color: AppTheme.accentWarm),
                         ]),
-                        const SizedBox(height: 10),
+                        AppSpacing.h10,
                         Row(children: [
                           _StatCard(icon: '⏱️', label: 'Time', value: '${widget.result.timeTakenSeconds}s', color: AppTheme.accentBlue),
-                          const SizedBox(width: 10),
+                          AppSpacing.w10,
                           _StatCard(icon: '🏆', label: 'Grade', value: grade, color: gradeColor),
                         ]),
                       ]),
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.lg,
                     FadeTransition(opacity: _cardAnimation, child: _ResultBreakdownCard(result: widget.result)),
                     if (widget.reviews.isNotEmpty) ...[
-                      const SizedBox(height: 16),
+                      AppSpacing.md,
                       FadeTransition(
                         opacity: _cardAnimation,
                         child: Container(
@@ -120,14 +121,14 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Question Review', style: AppTheme.titleLarge.copyWith(fontSize: 15)),
-                              const SizedBox(height: 12),
+                              AppSpacing.h12,
                               ...widget.reviews.indexed.map((e) => _ReviewTile(index: e.$1 + 1, review: e.$2)),
                             ],
                           ),
                         ),
                       ),
                     ],
-                    const SizedBox(height: 32),
+                    AppSpacing.xl,
                   ],
                 ),
               ),
@@ -154,7 +155,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                       child: const Text('Back to Home'),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  AppSpacing.h10,
                   SizedBox(
                     width: double.infinity, height: 52,
                     child: OutlinedButton(

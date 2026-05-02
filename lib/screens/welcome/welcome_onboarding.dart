@@ -34,7 +34,7 @@ class _OnboardingStep extends StatelessWidget {
       key: const ValueKey('onboarding'),
       child: Column(
         children: [
-          const SizedBox(height: 20),
+          AppSpacing.h20,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
@@ -83,7 +83,7 @@ class _OnboardingStep extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 48),
+          AppSpacing.h48,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Column(
@@ -99,13 +99,13 @@ class _OnboardingStep extends StatelessWidget {
                       final p = pages[i];
                       return Column(children: [
                         Text(p.title, style: AppTheme.displayLarge.copyWith(fontSize: 36), textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
+                        AppSpacing.md,
                         Text(p.subtitle, style: AppTheme.bodyLarge.copyWith(color: AppTheme.textSecondary, height: 1.6), textAlign: TextAlign.center),
                       ]);
                     },
                   ),
                 ),
-                const SizedBox(height: 32),
+                AppSpacing.xl,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(pages.length, (i) => AnimatedContainer(

@@ -20,17 +20,17 @@ class _ReviewTile extends StatelessWidget {
             children: [
               Row(children: [
                 const Icon(Icons.lightbulb_outline_rounded, color: AppTheme.accentWarm, size: 22),
-                const SizedBox(width: 8),
+                AppSpacing.smH,
                 Expanded(child: Text('Why this is correct', style: AppTheme.titleLarge.copyWith(fontSize: 16))),
               ]),
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Text(review.correctAnswer, style: AppTheme.bodyLarge.copyWith(color: AppTheme.success, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Text(
                 review.explanation.isNotEmpty ? review.explanation : 'No explanation available for this question.',
                 style: AppTheme.bodyMedium.copyWith(height: 1.45),
               ),
-              const SizedBox(height: 20),
+              AppSpacing.h20,
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -56,17 +56,17 @@ class _ReviewTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('$index. ${review.question}', style: AppTheme.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
+          AppSpacing.sm,
           Text('Your answers', style: AppTheme.labelSmall.copyWith(color: AppTheme.textMuted, letterSpacing: 0.6)),
-          const SizedBox(height: 4),
+          AppSpacing.xs,
           Text('1st: ${review.firstAttemptAnswer ?? '—'}', style: AppTheme.bodyMedium.copyWith(color: AppTheme.textSecondary)),
           if (review.secondAttemptAnswer != null) ...[
             const SizedBox(height: 2),
             Text('2nd: ${review.secondAttemptAnswer}', style: AppTheme.bodyMedium.copyWith(color: AppTheme.textSecondary)),
           ],
-          const SizedBox(height: 8),
+          AppSpacing.sm,
           Text('Correct answer', style: AppTheme.labelSmall.copyWith(color: AppTheme.success, letterSpacing: 0.6)),
-          const SizedBox(height: 4),
+          AppSpacing.xs,
           if (review.answeredCorrectly)
             Text(review.correctAnswer, style: AppTheme.bodyMedium.copyWith(color: AppTheme.success, fontWeight: FontWeight.w600))
           else
@@ -91,7 +91,7 @@ class _ReviewTile extends StatelessWidget {
                           Icon(Icons.info_outline_rounded, size: 18, color: AppTheme.success.withValues(alpha:0.9)),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      AppSpacing.xs,
                       Text('Tap for explanation', style: AppTheme.labelSmall.copyWith(color: AppTheme.textMuted, fontSize: 10)),
                     ],
                   ),

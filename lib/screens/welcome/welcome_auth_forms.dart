@@ -41,28 +41,28 @@ class _LoginStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            AppSpacing.md,
             IconButton(onPressed: onBack, icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary), padding: EdgeInsets.zero),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(color: AppTheme.accent.withValues(alpha:0.1), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.accent.withValues(alpha:0.2))),
               child: const Text('👋', style: TextStyle(fontSize: 28)),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Text('Welcome back', style: AppTheme.displayLarge),
-            const SizedBox(height: 6),
+            AppSpacing.h6,
             Text('Log in to continue your learning streak.', style: AppTheme.bodyMedium),
-            const SizedBox(height: 36),
+            AppSpacing.h36,
             _authLabel('EMAIL'),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: emailCtrl, style: AppTheme.bodyLarge, keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(hintText: 'you@example.com', prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textMuted, size: 20)),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             _authLabel('PASSWORD'),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: passwordCtrl, style: AppTheme.bodyLarge, obscureText: obscurePassword,
               decoration: InputDecoration(
@@ -75,10 +75,10 @@ class _LoginStep extends StatelessWidget {
               ),
             ),
             if (error != null) ...[
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Text(error!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger)),
             ],
-            const SizedBox(height: 12),
+            AppSpacing.h12,
             Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
@@ -86,7 +86,7 @@ class _LoginStep extends StatelessWidget {
                 child: Text('Forgot Password?', style: AppTheme.bodyMedium.copyWith(color: AppTheme.accentBlue)),
               ),
             ),
-            const SizedBox(height: 24),
+            AppSpacing.lg,
             SizedBox(
               width: double.infinity, height: 56,
               child: ElevatedButton(
@@ -96,7 +96,7 @@ class _LoginStep extends StatelessWidget {
                       : Text('Log In →', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, fontSize: 16)),
               ),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text("Don't have an account? ", style: AppTheme.bodyMedium),
               GestureDetector(
@@ -104,7 +104,7 @@ class _LoginStep extends StatelessWidget {
                 child: Text('Sign Up', style: AppTheme.bodyMedium.copyWith(color: AppTheme.accent, fontWeight: FontWeight.w600)),
               ),
             ]),
-            const SizedBox(height: 32),
+            AppSpacing.xl,
           ],
         ),
       ),

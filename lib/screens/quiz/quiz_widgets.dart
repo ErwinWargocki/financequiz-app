@@ -32,14 +32,14 @@ class _QuizHeader extends StatelessWidget {
                   child: const Icon(Icons.close_rounded, color: AppTheme.textSecondary, size: 18),
                 ),
               ),
-              const SizedBox(width: 12),
+              AppSpacing.w12,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(children: [
                       Text(category.icon, style: const TextStyle(fontSize: 16)),
-                      const SizedBox(width: 6),
+                      AppSpacing.w6,
                       Text(category.name, style: AppTheme.titleLarge.copyWith(fontSize: 15)),
                     ]),
                     Text('${currentIndex + 1} of $totalCount', style: AppTheme.bodyMedium.copyWith(fontSize: 12)),
@@ -53,7 +53,7 @@ class _QuizHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          AppSpacing.h10,
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(value: progress, backgroundColor: AppTheme.border, valueColor: AlwaysStoppedAnimation(catColor), minHeight: 4),
@@ -91,7 +91,7 @@ class _TimerBar extends StatelessWidget {
             Text('$timeLeft s', style: GoogleFonts.jetBrainsMono(color: timerColor, fontWeight: FontWeight.w700, fontSize: 14)),
           ]),
         ),
-        const SizedBox(width: 10),
+        AppSpacing.w10,
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
@@ -123,7 +123,7 @@ class _QuestionCard extends StatelessWidget {
             decoration: BoxDecoration(color: diffColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
             child: Text(question.difficulty.toUpperCase(), style: AppTheme.labelSmall.copyWith(color: diffColor, fontSize: 10)),
           ),
-          const SizedBox(height: 12),
+          AppSpacing.h12,
           Text(question.question, style: AppTheme.titleLarge.copyWith(fontSize: 17, height: 1.4)),
         ],
       ),
@@ -221,7 +221,7 @@ class _OptionTile extends StatelessWidget {
                   )),
                 ),
               ),
-              const SizedBox(width: 12),
+              AppSpacing.w12,
               Expanded(child: Text(
                 question.options[index],
                 style: AppTheme.bodyLarge.copyWith(
@@ -231,7 +231,7 @@ class _OptionTile extends StatelessWidget {
                   decorationThickness: 2.0,
                 ),
               )),
-              if (trailingIcon != null) ...[const SizedBox(width: 8), Icon(trailingIcon, color: textColor, size: 20)],
+              if (trailingIcon != null) ...[AppSpacing.smH, Icon(trailingIcon, color: textColor, size: 20)],
             ],
           ),
         ),
@@ -258,10 +258,10 @@ class _ExplanationCard extends StatelessWidget {
         children: [
           Row(children: [
             Text(isCorrect ? '✅' : '❌', style: const TextStyle(fontSize: 18)),
-            const SizedBox(width: 8),
+            AppSpacing.smH,
             Text(isCorrect ? 'Correct!' : 'Not quite!', style: GoogleFonts.spaceGrotesk(color: color, fontWeight: FontWeight.w700, fontSize: 15)),
           ]),
-          const SizedBox(height: 8),
+          AppSpacing.sm,
           Text(question.explanation, style: AppTheme.bodyMedium.copyWith(color: AppTheme.textPrimary, height: 1.5)),
         ],
       ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_spacing.dart';
 import '../data/quiz_categories.dart';
 import '../models/models.dart';
 import '../providers/app_providers.dart';
-import 'quiz/quiz_screen.dart';
+import '../navigation/app_routes.dart';
 
 class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});
@@ -81,7 +82,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           : null,
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  AppSpacing.h14,
                   // Difficulty filter chips
                   SizedBox(
                     height: 34,
@@ -89,7 +90,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       scrollDirection: Axis.horizontal,
                       itemCount: difficulties.length,
                       separatorBuilder: (_, __) =>
-                          const SizedBox(width: 8),
+                          AppSpacing.smH,
                       itemBuilder: (context, i) {
                         final diff = difficulties[i];
                         final selected = _selectedDifficulty == diff;
@@ -123,7 +124,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  AppSpacing.h14,
                 ],
               ),
             ),
@@ -143,7 +144,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          const SliverToBoxAdapter(child: AppSpacing.lg),
         ],
       ),
     );
@@ -152,11 +153,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   void _startQuiz(QuizCategory cat) async {
     final user = ref.read(currentUserProvider).asData?.value;
     if (user == null) return;
-    await Navigator.push(
+    await Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => QuizScreen(category: cat, userId: user.id!),
-      ),
+      AppRoutes.quiz,
+      arguments: QuizArgs(category: cat, userId: user.id!),
     );
   }
 }
@@ -195,7 +195,7 @@ class _ExploreCategoryTile extends StatelessWidget {
                     style: const TextStyle(fontSize: 26)),
               ),
             ),
-            const SizedBox(width: 14),
+            AppSpacing.w14,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +205,7 @@ class _ExploreCategoryTile extends StatelessWidget {
                       Text(category.name,
                           style:
                               AppTheme.titleLarge.copyWith(fontSize: 16)),
-                      const SizedBox(width: 8),
+                      AppSpacing.smH,
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 7, vertical: 2),
@@ -226,7 +226,7 @@ class _ExploreCategoryTile extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(category.description,
                       style: AppTheme.bodyMedium.copyWith(fontSize: 13)),
-                  const SizedBox(height: 6),
+                  AppSpacing.h6,
                   Text(
                     '${category.totalQuestions} questions',
                     style: AppTheme.labelSmall.copyWith(

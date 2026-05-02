@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
 import '../../data/quiz_categories.dart';
 import '../../providers/app_providers.dart';
@@ -60,7 +61,7 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Settings', style: AppTheme.headlineMedium),
-                  const SizedBox(height: 20),
+                  AppSpacing.h20,
                   _ModeSwitcherTile(
                     isDarkMode:
                         innerRef.watch(themeModeProvider) == ThemeMode.dark,
@@ -92,7 +93,7 @@ class ProfileScreen extends ConsumerWidget {
                       }
                     },
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.sm,
                 ],
               ),
             ),
@@ -170,7 +171,7 @@ class _ProfileScaffold extends StatelessWidget {
               ),
             ),
           ],
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const SliverToBoxAdapter(child: AppSpacing.xl),
         ],
       ),
     );

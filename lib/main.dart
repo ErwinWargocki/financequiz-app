@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/app_providers.dart';
 import 'theme/app_theme.dart';
+import 'navigation/app_routes.dart';
 import 'screens/intro/loading_screen.dart';
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/main_shell.dart';
 import 'screens/study/study_screen.dart';
 import 'screens/all_categories_screen.dart';
+import 'screens/quiz/quiz_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,10 +34,18 @@ class FinQuizApp extends ConsumerWidget {
       themeMode: themeMode,
       home: const LoadingScreen(),
       routes: {
-        '/welcome':    (_) => const WelcomeScreen(),
-        '/home':       (_) => const MainShell(),
-        '/study':      (_) => const StudyScreen(),
-        '/categories': (_) => const AllCategoriesScreen(),
+        AppRoutes.welcome:    (_) => const WelcomeScreen(),
+        AppRoutes.home:       (_) => const MainShell(),
+        AppRoutes.study:      (_) => const StudyScreen(),
+        AppRoutes.categories: (_) => const AllCategoriesScreen(),
+        AppRoutes.quiz: (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as QuizArgs;
+          return QuizScreen(category: args.category, userId: args.userId);
+        },
+        AppRoutes.studyTopics: (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as StudyCategoryInfo;
+          return StudyTopicsListScreen(category: args);
+        },
       },
     );
   }

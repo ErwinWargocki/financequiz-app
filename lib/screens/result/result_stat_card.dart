@@ -33,7 +33,7 @@ class _GradeSection extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        AppSpacing.h20,
         AnimatedBuilder(
           animation: scoreAnimation,
           builder: (_, __) => Text(
@@ -41,7 +41,7 @@ class _GradeSection extends StatelessWidget {
             style: AppTheme.displayLarge.copyWith(color: gradeColor, fontSize: 48),
           ),
         ),
-        const SizedBox(height: 4),
+        AppSpacing.xs,
         Text(message, style: AppTheme.bodyMedium.copyWith(fontSize: 15), textAlign: TextAlign.center),
       ],
     );
@@ -89,7 +89,7 @@ class _ResultBreakdownCard extends StatelessWidget {
             child: LinearProgressIndicator(value: ratio, backgroundColor: color.withValues(alpha:0.12), valueColor: AlwaysStoppedAnimation(color), minHeight: 8),
           ),
         ),
-        const SizedBox(width: 8),
+        AppSpacing.smH,
         Text('$count', style: GoogleFonts.jetBrainsMono(color: color, fontWeight: FontWeight.w700, fontSize: 13)),
       ],
     );
@@ -105,9 +105,9 @@ class _ResultBreakdownCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Breakdown', style: AppTheme.titleLarge.copyWith(fontSize: 15)),
-          const SizedBox(height: 12),
+          AppSpacing.h12,
           _progressBar(label: 'Correct', count: result.correctAnswers, total: result.totalQuestions, color: AppTheme.success),
-          const SizedBox(height: 8),
+          AppSpacing.sm,
           _progressBar(label: 'Incorrect', count: result.totalQuestions - result.correctAnswers, total: result.totalQuestions, color: AppTheme.danger),
         ],
       ),

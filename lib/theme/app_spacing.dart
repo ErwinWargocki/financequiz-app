@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Spacing constants on a 4 dp grid.
 ///
-/// Vertical: [h4] [h6] [h8] [h10] [h12] [h14] [h16] [h20] [h24] [h32] [h48]
+/// Vertical: [h4] [h6] [h8] [h10] [h12] [h14] [h16] [h20] [h24] [h28] [h32] [h36] [h48]
 /// Horizontal: [w4] [w6] [w8] [w10] [w12] [w14] [w16] [w24]
 /// Semantic aliases: [xs] [sm] [md] [lg] [xl] / [xsH] [smH] [mdH] [lgH]
 class AppSpacing {
@@ -29,7 +29,9 @@ class AppSpacing {
   static const Widget h16 = SizedBox(height: 16);
   static const Widget h20 = SizedBox(height: 20);
   static const Widget h24 = SizedBox(height: 24);
+  static const Widget h28 = SizedBox(height: 28);
   static const Widget h32 = SizedBox(height: 32);
+  static const Widget h36 = SizedBox(height: 36);
   static const Widget h48 = SizedBox(height: 48);
 
   // ─── Explicit horizontal values ───────────────────────────────────────────

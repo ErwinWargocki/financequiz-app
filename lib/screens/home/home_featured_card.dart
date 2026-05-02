@@ -78,7 +78,7 @@ class _FeaturedCard extends StatelessWidget {
                           child: Text(emoji,
                               style: const TextStyle(fontSize: 26))),
                     ),
-                    const SizedBox(width: 16),
+                    AppSpacing.mdH,
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +89,7 @@ class _FeaturedCard extends StatelessWidget {
                                   color: titleColor,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w800)),
-                          const SizedBox(height: 4),
+                          AppSpacing.xs,
                           Text(subtitle,
                               style:
                                   TextStyle(color: subtitleColor, fontSize: 13)),

@@ -37,7 +37,7 @@ class _SecurityChallengeStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            AppSpacing.md,
             // Back arrow is hidden while locked — the user must use the button
             if (!isLocked)
               IconButton(
@@ -45,7 +45,7 @@ class _SecurityChallengeStep extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
                 padding: EdgeInsets.zero,
               ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -55,12 +55,12 @@ class _SecurityChallengeStep extends StatelessWidget {
               ),
               child: Text(isLocked ? '🔒' : '🛡️', style: const TextStyle(fontSize: 28)),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Text(
               isLocked ? 'Account Locked' : 'Security Question',
               style: AppTheme.displayLarge,
             ),
-            const SizedBox(height: 6),
+            AppSpacing.h6,
 
             // ── Locked state — show message and a back button only ────────────
             if (isLocked) ...[
@@ -68,7 +68,7 @@ class _SecurityChallengeStep extends StatelessWidget {
                 'Too many incorrect attempts. Please go back and try again.',
                 style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger),
               ),
-              const SizedBox(height: 36),
+              AppSpacing.h36,
               SizedBox(
                 width: double.infinity, height: 56,
                 child: ElevatedButton(
@@ -88,7 +88,7 @@ class _SecurityChallengeStep extends StatelessWidget {
                 'Answer the question below to verify your identity.',
                 style: AppTheme.bodyMedium,
               ),
-              const SizedBox(height: 8),
+              AppSpacing.sm,
               // 4 dots — each one fills red as an attempt is used
               Row(
                 children: List.generate(4, (i) => Padding(
@@ -102,7 +102,7 @@ class _SecurityChallengeStep extends StatelessWidget {
                   ),
                 )),
               ),
-              const SizedBox(height: 28),
+              AppSpacing.h28,
               // The question is displayed in a card so it stands out visually
               Container(
                 width: double.infinity,
@@ -114,14 +114,14 @@ class _SecurityChallengeStep extends StatelessWidget {
                 ),
                 child: Text(question, style: AppTheme.bodyLarge),
               ),
-              const SizedBox(height: 20),
+              AppSpacing.h20,
               Text(
                 'YOUR ANSWER',
                 style: AppTheme.labelSmall.copyWith(
                   color: AppTheme.textSecondary, letterSpacing: 1.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              AppSpacing.sm,
               TextField(
                 controller: answerCtrl,
                 style: AppTheme.bodyLarge,
@@ -131,10 +131,10 @@ class _SecurityChallengeStep extends StatelessWidget {
                 ),
               ),
               if (error != null) ...[
-                const SizedBox(height: 12),
+                AppSpacing.h12,
                 Text(error!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger)),
               ],
-              const SizedBox(height: 36),
+              AppSpacing.h36,
               SizedBox(
                 width: double.infinity, height: 56,
                 child: ElevatedButton(
@@ -145,7 +145,7 @@ class _SecurityChallengeStep extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 32),
+            AppSpacing.xl,
           ],
         ),
       ),
@@ -189,7 +189,7 @@ class _NewPasswordStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            AppSpacing.md,
             // Green checkmark badge signals that identity was verified
             Container(
               padding: const EdgeInsets.all(14),
@@ -200,21 +200,21 @@ class _NewPasswordStep extends StatelessWidget {
               ),
               child: const Text('✅', style: TextStyle(fontSize: 28)),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Text('New Password', style: AppTheme.displayLarge),
-            const SizedBox(height: 6),
+            AppSpacing.h6,
             Text(
               'Identity verified. Set your new password below.',
               style: AppTheme.bodyMedium,
             ),
-            const SizedBox(height: 36),
+            AppSpacing.h36,
             Text(
               'NEW PASSWORD',
               style: AppTheme.labelSmall.copyWith(
                 color: AppTheme.textSecondary, letterSpacing: 1.5,
               ),
             ),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: passwordCtrl,
               style: AppTheme.bodyLarge,
@@ -231,14 +231,14 @@ class _NewPasswordStep extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             Text(
               'CONFIRM PASSWORD',
               style: AppTheme.labelSmall.copyWith(
                 color: AppTheme.textSecondary, letterSpacing: 1.5,
               ),
             ),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: confirmCtrl,
               style: AppTheme.bodyLarge,
@@ -256,10 +256,10 @@ class _NewPasswordStep extends StatelessWidget {
               ),
             ),
             if (error != null) ...[
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Text(error!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger)),
             ],
-            const SizedBox(height: 36),
+            AppSpacing.h36,
             SizedBox(
               width: double.infinity, height: 56,
               child: ElevatedButton(
@@ -269,7 +269,7 @@ class _NewPasswordStep extends StatelessWidget {
                     : const Text('Reset Password →'),
               ),
             ),
-            const SizedBox(height: 32),
+            AppSpacing.xl,
           ],
         ),
       ),

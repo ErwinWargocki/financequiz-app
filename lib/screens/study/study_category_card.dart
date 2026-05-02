@@ -2,7 +2,7 @@ part of 'study_screen.dart';
 
 // ─── Category Card ────────────────────────────────────────────────────────────
 class _CategoryCard extends StatelessWidget {
-  final _CategoryInfo info;
+  final StudyCategoryInfo info;
   final int topicCount;
   final VoidCallback onTap;
 

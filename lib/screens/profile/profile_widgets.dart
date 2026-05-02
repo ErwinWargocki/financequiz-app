@@ -56,19 +56,19 @@ class _ProfileHeader extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          AppSpacing.mdH,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(name, style: AppTheme.headlineMedium.copyWith(fontSize: 20)),
                 Text('@$username', style: AppTheme.bodyMedium.copyWith(color: AppTheme.accent)),
-                const SizedBox(height: 8),
+                AppSpacing.sm,
                 Row(children: [
                   _MiniStat(label: 'Quizzes', value: '${user?.quizzesCompleted ?? 0}'),
-                  const SizedBox(width: 16),
+                  AppSpacing.mdH,
                   _MiniStat(label: 'Streak', value: ' ${user?.currentStreak ?? 0}'),
-                  const SizedBox(width: 16),
+                  AppSpacing.mdH,
                   _MiniStat(label: 'Best', value: '${user?.longestStreak ?? 0} days'),
                 ]),
               ],
@@ -99,7 +99,7 @@ class _ProfileHeader extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Choose Avatar', style: AppTheme.headlineMedium),
-                  const SizedBox(height: 16),
+                  AppSpacing.md,
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -137,7 +137,7 @@ class _ProfileHeader extends ConsumerWidget {
                       );
                     },
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.sm,
                 ],
               ),
             ),
@@ -168,13 +168,13 @@ class _StatsGrid extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Your Stats', style: AppTheme.titleLarge),
-          const SizedBox(height: 10),
+          AppSpacing.h10,
           Row(children: [
             _BigStatCard(icon: '⭐', label: 'Total Points', value: '$totalScore', color: AppTheme.accentWarm),
-            const SizedBox(width: 10),
+            AppSpacing.w10,
             _BigStatCard(icon: '📊', label: 'Avg Score', value: '${avgScore.toStringAsFixed(0)}%', color: AppTheme.accentBlue),
           ]),
-          const SizedBox(height: 10),
+          AppSpacing.h10,
           Row(children: [
             _BigStatCard(
               icon: '🏆',
@@ -182,7 +182,7 @@ class _StatsGrid extends StatelessWidget {
               value: bestCategory == 'N/A' ? 'N/A' : _capitalize(bestCategory as String),
               color: AppTheme.accent,
             ),
-            const SizedBox(width: 10),
+            AppSpacing.w10,
             _BigStatCard(icon: '⏱️', label: 'Time Spent', value: '${minutes}m', color: AppTheme.catCrypto),
           ]),
         ],
@@ -228,7 +228,7 @@ class _BigStatCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(icon, style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             Text(value, style: GoogleFonts.spaceGrotesk(color: color, fontSize: 20, fontWeight: FontWeight.w800), overflow: TextOverflow.ellipsis),
             Text(label, style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha:0.7), fontSize: 11)),
           ],
@@ -237,42 +237,3 @@ class _BigStatCard extends StatelessWidget {
     );
   }
 }
-
-// ─── Achievement ──────────────────────────────────────────────────────────────
-/*class _Achievement {
-  final String icon;
-  final String name;
-  final bool unlocked;
-  final String description;
-  const _Achievement(this.icon, this.name, this.unlocked, this.description);
-}
-  class _AchievementBadge extends StatelessWidget {
-  final _Achievement achievement;
-  const _AchievementBadge({required this.achievement});
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: achievement.description,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: achievement.unlocked ? AppTheme.accentWarm.withValues(alpha: 0.1) : AppTheme.cardBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: achievement.unlocked ? AppTheme.accentWarm.withValues(alpha: 0.4) : AppTheme.border),
-        ),
-        child: Column(
-          children: [
-            Text(achievement.icon, style: TextStyle(fontSize: 24, color: achievement.unlocked ? null : AppTheme.textMuted)),
-            const SizedBox(height: 4),
-            Text(
-              achievement.name,
-              style: AppTheme.labelSmall.copyWith(fontSize: 9, color: achievement.unlocked ? AppTheme.accentWarm : AppTheme.textMuted),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}*/

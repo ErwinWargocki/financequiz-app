@@ -22,7 +22,7 @@ class _IconSelectionStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 16),
+          AppSpacing.md,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: IconButton(onPressed: onBack, icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary), padding: EdgeInsets.zero),
@@ -33,12 +33,12 @@ class _IconSelectionStep extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Choose your\nprofile icon', style: AppTheme.displayLarge.copyWith(fontSize: 30)),
-                const SizedBox(height: 8),
+                AppSpacing.sm,
                 Text('Pick the one that represents you best.', style: AppTheme.bodyMedium),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          AppSpacing.lg,
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -70,7 +70,7 @@ class _IconSelectionStep extends StatelessWidget {
               children: [
                 if (error != null) ...[
                   Text(error!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger)),
-                  const SizedBox(height: 8),
+                  AppSpacing.sm,
                 ],
                 SizedBox(
                   width: double.infinity, height: 56,
@@ -80,7 +80,7 @@ class _IconSelectionStep extends StatelessWidget {
                         ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppTheme.primary))
                         : Row(mainAxisSize: MainAxisSize.min, children: [
                             Text(ProfileIcons.all[selectedIconIndex], style: const TextStyle(fontSize: 20)),
-                            const SizedBox(width: 10),
+                            AppSpacing.w10,
                             const Text('Continue →'),
                           ]),
                   ),

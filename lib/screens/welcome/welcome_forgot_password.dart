@@ -29,13 +29,13 @@ class _ForgotEmailStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            AppSpacing.md,
             IconButton(
               onPressed: onBack,
               icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
               padding: EdgeInsets.zero,
             ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -45,19 +45,19 @@ class _ForgotEmailStep extends StatelessWidget {
               ),
               child: const Text('🔑', style: TextStyle(fontSize: 28)),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Text('Reset Password', style: AppTheme.displayLarge),
-            const SizedBox(height: 6),
+            AppSpacing.h6,
             Text(
               'Enter your registered email address to verify your identity.',
               style: AppTheme.bodyMedium,
             ),
-            const SizedBox(height: 36),
+            AppSpacing.h36,
             Text(
               'EMAIL',
               style: AppTheme.labelSmall.copyWith(color: AppTheme.textSecondary, letterSpacing: 1.5),
             ),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: emailCtrl,
               style: AppTheme.bodyLarge,
@@ -68,10 +68,10 @@ class _ForgotEmailStep extends StatelessWidget {
               ),
             ),
             if (error != null) ...[
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Text(error!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger)),
             ],
-            const SizedBox(height: 36),
+            AppSpacing.h36,
             SizedBox(
               width: double.infinity,
               height: 56,
@@ -82,7 +82,7 @@ class _ForgotEmailStep extends StatelessWidget {
                     : const Text('Continue →'),
               ),
             ),
-            const SizedBox(height: 32),
+            AppSpacing.xl,
           ],
         ),
       ),

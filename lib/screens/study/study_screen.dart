@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/app_spacing.dart';
 import '../../data/study_topics.dart';
 import '../../data/quiz_categories.dart';
 import '../../models/models.dart';
-import '../../database/database_helper.dart';
-import '../quiz/quiz_screen.dart';
+import '../../providers/app_providers.dart';
+import '../../navigation/app_routes.dart';
 
 part 'study_category_card.dart';
 part 'study_topics_list_screen.dart';
@@ -15,14 +15,14 @@ part 'study_topic_tile.dart';
 part 'study_topic_detail.dart';
 
 // ─── Category config ─────────────────────────────────────────────────────────
-class _CategoryInfo {
+class StudyCategoryInfo {
   final String label;
-  final String? difficulty; // null = All
+  final String? difficulty;
   final Color color;
   final String icon;
   final String subtitle;
 
-  const _CategoryInfo({
+  const StudyCategoryInfo({
     required this.label,
     required this.difficulty,
     required this.color,
@@ -32,10 +32,10 @@ class _CategoryInfo {
 }
 
 const _categories = [
-  _CategoryInfo(label: 'All Topics',    difficulty: null,           color: AppTheme.diffAll,          icon: '📚', subtitle: 'Browse everything'),
-  _CategoryInfo(label: 'Beginner',      difficulty: 'Beginner',     color: AppTheme.diffBeginner,     icon: '🌰', subtitle: 'Start here'),
-  _CategoryInfo(label: 'Intermediate',  difficulty: 'Intermediate', color: AppTheme.diffIntermediate, icon: '🌿', subtitle: 'Level up'),
-  _CategoryInfo(label: 'Advanced',      difficulty: 'Advanced',     color: AppTheme.diffAdvanced,     icon: '🌳', subtitle: 'Master it'),
+  StudyCategoryInfo(label: 'All Topics',    difficulty: null,           color: AppTheme.diffAll,          icon: '📚', subtitle: 'Browse everything'),
+  StudyCategoryInfo(label: 'Beginner',      difficulty: 'Beginner',     color: AppTheme.diffBeginner,     icon: '🌰', subtitle: 'Start here'),
+  StudyCategoryInfo(label: 'Intermediate',  difficulty: 'Intermediate', color: AppTheme.diffIntermediate, icon: '🌿', subtitle: 'Level up'),
+  StudyCategoryInfo(label: 'Advanced',      difficulty: 'Advanced',     color: AppTheme.diffAdvanced,     icon: '🌳', subtitle: 'Master it'),
 ];
 
 // ─── Study Screen (category grid) ────────────────────────────────────────────
@@ -78,11 +78,10 @@ class StudyScreen extends StatelessWidget {
                   return _CategoryCard(
                     info: cat,
                     topicCount: topics.length,
-                    onTap: () => Navigator.push(
+                    onTap: () => Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => _StudyTopicsListScreen(category: cat),
-                      ),
+                      AppRoutes.studyTopics,
+                      arguments: cat,
                     ),
                   );
                 },

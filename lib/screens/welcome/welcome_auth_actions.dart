@@ -37,26 +37,21 @@ extension _AuthActions on _WelcomeScreenState {
     setState(() { _isLoading = true; _error = null; });
 
     try {
-      final db   = DatabaseHelper.instance;
-      final user = await db.getUserByEmail(email);
+      final auth = ref.read(authProvider.notifier);
+      final user = await auth.getUserByEmail(email);
 
-      // No account found with that email
       if (user == null) {
         setState(() { _isLoading = false; _error = 'No account found with that email.'; });
         return;
       }
 
-      // Compare the stored hash against what the user typed
       final hash = _hashPassword(password);
       if (user.passwordHash != hash) {
         setState(() { _isLoading = false; _error = 'Incorrect password. Please try again.'; });
         return;
       }
 
-      // Persist the session and notify authProvider so dependent providers
-      // (homeProvider, profileProvider) rebuild automatically.
-      await ref.read(authProvider.notifier).login(user.id!);
-
+      await auth.login(user.id!);
       _navigateToApp();
     } catch (e) {
       setState(() { _isLoading = false; _error = 'Something went wrong. Please try again.'; });
@@ -89,24 +84,20 @@ extension _AuthActions on _WelcomeScreenState {
     setState(() { _isLoading = true; _error = null; });
 
     try {
-      final db = DatabaseHelper.instance;
+      final auth = ref.read(authProvider.notifier);
 
-      // Reject duplicate usernames (case-insensitive handled by SQLite UNIQUE)
-      final existingUsername = await db.getUserByUsername(username);
+      final existingUsername = await auth.getUserByUsername(username);
       if (existingUsername != null) {
         setState(() { _isLoading = false; _error = 'That username is already taken.'; });
         return;
       }
 
-      // Reject duplicate emails — one account per address
-      final existingEmail = await db.getUserByEmail(email);
+      final existingEmail = await auth.getUserByEmail(email);
       if (existingEmail != null) {
         setState(() { _isLoading = false; _error = 'An account with that email already exists.'; });
         return;
       }
 
-      // Hold the validated data in memory — the user object isn't created
-      // in the database until _completeRegistration (after security Qs)
       _pendingName         = name;
       _pendingUsername     = username;
       _pendingEmail        = email;
@@ -146,10 +137,6 @@ extension _AuthActions on _WelcomeScreenState {
     setState(() { _isLoading = true; _error = null; });
 
     try {
-      final db = DatabaseHelper.instance;
-
-      // Create the user row — the icon index chosen on the previous step is
-      // embedded in the model so it is persisted immediately.
       final newUser = UserModel(
         name:             _pendingName!,
         username:         _pendingUsername!,
@@ -163,21 +150,11 @@ extension _AuthActions on _WelcomeScreenState {
         longestStreak:    0,
       );
 
-      final userId = await db.insertUser(newUser);
-
-      // Hash each answer before saving — answers are never stored as plain text
       final indices = _selectedQuestions.map((q) => q!).toList();
       final hashes  = _secAnswerCtrls.map((c) => _hashPassword(c.text)).toList();
-      await db.saveSecurityAnswers(userId, indices, hashes);
-
-      // Persist the session and notify authProvider so dependent providers
-      // (homeProvider, profileProvider) rebuild automatically.
-      await ref.read(authProvider.notifier).login(userId);
+      await ref.read(authProvider.notifier).registerUser(newUser, indices, hashes);
 
       setState(() { _isLoading = false; _currentPage = 0; });
-
-      // Show the "how it works" onboarding — new users only.
-      // Completing or skipping it calls _navigateToApp() directly.
       _goToStep(_AuthStep.onboarding);
     } catch (e) {
       setState(() { _isLoading = false; _error = 'Could not create account. Please try again.'; });
@@ -198,16 +175,15 @@ extension _AuthActions on _WelcomeScreenState {
     setState(() { _isLoading = true; _error = null; });
 
     try {
-      final db   = DatabaseHelper.instance;
-      final user = await db.getUserByEmail(email);
+      final auth = ref.read(authProvider.notifier);
+      final user = await auth.getUserByEmail(email);
 
       if (user == null) {
         setState(() { _isLoading = false; _error = 'No account found with that email.'; });
         return;
       }
 
-      // Load the saved security Q&A slots for this account
-      final answers = await db.getSecurityAnswers(user.id!);
+      final answers = await auth.getSecurityAnswers(user.id!);
       if (answers.isEmpty) {
         setState(() { _isLoading = false; _error = 'No security questions set up for this account.'; });
         return;
@@ -245,8 +221,7 @@ extension _AuthActions on _WelcomeScreenState {
     setState(() { _isLoading = true; _error = null; });
 
     try {
-      final db      = DatabaseHelper.instance;
-      final answers = await db.getSecurityAnswers(_forgotUserId);
+      final answers = await ref.read(authProvider.notifier).getSecurityAnswers(_forgotUserId);
 
       // Find the specific answer record for the presented question
       final record = answers.firstWhere(
@@ -308,9 +283,8 @@ extension _AuthActions on _WelcomeScreenState {
     setState(() { _isLoading = true; _error = null; });
 
     try {
-      final db   = DatabaseHelper.instance;
       final hash = _hashPassword(password);
-      await db.updateUserPassword(_forgotUserId, hash);
+      await ref.read(authProvider.notifier).updatePassword(_forgotUserId, hash);
 
       // Clear the reset flow state so it cannot be replayed
       _newPasswordCtrl.clear();

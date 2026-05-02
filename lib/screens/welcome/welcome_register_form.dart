@@ -34,14 +34,14 @@ class _RegisterStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            AppSpacing.md,
             // Back arrow returns to the auth-choice landing page
             IconButton(
               onPressed: onBack,
               icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
               padding: EdgeInsets.zero,
             ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             // Coloured icon badge — gives each step a distinct visual identity
             Container(
               padding: const EdgeInsets.all(14),
@@ -52,16 +52,16 @@ class _RegisterStep extends StatelessWidget {
               ),
               child: const Text('🚀', style: TextStyle(fontSize: 28)),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Text('Create account', style: AppTheme.displayLarge),
-            const SizedBox(height: 6),
+            AppSpacing.h6,
             Text(
               'Join and start levelling up your financial IQ.',
               style: AppTheme.bodyMedium,
             ),
-            const SizedBox(height: 36),
+            AppSpacing.h36,
             _authLabel('YOUR NAME'),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: nameCtrl,
               style: AppTheme.bodyLarge,
@@ -71,9 +71,9 @@ class _RegisterStep extends StatelessWidget {
                 prefixIcon: Icon(Icons.person_outline, color: AppTheme.textMuted, size: 20),
               ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             _authLabel('USERNAME'),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: usernameCtrl,
               style: AppTheme.bodyLarge,
@@ -82,9 +82,9 @@ class _RegisterStep extends StatelessWidget {
                 prefixIcon: Icon(Icons.alternate_email, color: AppTheme.textMuted, size: 20),
               ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             _authLabel('EMAIL'),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: emailCtrl,
               style: AppTheme.bodyLarge,
@@ -94,9 +94,9 @@ class _RegisterStep extends StatelessWidget {
                 prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textMuted, size: 20),
               ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             _authLabel('PASSWORD'),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             TextField(
               controller: passwordCtrl,
               style: AppTheme.bodyLarge,
@@ -115,10 +115,10 @@ class _RegisterStep extends StatelessWidget {
             ),
             // Inline validation error — shown below the last field
             if (error != null) ...[
-              const SizedBox(height: 12),
+              AppSpacing.h12,
               Text(error!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger)),
             ],
-            const SizedBox(height: 36),
+            AppSpacing.h36,
             SizedBox(
               width: double.infinity, height: 56,
               child: ElevatedButton(
@@ -128,7 +128,7 @@ class _RegisterStep extends StatelessWidget {
                     : const Text('Continue →'),
               ),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             // Shortcut for users who accidentally landed on the wrong screen
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text('Already have an account? ', style: AppTheme.bodyMedium),
@@ -140,7 +140,7 @@ class _RegisterStep extends StatelessWidget {
                 ),
               ),
             ]),
-            const SizedBox(height: 32),
+            AppSpacing.xl,
           ],
         ),
       ),

@@ -11,30 +11,15 @@ const _folderMeta = {
 };
 
 // ─── Topics List Screen ───────────────────────────────────────────────────────
-class _StudyTopicsListScreen extends StatefulWidget {
-  final _CategoryInfo category;
-  const _StudyTopicsListScreen({required this.category});
+class StudyTopicsListScreen extends ConsumerStatefulWidget {
+  final StudyCategoryInfo category;
+  const StudyTopicsListScreen({super.key, required this.category});
 
   @override
-  State<_StudyTopicsListScreen> createState() => _StudyTopicsListScreenState();
+  ConsumerState<StudyTopicsListScreen> createState() => _StudyTopicsListScreenState();
 }
 
-class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
-  UserModel? _user;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUser();
-  }
-
-  Future<void> _loadUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
-    if (userId == null) return;
-    final user = await DatabaseHelper.instance.getUser(userId);
-    if (mounted) setState(() => _user = user);
-  }
+class _StudyTopicsListScreenState extends ConsumerState<StudyTopicsListScreen> {
 
   List<StudyTopic> get _topics => widget.category.difficulty == null
       ? StudyTopics.all
@@ -81,7 +66,7 @@ class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
             title: Row(
               children: [
                 Text(widget.category.icon, style: const TextStyle(fontSize: 20)),
-                const SizedBox(width: 8),
+                AppSpacing.smH,
                 Text(widget.category.label, style: AppTheme.headlineMedium),
               ],
             ),
@@ -133,13 +118,14 @@ class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
   }
 
   void _openTopic(StudyTopic topic) {
+    final user = ref.read(currentUserProvider).asData?.value;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _TopicDetailSheet(
         topic: topic,
-        onTakeQuiz: _user != null
+        onTakeQuiz: user != null
             ? () { Navigator.pop(context); _startQuiz(topic); }
             : null,
       ),
@@ -147,14 +133,16 @@ class _StudyTopicsListScreenState extends State<_StudyTopicsListScreen> {
   }
 
   void _startQuiz(StudyTopic topic) {
-    if (_user?.id == null) return;
+    final user = ref.read(currentUserProvider).asData?.value;
+    if (user?.id == null) return;
     final cat = QuizCategories.all.firstWhere(
       (c) => c.id == topic.quizCategoryId,
       orElse: () => QuizCategories.all.first,
     );
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(builder: (_) => QuizScreen(category: cat, userId: _user!.id!)),
+      AppRoutes.quiz,
+      arguments: QuizArgs(category: cat, userId: user!.id!),
     );
   }
 }
@@ -212,7 +200,7 @@ class _FolderHeader extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(width: 8),
+          AppSpacing.smH,
           Expanded(child: Container(height: 1, color: p.border)),
         ],
       ),

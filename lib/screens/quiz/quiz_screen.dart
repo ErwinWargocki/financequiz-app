@@ -2,26 +2,29 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
-import '../../database/database_helper.dart';
+import '../../providers/app_providers.dart';
+import '../../providers/auth_provider.dart';
 import '../result/result_screen.dart';
 
 part 'quiz_widgets.dart';
 part 'quiz_dialogs.dart';
 
-class QuizScreen extends StatefulWidget {
+class QuizScreen extends ConsumerStatefulWidget {
   final QuizCategory category;
   final int userId;
 
   const QuizScreen({super.key, required this.category, required this.userId});
 
   @override
-  State<QuizScreen> createState() => _QuizScreenState();
+  ConsumerState<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
+class _QuizScreenState extends ConsumerState<QuizScreen> with TickerProviderStateMixin {
   List<QuizQuestion> _questions = [];
   int _currentIndex = 0;
   int? _selectedOption;
@@ -59,8 +62,9 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _loadQuestions() async {
-    final questions = await DatabaseHelper.instance.getQuestionsByCategory(widget.category.id, limit: 10);
+    final questions = await ref.read(questionsProvider(widget.category.id).future);
     final randomized = questions.map(_shuffleQuestionOptions).toList()..shuffle(Random());
+    if (!mounted) return;
     setState(() { _questions = randomized; _loading = false; });
     _startTimer();
     _slideController.forward();
@@ -152,19 +156,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
       timeTakenSeconds: _totalTimeTaken,
       completedAt: DateTime.now(),
     );
-    final db = DatabaseHelper.instance;
-    await db.insertResult(result);
-    final user = await db.getUser(widget.userId);
-    if (user != null) {
-      final newStreak = user.currentStreak + 1;
-      final updated = user.copyWith(
-        totalScore: user.totalScore + _score,
-        quizzesCompleted: user.quizzesCompleted + 1,
-        currentStreak: newStreak,
-        longestStreak: newStreak > user.longestStreak ? newStreak : user.longestStreak,
-      );
-      await db.updateUser(updated);
-    }
+    await ref.read(authProvider.notifier).completeQuiz(result);
     if (mounted) {
       Navigator.pushReplacement(context, MaterialPageRoute(
         builder: (_) => ResultScreen(result: result, category: widget.category, reviews: _questionReviews),
@@ -202,7 +194,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         backgroundColor: AppTheme.primary,
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           const CircularProgressIndicator(color: AppTheme.accent),
-          const SizedBox(height: 16),
+          AppSpacing.md,
           Text('Loading quiz...', style: AppTheme.bodyMedium),
         ])),
       );
@@ -212,9 +204,9 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         backgroundColor: AppTheme.primary,
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text('📭', style: TextStyle(fontSize: 48)),
-          const SizedBox(height: 16),
+          AppSpacing.md,
           Text('No questions found', style: AppTheme.headlineMedium),
-          const SizedBox(height: 8),
+          AppSpacing.sm,
           TextButton(onPressed: () => Navigator.pop(context), child: Text('Go back', style: AppTheme.bodyLarge.copyWith(color: AppTheme.accent))),
         ])),
       );
@@ -248,20 +240,20 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _TimerBar(timeLeft: _timeLeft, timePerQuestion: _timePerQuestion, catColor: catColor),
-                      const SizedBox(height: 24),
+                      AppSpacing.lg,
                       _QuestionCard(question: question),
-                      const SizedBox(height: 20),
+                      AppSpacing.h20,
                       ...List.generate(question.options.length, (i) => _OptionTile(
                         question: question, index: i, catColor: catColor,
                         selectedOption: _selectedOption, firstAttemptSelection: _firstAttemptSelection,
                         answered: _answered, shakeAnimation: _shakeAnimation, onSelect: _selectOption,
                       )),
                       if (!_answered && _attemptHint != null) ...[
-                        const SizedBox(height: 8),
+                        AppSpacing.sm,
                         Text(_attemptHint!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.accentWarm)),
                       ],
                       if (_answered) ...[
-                        const SizedBox(height: 16),
+                        AppSpacing.md,
                         _ExplanationCard(question: question, selectedOption: _selectedOption),
                       ],
                       const SizedBox(height: 100),

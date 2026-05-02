@@ -29,13 +29,13 @@ class _SecurityQuestionsStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            AppSpacing.md,
             IconButton(
               onPressed: onBack,
               icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
               padding: EdgeInsets.zero,
             ),
-            const SizedBox(height: 16),
+            AppSpacing.md,
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -45,14 +45,14 @@ class _SecurityQuestionsStep extends StatelessWidget {
               ),
               child: const Text('🔐', style: TextStyle(fontSize: 28)),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Text('Security Questions', style: AppTheme.displayLarge),
-            const SizedBox(height: 6),
+            AppSpacing.h6,
             Text(
               'Choose 3 questions and set your personal answers. These will be used to verify your identity if you forget your password.',
               style: AppTheme.bodyMedium,
             ),
-            const SizedBox(height: 32),
+            AppSpacing.xl,
             for (int i = 0; i < 3; i++) ...[
               _QuestionSlot(
                 slotNumber: i + 1,
@@ -63,11 +63,11 @@ class _SecurityQuestionsStep extends StatelessWidget {
                 answerCtrl: answerCtrls[i],
                 onQuestionChanged: (q) => onQuestionChanged(i, q),
               ),
-              const SizedBox(height: 20),
+              AppSpacing.h20,
             ],
             if (error != null) ...[
               Text(error!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.danger)),
-              const SizedBox(height: 12),
+              AppSpacing.h12,
             ],
             SizedBox(
               width: double.infinity,
@@ -79,7 +79,7 @@ class _SecurityQuestionsStep extends StatelessWidget {
                     : const Text('Complete Sign Up →'),
               ),
             ),
-            const SizedBox(height: 32),
+            AppSpacing.xl,
           ],
         ),
       ),
@@ -118,7 +118,7 @@ class _QuestionSlot extends StatelessWidget {
             'Question $slotNumber',
             style: AppTheme.labelSmall.copyWith(color: AppTheme.textSecondary, letterSpacing: 1.5),
           ),
-          const SizedBox(height: 10),
+          AppSpacing.h10,
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
@@ -152,7 +152,7 @@ class _QuestionSlot extends StatelessWidget {
             ),
           ),
           if (selectedIndex != null) ...[
-            const SizedBox(height: 12),
+            AppSpacing.h12,
             TextField(
               controller: answerCtrl,
               style: AppTheme.bodyLarge,

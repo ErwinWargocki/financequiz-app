@@ -50,13 +50,13 @@ class _AuthChoiceStepState extends State<_AuthChoiceStep> with SingleTickerProvi
                 TextSpan(text: 'QUIZ', style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimary, fontSize: 42, fontWeight: FontWeight.w800)),
               ])),
             ),
-            const SizedBox(height: 20),
+            AppSpacing.h20,
             Text(
               'Your financial\nlearning journey\nstarts here.',
               textAlign: TextAlign.center,
               style: AppTheme.displayLarge.copyWith(fontSize: 32, height: 1.15),
             ),
-            const SizedBox(height: 28),
+            AppSpacing.h28,
             Text(
               'Quiz-based learning for real-world money skills.',
               textAlign: TextAlign.center,
@@ -71,7 +71,7 @@ class _AuthChoiceStepState extends State<_AuthChoiceStep> with SingleTickerProvi
                 child: Text('Create Account', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 16)),
               ),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.h12,
             SizedBox(
               width: double.infinity, height: 56,
               child: OutlinedButton(
@@ -80,7 +80,7 @@ class _AuthChoiceStepState extends State<_AuthChoiceStep> with SingleTickerProvi
                 child: Text('Log In', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, fontSize: 16)),
               ),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.h12,
             SizedBox(
               width: double.infinity, height: 56,
               child: OutlinedButton.icon(
@@ -92,7 +92,7 @@ class _AuthChoiceStepState extends State<_AuthChoiceStep> with SingleTickerProvi
                 style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.border), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
               ),
             ),
-            const SizedBox(height: 32),
+            AppSpacing.xl,
           ],
         ),
       ),

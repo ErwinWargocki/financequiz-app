@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
 import '../../data/quiz_categories.dart';
 import '../../providers/app_providers.dart';
@@ -104,7 +105,7 @@ class _HomeContent extends StatelessWidget {
             SliverToBoxAdapter(
                 child: _HomeRecentActivity(results: recentResults)),
           ],
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          const SliverToBoxAdapter(child: AppSpacing.lg),
         ],
       ),
     );
@@ -145,7 +146,7 @@ class _HomeAppBar extends StatelessWidget {
                     letterSpacing: -0.5)),
           ])),
           const Spacer(),
-          const SizedBox(width: 10),
+          AppSpacing.w10,
           Container(
             width: avatarSize,
             height: avatarSize,
@@ -197,23 +198,23 @@ class _HomeStatsRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Hey $firstName 👋', style: AppTheme.headlineMedium),
-          const SizedBox(height: 4),
+          AppSpacing.xs,
           Text('Ready to level up your finances?',
               style: AppTheme.bodyMedium),
-          const SizedBox(height: 16),
+          AppSpacing.md,
           Row(children: [
             _StatChip(
                 label: 'Quizzes',
                 value: '${user.quizzesCompleted}',
                 icon: '📝',
                 color: AppTheme.accentBlue),
-            const SizedBox(width: 10),
+            AppSpacing.w10,
             _StatChip(
                 label: 'Points',
                 value: '${user.totalScore}',
                 icon: '⭐',
                 color: AppTheme.accentWarm),
-            const SizedBox(width: 10),
+            AppSpacing.w10,
           ]),
         ],
       ),

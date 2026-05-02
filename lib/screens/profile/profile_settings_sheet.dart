@@ -28,7 +28,7 @@ class _SettingsTile extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: tileColor, size: 20),
-            const SizedBox(width: 12),
+            AppSpacing.w12,
             Text(label, style: AppTheme.bodyLarge.copyWith(color: tileColor)),
             const Spacer(),
             Icon(Icons.chevron_right_rounded, color: p.textMuted, size: 18),
@@ -58,7 +58,7 @@ class _ModeSwitcherTile extends StatelessWidget {
       child: Row(
         children: [
           Icon(Icons.brightness_6_outlined, color: p.text, size: 20),
-          const SizedBox(width: 12),
+          AppSpacing.w12,
           Text('Theme Mode', style: AppTheme.bodyLarge),
           const Spacer(),
           IconButton(

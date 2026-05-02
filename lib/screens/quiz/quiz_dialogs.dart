@@ -13,11 +13,11 @@ void _showQuizExitDialog(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('⚠️', style: TextStyle(fontSize: 40)),
-            const SizedBox(height: 12),
+            AppSpacing.h12,
             Text('Quit Quiz?', style: AppTheme.headlineMedium),
-            const SizedBox(height: 8),
+            AppSpacing.sm,
             Text('Your progress will be lost.', style: AppTheme.bodyMedium, textAlign: TextAlign.center),
-            const SizedBox(height: 24),
+            AppSpacing.lg,
             Row(
               children: [
                 Expanded(
@@ -32,7 +32,7 @@ void _showQuizExitDialog(BuildContext context) {
                     child: const Text('Stay'),
                   ),
                 ),
-                const SizedBox(width: 12),
+                AppSpacing.w12,
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () { Navigator.pop(context); Navigator.pop(context); },

@@ -74,6 +74,12 @@ final userStatsProvider =
   return DatabaseHelper.instance.getUserStats(userId);
 });
 
+/// Raw (unshuffled) questions for [categoryId]. QuizScreen shuffles before use.
+final questionsProvider =
+    FutureProvider.family<List<QuizQuestion>, String>((ref, categoryId) {
+  return DatabaseHelper.instance.getQuestionsByCategory(categoryId, limit: 10);
+});
+
 /// Daily quiz counts for the current ISO week (Mon=0 … Sun=6) for [userId].
 /// Recomputed from the DB; invalidate after a quiz completes.
 final weeklyResultsProvider =
