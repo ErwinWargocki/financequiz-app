@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
 import '../../providers/app_providers.dart';
@@ -189,9 +190,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
+
     if (_loading) {
       return Scaffold(
-        backgroundColor: AppTheme.primary,
+        backgroundColor: p.bg,
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           const CircularProgressIndicator(color: AppTheme.accent),
           AppSpacing.md,
@@ -201,7 +204,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> with TickerProviderStat
     }
     if (_questions.isEmpty) {
       return Scaffold(
-        backgroundColor: AppTheme.primary,
+        backgroundColor: p.bg,
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text('📭', style: TextStyle(fontSize: 48)),
           AppSpacing.md,
@@ -217,7 +220,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> with TickerProviderStat
     final progress = (_currentIndex + 1) / _questions.length;
 
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       body: SafeArea(
         child: Column(
           children: [

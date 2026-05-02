@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
 import '../../providers/app_providers.dart';
@@ -63,14 +64,16 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
+    final c = AppColors.of(context);
     final catColor = Color(widget.category.color);
     final grade = widget.result.grade;
     final gradeColor = grade == 'S' || grade == 'A'
-        ? AppTheme.success
-        : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : AppTheme.danger;
+        ? c.success
+        : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : c.danger;
 
     return Scaffold(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: p.bg,
       body: SafeArea(
         child: Column(
           children: [
@@ -82,7 +85,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                 Text('${widget.category.name} Results', style: AppTheme.titleLarge),
               ]),
             ),
-            const Divider(color: AppTheme.border, height: 1),
+            Divider(color: p.border, height: 1),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
@@ -95,7 +98,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                       opacity: _cardAnimation,
                       child: Column(children: [
                         Row(children: [
-                          _StatCard(icon: '✅', label: 'Correct', value: '${widget.result.correctAnswers}/${widget.result.totalQuestions}', color: AppTheme.success),
+                          _StatCard(icon: '✅', label: 'Correct', value: '${widget.result.correctAnswers}/${widget.result.totalQuestions}', color: c.success),
                           AppSpacing.w10,
                           _StatCard(icon: '⭐', label: 'Score', value: '${widget.result.score}', color: AppTheme.accentWarm),
                         ]),
@@ -116,7 +119,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(color: AppTheme.cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.border)),
+                          decoration: BoxDecoration(color: p.card, borderRadius: BorderRadius.circular(16), border: Border.all(color: p.border)),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -160,7 +163,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                     width: double.infinity, height: 52,
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.border), foregroundColor: AppTheme.textPrimary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                      style: OutlinedButton.styleFrom(side: BorderSide(color: p.border), foregroundColor: p.text, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                       child: const Text('Try Again'),
                     ),
                   ),

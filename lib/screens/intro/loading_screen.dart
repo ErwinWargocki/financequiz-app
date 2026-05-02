@@ -162,10 +162,10 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen>
           }
 
           // ── 4. Scale (begins after the 3-second F pause at t = 0.79) ───────
-          const double _scaleStart = 0.79;
-          final fScale = t > _scaleStart
+          const double scaleStart = 0.79;
+          final fScale = t > scaleStart
               ? lerpDouble(1.0, targetScale,
-                  Curves.easeInCubic.transform(_p(t, _scaleStart, _scaleEnd)))!
+                  Curves.easeInCubic.transform(_p(t, scaleStart, _scaleEnd)))!
               : 1.0;
 
           // ── 5. Fade ───────────────────────────────────────────────────────

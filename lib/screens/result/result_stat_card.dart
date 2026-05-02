@@ -24,9 +24,9 @@ class _GradeSection extends StatelessWidget {
             width: 120, height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: gradeColor.withValues(alpha:0.1),
+              color: gradeColor.withValues(alpha: 0.1),
               border: Border.all(color: gradeColor, width: 3),
-              boxShadow: [BoxShadow(color: gradeColor.withValues(alpha:0.3), blurRadius: 30, spreadRadius: 5)],
+              boxShadow: [BoxShadow(color: gradeColor.withValues(alpha: 0.3), blurRadius: 30, spreadRadius: 5)],
             ),
             child: Center(
               child: Text(grade, style: GoogleFonts.spaceGrotesk(color: gradeColor, fontSize: 52, fontWeight: FontWeight.w900)),
@@ -55,11 +55,7 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatCard(
-      {required this.icon,
-      required this.label,
-      required this.value,
-      required this.color});
+  const _StatCard({required this.icon, required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +82,7 @@ class _ResultBreakdownCard extends StatelessWidget {
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(value: ratio, backgroundColor: color.withValues(alpha:0.12), valueColor: AlwaysStoppedAnimation(color), minHeight: 8),
+            child: LinearProgressIndicator(value: ratio, backgroundColor: color.withValues(alpha: 0.12), valueColor: AlwaysStoppedAnimation(color), minHeight: 8),
           ),
         ),
         AppSpacing.smH,
@@ -97,18 +93,20 @@ class _ResultBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
+    final c = AppColors.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppTheme.cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.border)),
+      decoration: BoxDecoration(color: p.card, borderRadius: BorderRadius.circular(16), border: Border.all(color: p.border)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Breakdown', style: AppTheme.titleLarge.copyWith(fontSize: 15)),
           AppSpacing.h12,
-          _progressBar(label: 'Correct', count: result.correctAnswers, total: result.totalQuestions, color: AppTheme.success),
+          _progressBar(label: 'Correct', count: result.correctAnswers, total: result.totalQuestions, color: c.success),
           AppSpacing.sm,
-          _progressBar(label: 'Incorrect', count: result.totalQuestions - result.correctAnswers, total: result.totalQuestions, color: AppTheme.danger),
+          _progressBar(label: 'Incorrect', count: result.totalQuestions - result.correctAnswers, total: result.totalQuestions, color: c.danger),
         ],
       ),
     );
