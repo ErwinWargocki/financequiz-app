@@ -129,7 +129,6 @@ class _CategoryGridTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
             Text(
               '${category.totalQuestions} questions',
               style: AppTheme.bodyMedium.copyWith(fontSize: 12),

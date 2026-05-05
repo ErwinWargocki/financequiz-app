@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
+import '../../navigation/app_routes.dart';
 import '../../models/models.dart';
-import '../../data/quiz_categories.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/auth_provider.dart';
-import '../../database/database_helper.dart';
+import '../../widgets/app_loading_scaffold.dart';
 
-part 'profile_widgets.dart';
-part 'profile_history_tile.dart';
-part 'profile_settings_sheet.dart';
+import 'profile_widgets.dart';
+import 'profile_history_tile.dart';
+import 'profile_settings_sheet.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -21,15 +21,15 @@ class ProfileScreen extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
 
     return userAsync.when(
-      loading: () => const _ProfileLoadingScaffold(),
-      error: (_, __) => const _ProfileLoadingScaffold(),
+      loading: () => const AppLoadingScaffold(),
+      error: (_, __) => const AppLoadingScaffold(),
       data: (user) {
-        if (user == null) return const _ProfileLoadingScaffold();
+        if (user == null) return const AppLoadingScaffold();
         final statsAsync = ref.watch(userStatsProvider(user.id!));
         final history = ref.watch(quizHistoryProvider(user.id!)).asData?.value ?? [];
         return statsAsync.when(
-          loading: () => const _ProfileLoadingScaffold(),
-          error: (_, __) => const _ProfileLoadingScaffold(),
+          loading: () => const AppLoadingScaffold(),
+          error: (_, __) => const AppLoadingScaffold(),
           data: (stats) => _ProfileScaffold(
             user: user,
             stats: stats,
@@ -48,6 +48,7 @@ class ProfileScreen extends ConsumerWidget {
       builder: (_) => Consumer(
         builder: (ctx, innerRef, _) {
           final p = AppTheme.palette(ctx);
+          final c = AppColors.of(ctx);
           return Container(
             decoration: BoxDecoration(
               color: p.card,
@@ -62,7 +63,7 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   Text('Settings', style: AppTheme.headlineMedium),
                   AppSpacing.h20,
-                  _ModeSwitcherTile(
+                  ProfileModeSwitcherTile(
                     isDarkMode:
                         innerRef.watch(themeModeProvider) == ThemeMode.dark,
                     onPrevious: () =>
@@ -70,26 +71,26 @@ class ProfileScreen extends ConsumerWidget {
                     onNext: () =>
                         innerRef.read(themeModeProvider.notifier).toggle(),
                   ),
-                  _SettingsTile(
+                  ProfileSettingsTile(
                     icon: Icons.person_outline_rounded,
                     label: 'Edit Profile',
                     onTap: () => Navigator.pop(ctx),
                   ),
-                  _SettingsTile(
+                  ProfileSettingsTile(
                     icon: Icons.info_outline_rounded,
                     label: 'About FinQuiz',
                     onTap: () => Navigator.pop(ctx),
                   ),
-                  _SettingsTile(
+                  ProfileSettingsTile(
                     icon: Icons.logout_rounded,
                     label: 'Sign Out',
-                    color: AppTheme.danger,
+                    color: c.danger,
                     onTap: () async {
                       Navigator.pop(ctx);
                       await ref.read(authProvider.notifier).logout();
                       if (context.mounted) {
                         Navigator.pushNamedAndRemoveUntil(
-                            context, '/welcome', (_) => false);
+                            context, AppRoutes.welcome, (_) => false);
                       }
                     },
                   ),
@@ -102,17 +103,6 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _ProfileLoadingScaffold extends StatelessWidget {
-  const _ProfileLoadingScaffold();
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppTheme.palette(context).bg,
-        body: const Center(
-            child: CircularProgressIndicator(color: AppTheme.accent)),
-      );
 }
 
 class _ProfileScaffold extends StatelessWidget {
@@ -152,8 +142,8 @@ class _ProfileScaffold extends StatelessWidget {
               child: Container(height: 0.5, color: p.border),
             ),
           ),
-          SliverToBoxAdapter(child: _ProfileHeader(user: user)),
-          SliverToBoxAdapter(child: _StatsGrid(stats: stats)),
+          SliverToBoxAdapter(child: ProfileHeader(user: user)),
+          SliverToBoxAdapter(child: ProfileStatsGrid(stats: stats)),
           if (history.isNotEmpty) ...[
             SliverToBoxAdapter(
               child: Padding(
@@ -165,7 +155,7 @@ class _ProfileScaffold extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (_, i) => _HistoryTile(result: history[i]),
+                  (_, i) => ProfileHistoryTile(result: history[i]),
                   childCount: history.length,
                 ),
               ),

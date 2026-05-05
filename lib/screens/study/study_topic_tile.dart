@@ -1,23 +1,26 @@
-part of 'study_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
 
 // ─── Shared helper ────────────────────────────────────────────────────────────
-Color _difficultyColor(String difficulty) => switch (difficulty) {
+Color difficultyColor(String difficulty) => switch (difficulty) {
   'Beginner'     => AppTheme.diffBeginner,
   'Intermediate' => AppTheme.diffIntermediate,
   _              => AppTheme.diffAdvanced,
 };
 
 // ─── Study Topic List Tile ────────────────────────────────────────────────────
-class _StudyTopicTile extends StatelessWidget {
+class StudyTopicTile extends StatelessWidget {
   final StudyTopic topic;
   final VoidCallback onTap;
 
-  const _StudyTopicTile({required this.topic, required this.onTap});
+  const StudyTopicTile({super.key, required this.topic, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final color = Color(topic.color);
-    final diffColor = _difficultyColor(topic.difficulty);
+    final diffColor = difficultyColor(topic.difficulty);
     final p = AppTheme.palette(context);
 
     return GestureDetector(
@@ -49,50 +52,28 @@ class _StudyTopicTile extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          topic.title,
-                          style: AppTheme.titleLarge.copyWith(fontSize: 15),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        child: Text(topic.title, style: AppTheme.titleLarge.copyWith(fontSize: 15), maxLines: 1, overflow: TextOverflow.ellipsis),
                       ),
                       AppSpacing.w6,
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: diffColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          topic.difficulty,
-                          style: AppTheme.labelSmall.copyWith(color: diffColor, fontSize: 10),
-                        ),
+                        decoration: BoxDecoration(color: diffColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
+                        child: Text(topic.difficulty, style: AppTheme.labelSmall.copyWith(color: diffColor, fontSize: 10)),
                       ),
                     ],
                   ),
                   AppSpacing.h4,
-                  Text(
-                    topic.summary,
-                    style: AppTheme.bodyMedium.copyWith(fontSize: 12),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(topic.summary, style: AppTheme.bodyMedium.copyWith(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
                   AppSpacing.h6,
                   Row(
                     children: [
                       Icon(Icons.menu_book_outlined, size: 12, color: color.withValues(alpha: 0.7)),
                       AppSpacing.w4,
-                      Text(
-                        '${topic.lessons.length} lessons',
-                        style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha: 0.8), fontSize: 10),
-                      ),
+                      Text('${topic.lessons.length} lessons', style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha: 0.8), fontSize: 10)),
                       AppSpacing.w10,
                       Icon(Icons.timer_outlined, size: 12, color: p.textMuted),
                       AppSpacing.w4,
-                      Text(
-                        topic.readingTime,
-                        style: AppTheme.labelSmall.copyWith(color: p.textMuted, fontSize: 10),
-                      ),
+                      Text(topic.readingTime, style: AppTheme.labelSmall.copyWith(color: p.textMuted, fontSize: 10)),
                     ],
                   ),
                 ],
@@ -102,10 +83,7 @@ class _StudyTopicTile extends StatelessWidget {
             Container(
               width: 34,
               height: 34,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
               child: Icon(Icons.chevron_right_rounded, color: color, size: 20),
             ),
           ],

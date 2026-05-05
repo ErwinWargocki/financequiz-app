@@ -1,9 +1,15 @@
-part of 'profile_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
+import '../../providers/auth_provider.dart';
 
 // ─── Profile Header ───────────────────────────────────────────────────────────
-class _ProfileHeader extends ConsumerWidget {
+class ProfileHeader extends ConsumerWidget {
   final UserModel? user;
-  const _ProfileHeader({required this.user});
+  const ProfileHeader({super.key, required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -115,24 +121,18 @@ class _ProfileHeader extends ConsumerWidget {
                       return GestureDetector(
                         onTap: () async {
                           Navigator.pop(ctx);
-                          await DatabaseHelper.instance
-                              .updateUser(user.copyWith(profileIconIndex: i));
-                          ref.invalidate(currentUserProvider);
+                          await ref.read(authProvider.notifier).updateIcon(user.id!, i);
                         },
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: selected
-                                ? AppTheme.accent.withValues(alpha: 0.15)
-                                : ip.surface,
+                            color: selected ? AppTheme.accent.withValues(alpha: 0.15) : ip.surface,
                             border: Border.all(
                               color: selected ? AppTheme.accent : ip.border,
                               width: selected ? 2 : 1,
                             ),
                           ),
-                          child: Center(
-                            child: Text(ProfileIcons.all[i], style: const TextStyle(fontSize: 26)),
-                          ),
+                          child: Center(child: Text(ProfileIcons.all[i], style: const TextStyle(fontSize: 26))),
                         ),
                       );
                     },
@@ -149,9 +149,9 @@ class _ProfileHeader extends ConsumerWidget {
 }
 
 // ─── Stats Grid ───────────────────────────────────────────────────────────────
-class _StatsGrid extends StatelessWidget {
+class ProfileStatsGrid extends StatelessWidget {
   final Map<String, dynamic> stats;
-  const _StatsGrid({required this.stats});
+  const ProfileStatsGrid({super.key, required this.stats});
 
   String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
@@ -191,7 +191,7 @@ class _StatsGrid extends StatelessWidget {
   }
 }
 
-// ─── Mini Stat ────────────────────────────────────────────────────────────────
+// ─── Mini Stat (private, used only by ProfileHeader) ─────────────────────────
 class _MiniStat extends StatelessWidget {
   final String label;
   final String value;
@@ -210,7 +210,7 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-// ─── Big Stat Card ────────────────────────────────────────────────────────────
+// ─── Big Stat Card (private, used only by ProfileStatsGrid) ──────────────────
 class _BigStatCard extends StatelessWidget {
   final String icon;
   final String label;
@@ -223,14 +223,14 @@ class _BigStatCard extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: color.withValues(alpha:0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withValues(alpha:0.2))),
+        decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withValues(alpha: 0.2))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(icon, style: const TextStyle(fontSize: 22)),
             AppSpacing.sm,
             Text(value, style: GoogleFonts.spaceGrotesk(color: color, fontSize: 20, fontWeight: FontWeight.w800), overflow: TextOverflow.ellipsis),
-            Text(label, style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha:0.7), fontSize: 11)),
+            Text(label, style: AppTheme.labelSmall.copyWith(color: color.withValues(alpha: 0.7), fontSize: 11)),
           ],
         ),
       ),

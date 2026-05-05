@@ -1,6 +1,4 @@
-// Host library for the entire authentication flow.
-// Every 'part' file below contributes widgets and methods to this library
-// so they can all reference private symbols (those starting with _).
+// Host screen for the entire authentication flow.
 //
 // Navigation flow:
 //   introScreen → WelcomeScreen (authChoice) → login  → MainShell
@@ -12,56 +10,21 @@
 // The onboarding carousel is shown exactly once: immediately after a brand-new
 // account is created.  It is never shown on subsequent app opens.
 
-import 'dart:convert';
-import 'dart:math';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/welcome_provider.dart';
 import '../../theme/app_theme.dart';
-import '../../theme/app_spacing.dart';
-import '../../models/models.dart';
-import '../main_shell.dart';
-
-// Each part file is literally part of this same Dart library, so it can
-// access any private class, method, or constant defined here.
-part 'welcome_onboarding.dart';
-part 'welcome_auth_choice.dart';
-part 'welcome_auth_forms.dart';
-part 'welcome_register_form.dart';
-part 'welcome_icon_selection.dart';
-part 'welcome_security_questions.dart';
-part 'welcome_forgot_password.dart';
-part 'welcome_reset_password.dart';
-part 'welcome_auth_actions.dart';
-
-// Every step in the registration / login / password-reset funnel
-enum _AuthStep {
-  onboarding,         // 3-slide "how it works" carousel (new users only)
-  authChoice,         // landing page: Create Account / Log In
-  login,              // email + password login form
-  register,           // name / username / email / password form
-  iconSelection,      // pick a profile emoji icon
-  securityQuestions,  // choose 3 security Q&As for account recovery
-  forgotEmail,        // enter email to start password reset
-  securityChallenge,  // answer one of the saved security questions
-  newPassword,        // enter and confirm the new password
-}
-
-// The 7 personal questions a user can choose from during registration.
-// Stored as question indices (0-6) in the database — the text lives here.
-const List<String> _kSecurityQuestions = [
-  'What was the name of your first pet?',
-  'What was your first car?',
-  'What is your favourite city?',
-  'What was the name of your childhood best friend?',
-  'What street did you grow up on?',
-  "What is your mother's maiden name?",
-  'What was the name of your primary school?',
-];
+import '../../navigation/app_routes.dart';
+import 'welcome_onboarding.dart';
+import 'welcome_auth_choice.dart';
+import 'welcome_auth_forms.dart';
+import 'welcome_register_form.dart';
+import 'welcome_icon_selection.dart';
+import 'welcome_security_questions.dart';
+import 'welcome_forgot_password.dart';
+import 'welcome_reset_password.dart';
 
 class WelcomeScreen extends ConsumerStatefulWidget {
   const WelcomeScreen({super.key});
@@ -72,12 +35,8 @@ class WelcomeScreen extends ConsumerStatefulWidget {
 
 class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
     with TickerProviderStateMixin {
-  // ── Current step ────────────────────────────────────────────────────────
-  late _AuthStep _step;
-
   // ── Onboarding carousel ──────────────────────────────────────────────────
   final PageController _pageController = PageController();
-  int _currentPage = 0;
 
   // ── Registration form controllers ────────────────────────────────────────
   final _nameCtrl          = TextEditingController();
@@ -90,35 +49,14 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
   final _loginPasswordCtrl = TextEditingController();
 
   // ── Security Q&A controllers (3 answer fields, one per question slot) ───
-  final List<int?> _selectedQuestions = [null, null, null];
   final List<TextEditingController> _secAnswerCtrls =
       List.generate(3, (_) => TextEditingController());
 
   // ── Forgot-password / reset flow ─────────────────────────────────────────
-  final _forgotEmailCtrl       = TextEditingController();
-  final _challengeAnswerCtrl   = TextEditingController();
-  final _newPasswordCtrl       = TextEditingController();
+  final _forgotEmailCtrl        = TextEditingController();
+  final _challengeAnswerCtrl    = TextEditingController();
+  final _newPasswordCtrl        = TextEditingController();
   final _confirmNewPasswordCtrl = TextEditingController();
-  bool _obscureNewPassword     = true;
-  bool _obscureConfirmPassword = true;
-  int  _forgotUserId           = -1;
-  int  _challengeAttempts      = 0;
-  bool _isLocked               = false;
-  String _challengeQuestion    = '';
-  int  _challengeQuestionIndex = -1;
-
-  // ── Shared UI state ──────────────────────────────────────────────────────
-  bool    _isLoading          = false;
-  bool    _obscurePassword    = true;
-  bool    _obscureLoginPassword = true;
-  String? _error;
-  int     _selectedIconIndex  = 0;
-
-  // Registration data held in memory between steps
-  String? _pendingName;
-  String? _pendingUsername;
-  String? _pendingEmail;
-  String? _pendingPasswordHash;
 
   // ── Onboarding animation controllers ────────────────────────────────────
   late AnimationController _floatController;
@@ -127,18 +65,18 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
   late Animation<double>   _pulseAnimation;
 
   // Static content for the three onboarding slides
-  final List<_OnboardPage> _pages = const [
-    _OnboardPage(
+  final List<WelcomeOnboardPage> _pages = const [
+    WelcomeOnboardPage(
       emoji: '📊', title: 'Financial\nIntelligence',
       subtitle: 'Test and build your money knowledge with curated quizzes across 6 key areas.',
       accent: AppTheme.accent,
     ),
-    _OnboardPage(
+    WelcomeOnboardPage(
       emoji: '🏆', title: 'Track Your\nProgress',
       subtitle: 'Watch your scores improve over time. Earn streaks, unlock grades, see your stats grow.',
       accent: AppTheme.accentBlue,
     ),
-    _OnboardPage(
+    WelcomeOnboardPage(
       emoji: '💡', title: 'Learn As\nYou Play',
       subtitle: 'Every question comes with a clear explanation — so you always walk away smarter.',
       accent: AppTheme.accentWarm,
@@ -148,14 +86,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
   @override
   void initState() {
     super.initState();
-    // Always land on the auth-choice screen on launch — onboarding is for new users only
-    _step = _AuthStep.authChoice;
 
-    // Float + pulse animations drive the onboarding illustration
-    _floatController = AnimationController(vsync: this, duration: const Duration(seconds: 3))
-      ..repeat(reverse: true);
-    _pulseController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))
-      ..repeat(reverse: true);
+    // Float + pulse animations drive the onboarding illustration.
+    // Controllers are created idle — they only start when the onboarding step
+    // is shown (after successful registration) so they don't tick uselessly
+    // on every other step of the auth flow.
+    _floatController = AnimationController(vsync: this, duration: const Duration(seconds: 3));
+    _pulseController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
     _floatAnimation = Tween<double>(begin: -10, end: 10)
         .animate(CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
     _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05)
@@ -187,18 +124,30 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
 
   // ── Navigation helpers ───────────────────────────────────────────────────
 
-  // Clear the error and change the visible step in one setState call
-  void _goToStep(_AuthStep step) => setState(() { _error = null; _step = step; });
+  // Clear the error and change the visible step in one call.
+  // Starts the onboarding animations when entering that step and stops
+  // them on exit, so they don't tick while the user is in the auth forms.
+  void _goToStep(WelcomeAuthStep step) {
+    if (step == WelcomeAuthStep.onboarding) {
+      _floatController.repeat(reverse: true);
+      _pulseController.repeat(reverse: true);
+    } else if (ref.read(welcomeFlowProvider).step == WelcomeAuthStep.onboarding) {
+      _floatController.stop();
+      _pulseController.stop();
+    }
+    ref.read(welcomeFlowProvider.notifier).goToStep(step);
+  }
 
   // Advance the onboarding carousel, or finish it and enter the main app
   void _nextOnboardPage() {
-    if (_currentPage < _pages.length - 1) {
+    final flow = ref.read(welcomeFlowProvider);
+    if (flow.currentPage < _pages.length - 1) {
+      ref.read(welcomeFlowProvider.notifier).setCurrentPage(flow.currentPage + 1);
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOutCubic,
       );
     } else {
-      // Last slide — onboarding complete, enter the app
       _markOnboardingDone();
       _navigateToApp();
     }
@@ -210,105 +159,165 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
     await prefs.setBool('onboardingDone', true);
   }
 
-  // Replace this screen with MainShell using a fade transition
   void _navigateToApp() {
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainShell()),
+    Navigator.pushReplacementNamed(context, AppRoutes.home);
+  }
+
+  // ── Auth Actions ─────────────────────────────────────────────────────────
+  // Thin wrappers — all logic lives in WelcomeFlowNotifier.
+
+  Future<void> _login() async {
+    final ok = await ref.read(welcomeFlowProvider.notifier).login(
+      _loginEmailCtrl.text.trim(), _loginPasswordCtrl.text,
     );
+    if (ok && mounted) _navigateToApp();
+  }
+
+  Future<void> _submitRegister() async {
+    await ref.read(welcomeFlowProvider.notifier).submitRegister(
+      _nameCtrl.text.trim(), _usernameCtrl.text.trim(),
+      _emailCtrl.text.trim(), _passwordCtrl.text,
+    );
+  }
+
+  void _finishRegister() =>
+      ref.read(welcomeFlowProvider.notifier).finishIconSelection();
+
+  Future<void> _completeRegistration() async {
+    await ref.read(welcomeFlowProvider.notifier).completeRegistration(_secAnswerCtrls);
+    // Navigation to onboarding step is handled by the provider changing state.step.
+    // The build method observes the step change and drives the AnimatedSwitcher.
+  }
+
+  Future<void> _forgotPasswordEmailSubmit() async {
+    await ref.read(welcomeFlowProvider.notifier).forgotPasswordEmailSubmit(
+      _forgotEmailCtrl.text.trim(),
+    );
+  }
+
+  Future<void> _verifyChallengeAnswer() async {
+    await ref.read(welcomeFlowProvider.notifier).verifyChallengeAnswer(
+      _challengeAnswerCtrl.text.trim(),
+    );
+    if (!ref.read(welcomeFlowProvider).isLocked) {
+      _challengeAnswerCtrl.clear();
+    }
+  }
+
+  Future<void> _resetPassword() async {
+    final ok = await ref.read(welcomeFlowProvider.notifier).resetPassword(
+      _newPasswordCtrl.text, _confirmNewPasswordCtrl.text,
+    );
+    if (ok) {
+      _newPasswordCtrl.clear();
+      _confirmNewPasswordCtrl.clear();
+    }
   }
 
   // ── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
+    final flow = ref.watch(welcomeFlowProvider);
+    // Drive the onboarding animations when state changes to onboarding
+    if (flow.step == WelcomeAuthStep.onboarding &&
+        !_floatController.isAnimating) {
+      _floatController.repeat(reverse: true);
+      _pulseController.repeat(reverse: true);
+    } else if (flow.step != WelcomeAuthStep.onboarding &&
+               _floatController.isAnimating) {
+      _floatController.stop();
+      _pulseController.stop();
+    }
     return Scaffold(
       backgroundColor: AppTheme.primary,
       // AnimatedSwitcher cross-fades between steps instead of hard-cutting
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 350),
-        child: _buildCurrentStep(),
+        child: _buildCurrentStep(flow),
       ),
     );
   }
 
   // Returns the widget for the currently active authentication step
-  Widget _buildCurrentStep() {
-    return switch (_step) {
-      _AuthStep.onboarding => _OnboardingStep(
-          pages: _pages, currentPage: _currentPage,
+  Widget _buildCurrentStep(WelcomeFlowState flow) {
+    final notifier = ref.read(welcomeFlowProvider.notifier);
+    return switch (flow.step) {
+      WelcomeAuthStep.onboarding => WelcomeOnboardingStep(
+          pages: _pages, currentPage: flow.currentPage,
           floatAnimation: _floatAnimation, pulseAnimation: _pulseAnimation,
           pageController: _pageController,
-          onPageChanged: (i) => setState(() => _currentPage = i),
+          onPageChanged: (i) => notifier.setCurrentPage(i),
           onNext: _nextOnboardPage,
           // Skip → go straight into the app, same as completing the last slide
           onSkip: () { _markOnboardingDone(); _navigateToApp(); },
         ),
-      _AuthStep.authChoice => _AuthChoiceStep(
-          onRegister: () => _goToStep(_AuthStep.register),
-          onLogin:    () => _goToStep(_AuthStep.login),
+      WelcomeAuthStep.authChoice => WelcomeAuthChoiceStep(
+          onRegister: () => _goToStep(WelcomeAuthStep.register),
+          onLogin:    () => _goToStep(WelcomeAuthStep.login),
         ),
-      _AuthStep.login => _LoginStep(
+      WelcomeAuthStep.login => WelcomeLoginStep(
           emailCtrl: _loginEmailCtrl, passwordCtrl: _loginPasswordCtrl,
-          obscurePassword: _obscureLoginPassword,
-          onToggleObscure: () => setState(() => _obscureLoginPassword = !_obscureLoginPassword),
-          error: _error, isLoading: _isLoading,
+          obscurePassword: flow.obscureLoginPassword,
+          onToggleObscure: notifier.toggleObscureLoginPassword,
+          error: flow.error, isLoading: flow.isLoading,
           onLogin: _login,
-          onGoToRegister:   () => _goToStep(_AuthStep.register),
-          onForgotPassword: () => _goToStep(_AuthStep.forgotEmail),
-          onBack:           () => _goToStep(_AuthStep.authChoice),
+          onGoToRegister:   () => _goToStep(WelcomeAuthStep.register),
+          onForgotPassword: () => _goToStep(WelcomeAuthStep.forgotEmail),
+          onBack:           () => _goToStep(WelcomeAuthStep.authChoice),
         ),
-      _AuthStep.register => _RegisterStep(
+      WelcomeAuthStep.register => WelcomeRegisterStep(
           nameCtrl: _nameCtrl, usernameCtrl: _usernameCtrl,
           emailCtrl: _emailCtrl, passwordCtrl: _passwordCtrl,
-          obscurePassword: _obscurePassword,
-          onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
-          error: _error, isLoading: _isLoading,
+          obscurePassword: flow.obscurePassword,
+          onToggleObscure: notifier.toggleObscurePassword,
+          error: flow.error, isLoading: flow.isLoading,
           onSubmit:    _submitRegister,
-          onGoToLogin: () => _goToStep(_AuthStep.login),
-          onBack:      () => _goToStep(_AuthStep.authChoice),
+          onGoToLogin: () => _goToStep(WelcomeAuthStep.login),
+          onBack:      () => _goToStep(WelcomeAuthStep.authChoice),
         ),
-      _AuthStep.iconSelection => _IconSelectionStep(
-          selectedIconIndex: _selectedIconIndex,
-          onSelectIcon: (i) => setState(() => _selectedIconIndex = i),
-          error: _error, isLoading: _isLoading,
+      WelcomeAuthStep.iconSelection => WelcomeIconSelectionStep(
+          selectedIconIndex: flow.selectedIconIndex,
+          onSelectIcon: notifier.selectIcon,
+          error: flow.error, isLoading: flow.isLoading,
           onFinish: _finishRegister,
-          onBack: () => _goToStep(_AuthStep.register),
+          onBack: () => _goToStep(WelcomeAuthStep.register),
         ),
-      _AuthStep.securityQuestions => _SecurityQuestionsStep(
-          selectedQuestions: _selectedQuestions,
+      WelcomeAuthStep.securityQuestions => WelcomeSecurityQuestionsStep(
+          securityQuestions: kSecurityQuestions,
+          selectedQuestions: flow.selectedQuestions,
           answerCtrls: _secAnswerCtrls,
-          onQuestionChanged: (i, q) => setState(() => _selectedQuestions[i] = q),
-          error: _error, isLoading: _isLoading,
+          onQuestionChanged: (i, q) => notifier.updateQuestion(i, q),
+          error: flow.error, isLoading: flow.isLoading,
           onSubmit: _completeRegistration,
-          onBack: () => _goToStep(_AuthStep.iconSelection),
+          onBack: () => _goToStep(WelcomeAuthStep.iconSelection),
         ),
-      _AuthStep.forgotEmail => _ForgotEmailStep(
+      WelcomeAuthStep.forgotEmail => WelcomeForgotEmailStep(
           emailCtrl: _forgotEmailCtrl,
-          error: _error, isLoading: _isLoading,
+          error: flow.error, isLoading: flow.isLoading,
           onSubmit: _forgotPasswordEmailSubmit,
-          onBack: () => _goToStep(_AuthStep.login),
+          onBack: () => _goToStep(WelcomeAuthStep.login),
         ),
-      _AuthStep.securityChallenge => _SecurityChallengeStep(
-          question: _challengeQuestion,
+      WelcomeAuthStep.securityChallenge => WelcomeSecurityChallengeStep(
+          question: flow.challengeQuestion,
           answerCtrl: _challengeAnswerCtrl,
-          attempts: _challengeAttempts,
-          isLocked: _isLocked,
-          error: _error, isLoading: _isLoading,
+          attempts: flow.challengeAttempts,
+          isLocked: flow.isLocked,
+          error: flow.error, isLoading: flow.isLoading,
           onSubmit: _verifyChallengeAnswer,
           onBackToLogin: () {
-            setState(() { _challengeAttempts = 0; _isLocked = false; });
-            _goToStep(_AuthStep.login);
+            ref.read(welcomeFlowProvider.notifier).goToStep(WelcomeAuthStep.login);
           },
         ),
-      _AuthStep.newPassword => _NewPasswordStep(
+      WelcomeAuthStep.newPassword => WelcomeNewPasswordStep(
           passwordCtrl: _newPasswordCtrl,
           confirmCtrl:  _confirmNewPasswordCtrl,
-          obscurePassword: _obscureNewPassword,
-          obscureConfirm:  _obscureConfirmPassword,
-          onToggleObscure:        () => setState(() => _obscureNewPassword = !_obscureNewPassword),
-          onToggleObscureConfirm: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-          error: _error, isLoading: _isLoading,
+          obscurePassword: flow.obscureNewPassword,
+          obscureConfirm:  flow.obscureConfirmPassword,
+          onToggleObscure:        notifier.toggleObscureNewPassword,
+          onToggleObscureConfirm: notifier.toggleObscureConfirmPassword,
+          error: flow.error, isLoading: flow.isLoading,
           onSubmit: _resetPassword,
         ),
     };

@@ -1,7 +1,10 @@
-part of 'welcome_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 
 // ─── Security Questions Step (Sign-Up) ────────────────────────────────────────
-class _SecurityQuestionsStep extends StatelessWidget {
+class WelcomeSecurityQuestionsStep extends StatelessWidget {
+  final List<String> securityQuestions;
   final List<int?> selectedQuestions;
   final List<TextEditingController> answerCtrls;
   final void Function(int slotIndex, int? questionIndex) onQuestionChanged;
@@ -10,7 +13,9 @@ class _SecurityQuestionsStep extends StatelessWidget {
   final VoidCallback onSubmit;
   final VoidCallback onBack;
 
-  const _SecurityQuestionsStep({
+  const WelcomeSecurityQuestionsStep({
+    super.key,
+    required this.securityQuestions,
     required this.selectedQuestions,
     required this.answerCtrls,
     required this.onQuestionChanged,
@@ -57,6 +62,7 @@ class _SecurityQuestionsStep extends StatelessWidget {
               _QuestionSlot(
                 slotNumber: i + 1,
                 selectedIndex: selectedQuestions[i],
+                securityQuestions: securityQuestions,
                 otherSelected: [
                   for (int j = 0; j < 3; j++) if (j != i) selectedQuestions[j],
                 ],
@@ -90,6 +96,7 @@ class _SecurityQuestionsStep extends StatelessWidget {
 class _QuestionSlot extends StatelessWidget {
   final int slotNumber;
   final int? selectedIndex;
+  final List<String> securityQuestions;
   final List<int?> otherSelected;
   final TextEditingController answerCtrl;
   final ValueChanged<int?> onQuestionChanged;
@@ -97,6 +104,7 @@ class _QuestionSlot extends StatelessWidget {
   const _QuestionSlot({
     required this.slotNumber,
     required this.selectedIndex,
+    required this.securityQuestions,
     required this.otherSelected,
     required this.answerCtrl,
     required this.onQuestionChanged,
@@ -134,13 +142,13 @@ class _QuestionSlot extends StatelessWidget {
               hint: Text('Select a question', style: AppTheme.bodyMedium.copyWith(color: AppTheme.textMuted)),
               style: AppTheme.bodyMedium,
               iconEnabledColor: AppTheme.textSecondary,
-              items: List.generate(_kSecurityQuestions.length, (idx) {
+              items: List.generate(securityQuestions.length, (idx) {
                 final isUsedElsewhere = otherSelected.contains(idx);
                 return DropdownMenuItem<int>(
                   value: idx,
                   enabled: !isUsedElsewhere,
                   child: Text(
-                    _kSecurityQuestions[idx],
+                    securityQuestions[idx],
                     style: AppTheme.bodyMedium.copyWith(
                       color: isUsedElsewhere ? AppTheme.textMuted : AppTheme.textPrimary,
                     ),

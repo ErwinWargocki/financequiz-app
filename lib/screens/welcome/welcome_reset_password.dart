@@ -1,10 +1,12 @@
-part of 'welcome_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 
 // ─── Security Challenge Step ───────────────────────────────────────────────────
 // Shows a randomly selected security question from the user's saved answers.
 // The user has 4 attempts before the screen locks. A row of 4 dots tracks
 // how many attempts have been used (red dot = used attempt).
-class _SecurityChallengeStep extends StatelessWidget {
+class WelcomeSecurityChallengeStep extends StatelessWidget {
   final String question;
   final TextEditingController answerCtrl;
   final int attempts;
@@ -14,7 +16,8 @@ class _SecurityChallengeStep extends StatelessWidget {
   final VoidCallback onSubmit;
   final VoidCallback onBackToLogin;
 
-  const _SecurityChallengeStep({
+  const WelcomeSecurityChallengeStep({
+    super.key,
     required this.question,
     required this.answerCtrl,
     required this.attempts,
@@ -157,7 +160,7 @@ class _SecurityChallengeStep extends StatelessWidget {
 /* Shown after the security challenge is passed. The user enters their new
  password twice for confirmation. The form validates length and match before
  calling onSubmit, which writes the hashed password to the database.*/
-class _NewPasswordStep extends StatelessWidget {
+class WelcomeNewPasswordStep extends StatelessWidget {
   final TextEditingController passwordCtrl;
   final TextEditingController confirmCtrl;
   final bool obscurePassword;
@@ -168,7 +171,8 @@ class _NewPasswordStep extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onSubmit;
 
-  const _NewPasswordStep({
+  const WelcomeNewPasswordStep({
+    super.key,
     required this.passwordCtrl,
     required this.confirmCtrl,
     required this.obscurePassword,

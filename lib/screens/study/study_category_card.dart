@@ -1,12 +1,17 @@
-part of 'study_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
+import '../../data/study_category_info.dart';
 
 // ─── Category Card ────────────────────────────────────────────────────────────
-class _CategoryCard extends StatelessWidget {
+class StudyCategoryCard extends StatelessWidget {
   final StudyCategoryInfo info;
   final int topicCount;
   final VoidCallback onTap;
 
-  const _CategoryCard({
+  const StudyCategoryCard({
+    super.key,
     required this.info,
     required this.topicCount,
     required this.onTap,
@@ -39,13 +44,8 @@ class _CategoryCard extends StatelessWidget {
             AppSpacing.h12,
             Text(
               info.label,
-              style: GoogleFonts.spaceGrotesk(
-                color: p.text,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-              ),
+              style: GoogleFonts.spaceGrotesk(color: p.text, fontSize: 16, fontWeight: FontWeight.w800),
             ),
-            const SizedBox(height: 2),
             Text(info.subtitle, style: AppTheme.bodyMedium.copyWith(fontSize: 12)),
             const Spacer(),
             Container(
@@ -56,11 +56,7 @@ class _CategoryCard extends StatelessWidget {
               ),
               child: Text(
                 '$topicCount ${topicCount == 1 ? 'topic' : 'topics'}',
-                style: AppTheme.labelSmall.copyWith(
-                  color: color,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: AppTheme.labelSmall.copyWith(color: color, fontSize: 11, fontWeight: FontWeight.w700),
               ),
             ),
             AppSpacing.h10,
@@ -76,10 +72,7 @@ class _CategoryCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   padding: EdgeInsets.zero,
                 ),
-                child: Text(
-                  'Explore →',
-                  style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 13),
-                ),
+                child: Text('Explore →', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 13)),
               ),
             ),
           ],

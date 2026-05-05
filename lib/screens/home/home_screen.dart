@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
-import '../../data/quiz_categories.dart';
 import '../../providers/app_providers.dart';
-import '../../widgets/stat_display.dart';
+import '../../widgets/app_loading_scaffold.dart';
 
-part 'home_featured_card.dart';
-part 'home_stat_chip.dart';
-part 'home_result_tile.dart';
-part 'home_weekly_chart.dart';
+import 'home_featured_card.dart';
+import 'home_stat_chip.dart';
+import 'home_result_tile.dart';
+import 'home_weekly_chart.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -22,18 +20,18 @@ class HomeScreen extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
 
     return userAsync.when(
-      loading: () => const _HomeLoadingScaffold(),
-      error: (_, __) => const _HomeLoadingScaffold(),
+      loading: () => const AppLoadingScaffold(),
+      error: (_, __) => const AppLoadingScaffold(),
       data: (user) {
-        if (user == null) return const _HomeLoadingScaffold();
+        if (user == null) return const AppLoadingScaffold();
         final recentAsync = ref.watch(recentResultsProvider(user.id!));
         final weeklyAsync = ref.watch(weeklyResultsProvider(user.id!));
         return recentAsync.when(
-          loading: () => const _HomeLoadingScaffold(),
-          error: (_, __) => const _HomeLoadingScaffold(),
+          loading: () => const AppLoadingScaffold(),
+          error: (_, __) => const AppLoadingScaffold(),
           data: (recent) => weeklyAsync.when(
-            loading: () => const _HomeLoadingScaffold(),
-            error: (_, __) => const _HomeLoadingScaffold(),
+            loading: () => const AppLoadingScaffold(),
+            error: (_, __) => const AppLoadingScaffold(),
             data: (weekly) => _HomeContent(
               user: user,
               recentResults: recent,
@@ -44,17 +42,6 @@ class HomeScreen extends ConsumerWidget {
       },
     );
   }
-}
-
-class _HomeLoadingScaffold extends StatelessWidget {
-  const _HomeLoadingScaffold();
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppTheme.palette(context).bg,
-        body: const Center(
-            child: CircularProgressIndicator(color: AppTheme.accent)),
-      );
 }
 
 class _HomeContent extends StatelessWidget {
@@ -80,7 +67,7 @@ class _HomeContent extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _StudyTimeCard(
+              child: HomeStudyTimeCard(
                 onTap: () => Navigator.pushNamed(context, '/study'),
               ),
             ),
@@ -89,7 +76,7 @@ class _HomeContent extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _TestTimeCard(
+              child: HomeTestTimeCard(
                 onTap: () => Navigator.pushNamed(context, '/categories'),
               ),
             ),
@@ -98,7 +85,7 @@ class _HomeContent extends StatelessWidget {
               child: _HomeSectionHeader(
                   title: 'Number of quizzes completed this week')),
           SliverToBoxAdapter(
-              child: _WeeklyProgressChart(counts: weeklyTestCounts)),
+              child: HomeWeeklyChart(counts: weeklyTestCounts)),
           if (recentResults.isNotEmpty) ...[
             const SliverToBoxAdapter(
                 child: _HomeSectionHeader(title: 'Recent Activity')),
@@ -203,13 +190,13 @@ class _HomeStatsRow extends StatelessWidget {
               style: AppTheme.bodyMedium),
           AppSpacing.md,
           Row(children: [
-            _StatChip(
+            HomeStatChip(
                 label: 'Quizzes',
                 value: '${user.quizzesCompleted}',
                 icon: '📝',
                 color: AppTheme.accentBlue),
             AppSpacing.w10,
-            _StatChip(
+            HomeStatChip(
                 label: 'Points',
                 value: '${user.totalScore}',
                 icon: '⭐',
@@ -243,6 +230,6 @@ class _HomeRecentActivity extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
-            children: results.map((r) => _ResultTile(result: r)).toList()),
+            children: results.map((r) => HomeResultTile(result: r)).toList()),
       );
 }

@@ -1,7 +1,10 @@
-part of 'quiz_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 // ─── Exit Dialog ──────────────────────────────────────────────────────────────
-void _showQuizExitDialog(BuildContext context) {
+void showQuizExitDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (ctx) {

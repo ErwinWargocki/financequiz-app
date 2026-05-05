@@ -223,7 +223,6 @@ class _ExploreCategoryTile extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 3),
                   Text(category.description,
                       style: AppTheme.bodyMedium.copyWith(fontSize: 13)),
                   AppSpacing.h6,

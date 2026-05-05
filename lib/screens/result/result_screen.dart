@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/shell_provider.dart';
-import '../../widgets/stat_display.dart';
 
-part 'result_stat_card.dart';
-part 'result_review_tile.dart';
+import 'result_stat_card.dart';
+import 'result_review_tile.dart';
 
 class ResultScreen extends ConsumerStatefulWidget {
   final QuizResult result;
@@ -92,26 +90,26 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                 child: Column(
                   children: [
                     AppSpacing.sm,
-                    _GradeSection(grade: grade, gradeColor: gradeColor, scaleAnimation: _scaleAnimation, scoreAnimation: _scoreAnimation, message: _getGradeMessage(grade)),
+                    ResultGradeSection(grade: grade, gradeColor: gradeColor, scaleAnimation: _scaleAnimation, scoreAnimation: _scoreAnimation, message: _getGradeMessage(grade)),
                     AppSpacing.h28,
                     FadeTransition(
                       opacity: _cardAnimation,
                       child: Column(children: [
                         Row(children: [
-                          _StatCard(icon: '✅', label: 'Correct', value: '${widget.result.correctAnswers}/${widget.result.totalQuestions}', color: c.success),
+                          ResultStatCard(icon: '✅', label: 'Correct', value: '${widget.result.correctAnswers}/${widget.result.totalQuestions}', color: c.success),
                           AppSpacing.w10,
-                          _StatCard(icon: '⭐', label: 'Score', value: '${widget.result.score}', color: AppTheme.accentWarm),
+                          ResultStatCard(icon: '⭐', label: 'Score', value: '${widget.result.score}', color: AppTheme.accentWarm),
                         ]),
                         AppSpacing.h10,
                         Row(children: [
-                          _StatCard(icon: '⏱️', label: 'Time', value: '${widget.result.timeTakenSeconds}s', color: AppTheme.accentBlue),
+                          ResultStatCard(icon: '⏱️', label: 'Time', value: '${widget.result.timeTakenSeconds}s', color: AppTheme.accentBlue),
                           AppSpacing.w10,
-                          _StatCard(icon: '🏆', label: 'Grade', value: grade, color: gradeColor),
+                          ResultStatCard(icon: '🏆', label: 'Grade', value: grade, color: gradeColor),
                         ]),
                       ]),
                     ),
                     AppSpacing.lg,
-                    FadeTransition(opacity: _cardAnimation, child: _ResultBreakdownCard(result: widget.result)),
+                    FadeTransition(opacity: _cardAnimation, child: ResultBreakdownCard(result: widget.result)),
                     if (widget.reviews.isNotEmpty) ...[
                       AppSpacing.md,
                       FadeTransition(
@@ -125,7 +123,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> with TickerProvider
                             children: [
                               Text('Question Review', style: AppTheme.titleLarge.copyWith(fontSize: 15)),
                               AppSpacing.h12,
-                              ...widget.reviews.indexed.map((e) => _ReviewTile(index: e.$1 + 1, review: e.$2)),
+                              ...widget.reviews.indexed.map((e) => ResultReviewTile(index: e.$1 + 1, review: e.$2)),
                             ],
                           ),
                         ),

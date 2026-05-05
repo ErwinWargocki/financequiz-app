@@ -1,19 +1,15 @@
-import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/models.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/auth_provider.dart';
-import '../result/result_screen.dart';
-
-part 'quiz_widgets.dart';
-part 'quiz_dialogs.dart';
+import '../../navigation/app_routes.dart';
+import 'quiz_controller.dart';
+import 'quiz_widgets.dart';
+import 'quiz_dialogs.dart';
 
 class QuizScreen extends ConsumerStatefulWidget {
   final QuizCategory category;
@@ -26,22 +22,7 @@ class QuizScreen extends ConsumerStatefulWidget {
 }
 
 class _QuizScreenState extends ConsumerState<QuizScreen> with TickerProviderStateMixin {
-  List<QuizQuestion> _questions = [];
-  int _currentIndex = 0;
-  int? _selectedOption;
-  bool _answered = false;
-  int _correctCount = 0;
-  int _score = 0;
-  bool _loading = true;
-  int _attemptNumber = 1;
-  int? _firstAttemptSelection;
-  String? _attemptHint;
-  final List<QuestionReview> _questionReviews = [];
-
-  late Timer _timer;
-  int _timeLeft = 20;
-  int _totalTimeTaken = 0;
-  final int _timePerQuestion = 20;
+  late final QuizController _ctrl;
 
   late AnimationController _progressController;
   late AnimationController _shakeController;
@@ -52,129 +33,69 @@ class _QuizScreenState extends ConsumerState<QuizScreen> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    _progressController = AnimationController(vsync: this, duration: Duration(seconds: _timePerQuestion))
+    _ctrl = QuizController();
+
+    _progressController = AnimationController(vsync: this, duration: const Duration(seconds: QuizController.timePerQuestion))
       ..addListener(() => setState(() {}));
     _shakeController = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
-    _shakeAnimation = Tween<double>(begin: 0, end: 8).animate(CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn));
+    _shakeAnimation = Tween<double>(begin: 0, end: 8)
+        .animate(CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn));
     _slideController = AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
     _slideAnimation = Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
         .animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
+
+    _ctrl.addListener(_onControllerChange);
     _loadQuestions();
   }
 
   Future<void> _loadQuestions() async {
-    final questions = await ref.read(questionsProvider(widget.category.id).future);
-    final randomized = questions.map(_shuffleQuestionOptions).toList()..shuffle(Random());
+    final raw = await ref.read(questionsProvider(widget.category.id).future);
+    final shuffled = raw.map(_shuffleOptions).toList()..shuffle(Random());
     if (!mounted) return;
-    setState(() { _questions = randomized; _loading = false; });
-    _startTimer();
-    _slideController.forward();
-  }
-
-  void _startTimer() {
-    _timeLeft = _timePerQuestion;
-    _progressController.reset();
-    _progressController.forward();
-    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (_timeLeft <= 0) { t.cancel(); _autoSubmit(); }
-      else { setState(() => _timeLeft--); }
+    await _ctrl.loadQuestions(Future.value(shuffled), onReady: () {
+      _progressController.reset();
+      _progressController.forward();
+      _slideController.forward();
     });
   }
 
-  void _stopTimer() {
-    _timer.cancel();
-    _progressController.stop();
-    _totalTimeTaken += _timePerQuestion - _timeLeft;
-  }
-
-  void _autoSubmit() {
-    if (_answered) return;
-    _stopTimer();
-    final question = _questions[_currentIndex];
-    _questionReviews.add(QuestionReview(
-      question: question.question,
-      correctAnswer: question.options[question.correctIndex],
-      explanation: question.explanation,
-      firstAttemptAnswer: _firstAttemptSelection == null ? null : question.options[_firstAttemptSelection!],
-      secondAttemptAnswer: null,
-      answeredCorrectly: false,
-    ));
-    setState(() { _answered = true; _selectedOption = -1; _attemptHint = 'Time is up for this question.'; });
-    _shakeController.forward(from: 0);
-    HapticFeedback.heavyImpact();
-  }
-
-  void _selectOption(int index) {
-    if (_answered) return;
-    HapticFeedback.selectionClick();
-    final question = _questions[_currentIndex];
-    final isCorrect = index == question.correctIndex;
-
-    if (!isCorrect && _attemptNumber == 1) {
-      setState(() { _firstAttemptSelection = index; _attemptNumber = 2; _attemptHint = 'Not correct. Try one more time.'; });
+  void _onControllerChange() {
+    if (!mounted) return;
+    // Trigger shake on wrong answer
+    if (_ctrl.answered &&
+        _ctrl.selectedOption != null &&
+        _ctrl.selectedOption != -1 &&
+        _ctrl.selectedOption != _ctrl.questions[_ctrl.currentIndex].correctIndex) {
       _shakeController.forward(from: 0);
-      HapticFeedback.heavyImpact();
-      return;
     }
+  }
 
-    _stopTimer();
-    if (isCorrect) {
-      _correctCount++;
-      _score += (_attemptNumber == 1 ? 10 : 5) + (_timeLeft * 2);
-      HapticFeedback.mediumImpact();
+  void _handleNextQuestion() {
+    final isFinished = _ctrl.nextQuestion();
+    if (isFinished) {
+      _finishQuiz();
     } else {
-      _shakeController.forward(from: 0);
-      HapticFeedback.heavyImpact();
+      _slideController.reset();
+      _shakeController.reset();
+      _progressController.reset();
+      _progressController.forward();
+      _slideController.forward();
     }
-
-    _questionReviews.add(QuestionReview(
-      question: question.question,
-      correctAnswer: question.options[question.correctIndex],
-      explanation: question.explanation,
-      firstAttemptAnswer: _firstAttemptSelection == null ? question.options[index] : question.options[_firstAttemptSelection!],
-      secondAttemptAnswer: _firstAttemptSelection == null ? null : question.options[index],
-      answeredCorrectly: isCorrect,
-    ));
-    setState(() { _selectedOption = index; _answered = true; _attemptHint = null; });
-  }
-
-  void _nextQuestion() {
-    if (_currentIndex >= _questions.length - 1) { _finishQuiz(); return; }
-    _slideController.reset();
-    _shakeController.reset();
-    setState(() { _currentIndex++; _selectedOption = null; _answered = false; _attemptNumber = 1; _firstAttemptSelection = null; _attemptHint = null; });
-    _startTimer();
-    _slideController.forward();
   }
 
   Future<void> _finishQuiz() async {
-    final result = QuizResult(
-      userId: widget.userId,
-      category: widget.category.id,
-      score: _score,
-      totalQuestions: _questions.length,
-      correctAnswers: _correctCount,
-      timeTakenSeconds: _totalTimeTaken,
-      completedAt: DateTime.now(),
-    );
+    final result = _ctrl.buildResult(widget.userId, widget.category.id);
     await ref.read(authProvider.notifier).completeQuiz(result);
     if (mounted) {
-      Navigator.pushReplacement(context, MaterialPageRoute(
-        builder: (_) => ResultScreen(result: result, category: widget.category, reviews: _questionReviews),
-      ));
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.result,
+        arguments: ResultArgs(result: result, category: widget.category, reviews: List.of(_ctrl.questionReviews)),
+      );
     }
   }
 
-  @override
-  void dispose() {
-    try { _timer.cancel(); } catch (_) {}
-    _progressController.dispose();
-    _shakeController.dispose();
-    _slideController.dispose();
-    super.dispose();
-  }
-
-  QuizQuestion _shuffleQuestionOptions(QuizQuestion question) {
+  QuizQuestion _shuffleOptions(QuizQuestion question) {
     final random = Random();
     final indexed = question.options.asMap().entries.toList()..shuffle(random);
     return QuizQuestion(
@@ -189,90 +110,108 @@ class _QuizScreenState extends ConsumerState<QuizScreen> with TickerProviderStat
   }
 
   @override
+  void dispose() {
+    _ctrl.removeListener(_onControllerChange);
+    _ctrl.dispose();
+    _progressController.dispose();
+    _shakeController.dispose();
+    _slideController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final p = AppTheme.palette(context);
 
-    if (_loading) {
-      return Scaffold(
-        backgroundColor: p.bg,
-        body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const CircularProgressIndicator(color: AppTheme.accent),
-          AppSpacing.md,
-          Text('Loading quiz...', style: AppTheme.bodyMedium),
-        ])),
-      );
-    }
-    if (_questions.isEmpty) {
-      return Scaffold(
-        backgroundColor: p.bg,
-        body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('📭', style: TextStyle(fontSize: 48)),
-          AppSpacing.md,
-          Text('No questions found', style: AppTheme.headlineMedium),
-          AppSpacing.sm,
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Go back', style: AppTheme.bodyLarge.copyWith(color: AppTheme.accent))),
-        ])),
-      );
-    }
+    return ListenableBuilder(
+      listenable: _ctrl,
+      builder: (context, _) {
+        if (_ctrl.loading) {
+          return Scaffold(
+            backgroundColor: p.bg,
+            body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const CircularProgressIndicator(color: AppTheme.accent),
+              AppSpacing.md,
+              Text('Loading quiz...', style: AppTheme.bodyMedium),
+            ])),
+          );
+        }
+        if (_ctrl.questions.isEmpty) {
+          return Scaffold(
+            backgroundColor: p.bg,
+            body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Text('📭', style: TextStyle(fontSize: 48)),
+              AppSpacing.md,
+              Text('No questions found', style: AppTheme.headlineMedium),
+              AppSpacing.sm,
+              TextButton(onPressed: () => Navigator.pop(context), child: Text('Go back', style: AppTheme.bodyLarge.copyWith(color: AppTheme.accent))),
+            ])),
+          );
+        }
 
-    final question = _questions[_currentIndex];
-    final catColor = Color(widget.category.color);
-    final progress = (_currentIndex + 1) / _questions.length;
+        final question = _ctrl.questions[_ctrl.currentIndex];
+        final catColor = Color(widget.category.color);
+        final progress = (_ctrl.currentIndex + 1) / _ctrl.questions.length;
 
-    return Scaffold(
-      backgroundColor: p.bg,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _QuizHeader(
-              category: widget.category,
-              currentIndex: _currentIndex,
-              totalCount: _questions.length,
-              score: _score,
-              catColor: catColor,
-              progress: progress,
-              onExit: () => _showQuizExitDialog(context),
-            ),
-            Expanded(
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Column(
-                    key: ValueKey<int>(_currentIndex),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _TimerBar(timeLeft: _timeLeft, timePerQuestion: _timePerQuestion, catColor: catColor),
-                      AppSpacing.lg,
-                      _QuestionCard(question: question),
-                      AppSpacing.h20,
-                      ...List.generate(question.options.length, (i) => _OptionTile(
-                        question: question, index: i, catColor: catColor,
-                        selectedOption: _selectedOption, firstAttemptSelection: _firstAttemptSelection,
-                        answered: _answered, shakeAnimation: _shakeAnimation, onSelect: _selectOption,
-                      )),
-                      if (!_answered && _attemptHint != null) ...[
-                        AppSpacing.sm,
-                        Text(_attemptHint!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.accentWarm)),
-                      ],
-                      if (_answered) ...[
-                        AppSpacing.md,
-                        _ExplanationCard(question: question, selectedOption: _selectedOption),
-                      ],
-                      const SizedBox(height: 100),
-                    ],
+        return Scaffold(
+          backgroundColor: p.bg,
+          body: SafeArea(
+            child: Column(
+              children: [
+                QuizHeader(
+                  category: widget.category,
+                  currentIndex: _ctrl.currentIndex,
+                  totalCount: _ctrl.questions.length,
+                  score: _ctrl.score,
+                  catColor: catColor,
+                  progress: progress,
+                  onExit: () => showQuizExitDialog(context),
+                ),
+                Expanded(
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: Column(
+                        key: ValueKey<int>(_ctrl.currentIndex),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          QuizTimerBar(timeLeft: _ctrl.timeLeft, timePerQuestion: QuizController.timePerQuestion, catColor: catColor),
+                          AppSpacing.lg,
+                          QuizQuestionCard(question: question),
+                          AppSpacing.h20,
+                          ...List.generate(question.options.length, (i) => QuizOptionTile(
+                            question: question, index: i, catColor: catColor,
+                            selectedOption: _ctrl.selectedOption,
+                            firstAttemptSelection: _ctrl.firstAttemptSelection,
+                            answered: _ctrl.answered,
+                            shakeAnimation: _shakeAnimation,
+                            onSelect: _ctrl.selectOption,
+                          )),
+                          if (!_ctrl.answered && _ctrl.attemptHint != null) ...[
+                            AppSpacing.sm,
+                            Text(_ctrl.attemptHint!, style: AppTheme.bodyMedium.copyWith(color: AppTheme.accentWarm)),
+                          ],
+                          if (_ctrl.answered) ...[
+                            AppSpacing.md,
+                            QuizExplanationCard(question: question, selectedOption: _ctrl.selectedOption),
+                          ],
+                          const SizedBox(height: 100),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                if (_ctrl.answered) QuizNextButton(
+                  isLast: _ctrl.isLastQuestion,
+                  catColor: catColor,
+                  onNext: _handleNextQuestion,
+                ),
+              ],
             ),
-            if (_answered) _NextButton(
-              isLast: _currentIndex >= _questions.length - 1,
-              catColor: catColor,
-              onNext: _nextQuestion,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

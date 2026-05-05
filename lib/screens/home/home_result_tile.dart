@@ -1,9 +1,15 @@
-part of 'home_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
+import '../../data/quiz_categories.dart';
 
 // ─── Result Tile ──────────────────────────────────────────────────────────────
-class _ResultTile extends StatelessWidget {
+class HomeResultTile extends StatelessWidget {
   final QuizResult result;
-  const _ResultTile({required this.result});
+  const HomeResultTile({super.key, required this.result});
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +19,11 @@ class _ResultTile extends StatelessWidget {
     );
     final color = Color(cat.color);
     final grade = result.grade;
-    final gradeColor = grade == 'S' || grade == 'A'
-        ? AppTheme.success
-        : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : AppTheme.danger;
     final p = AppTheme.palette(context);
+    final c = AppColors.of(context);
+    final gradeColor = grade == 'S' || grade == 'A'
+        ? c.success
+        : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : c.danger;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -51,7 +58,6 @@ class _ResultTile extends StatelessWidget {
                 decoration: BoxDecoration(color: gradeColor.withValues(alpha: 0.12), shape: BoxShape.circle),
                 child: Center(child: Text(grade, style: GoogleFonts.spaceGrotesk(color: gradeColor, fontWeight: FontWeight.w800, fontSize: 14))),
               ),
-              const SizedBox(height: 2),
               Text('${result.score} pts', style: AppTheme.labelSmall.copyWith(color: p.textMuted)),
             ],
           ),

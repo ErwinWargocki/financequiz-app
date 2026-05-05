@@ -1,16 +1,19 @@
-part of 'welcome_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 
 // ─── Auth Choice Step ─────────────────────────────────────────────────────────
-class _AuthChoiceStep extends StatefulWidget {
+class WelcomeAuthChoiceStep extends StatefulWidget {
   final VoidCallback onRegister;
   final VoidCallback onLogin;
-  const _AuthChoiceStep({required this.onRegister, required this.onLogin});
+  const WelcomeAuthChoiceStep({super.key, required this.onRegister, required this.onLogin});
 
   @override
-  State<_AuthChoiceStep> createState() => _AuthChoiceStepState();
+  State<WelcomeAuthChoiceStep> createState() => _WelcomeAuthChoiceStepState();
 }
 
-class _AuthChoiceStepState extends State<_AuthChoiceStep> with SingleTickerProviderStateMixin {
+class _WelcomeAuthChoiceStepState extends State<WelcomeAuthChoiceStep> with SingleTickerProviderStateMixin {
   late AnimationController _floatController;
   late Animation<double> _floatAnimation;
 

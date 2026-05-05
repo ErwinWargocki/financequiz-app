@@ -1,35 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/app_spacing.dart';
 import '../../data/study_topics.dart';
-import '../../data/quiz_categories.dart';
-import '../../models/models.dart';
-import '../../providers/app_providers.dart';
+import '../../data/study_category_info.dart';
 import '../../navigation/app_routes.dart';
 
-part 'study_category_card.dart';
-part 'study_topics_list_screen.dart';
-part 'study_topic_tile.dart';
-part 'study_topic_detail.dart';
-
-// ─── Category config ─────────────────────────────────────────────────────────
-class StudyCategoryInfo {
-  final String label;
-  final String? difficulty;
-  final Color color;
-  final String icon;
-  final String subtitle;
-
-  const StudyCategoryInfo({
-    required this.label,
-    required this.difficulty,
-    required this.color,
-    required this.icon,
-    required this.subtitle,
-  });
-}
+import 'study_category_card.dart';
 
 const _categories = [
   StudyCategoryInfo(label: 'All Topics',    difficulty: null,           color: AppTheme.diffAll,          icon: '📚', subtitle: 'Browse everything'),
@@ -75,7 +51,7 @@ class StudyScreen extends StatelessWidget {
                   final topics = cat.difficulty == null
                       ? StudyTopics.all
                       : StudyTopics.byDifficulty(cat.difficulty!);
-                  return _CategoryCard(
+                  return StudyCategoryCard(
                     info: cat,
                     topicCount: topics.length,
                     onTap: () => Navigator.pushNamed(

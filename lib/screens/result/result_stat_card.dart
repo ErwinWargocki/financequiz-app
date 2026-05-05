@@ -1,14 +1,21 @@
-part of 'result_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
+import '../../widgets/stat_display.dart';
 
 // ─── Grade Section ────────────────────────────────────────────────────────────
-class _GradeSection extends StatelessWidget {
+class ResultGradeSection extends StatelessWidget {
   final String grade;
   final Color gradeColor;
   final Animation<double> scaleAnimation;
   final Animation<double> scoreAnimation;
   final String message;
 
-  const _GradeSection({
+  const ResultGradeSection({
+    super.key,
     required this.grade, required this.gradeColor,
     required this.scaleAnimation, required this.scoreAnimation, required this.message,
   });
@@ -49,30 +56,32 @@ class _GradeSection extends StatelessWidget {
 }
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-class _StatCard extends StatelessWidget {
+class ResultStatCard extends StatelessWidget {
   final String icon;
   final String label;
   final String value;
   final Color color;
 
-  const _StatCard({required this.icon, required this.label, required this.value, required this.color});
+  const ResultStatCard({super.key, required this.icon, required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    return StatDisplay(
-      icon: icon,
-      value: value,
-      label: label,
-      color: color,
-      size: StatDisplaySize.large,
+    return Expanded(
+      child: StatDisplay(
+        icon: icon,
+        value: value,
+        label: label,
+        color: color,
+        size: StatDisplaySize.large,
+      ),
     );
   }
 }
 
 // ─── Breakdown Card ───────────────────────────────────────────────────────────
-class _ResultBreakdownCard extends StatelessWidget {
+class ResultBreakdownCard extends StatelessWidget {
   final QuizResult result;
-  const _ResultBreakdownCard({required this.result});
+  const ResultBreakdownCard({super.key, required this.result});
 
   Widget _progressBar({required String label, required int count, required int total, required Color color}) {
     final ratio = total > 0 ? count / total : 0.0;

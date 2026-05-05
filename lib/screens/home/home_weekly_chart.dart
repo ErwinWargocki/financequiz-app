@@ -1,11 +1,14 @@
-part of 'home_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:fl_chart/fl_chart.dart';
+import '../../theme/app_theme.dart';
 
 // ─── Weekly Study Progress Chart ──────────────────────────────────────────────
-class _WeeklyProgressChart extends StatelessWidget {
+class HomeWeeklyChart extends StatelessWidget {
   /// counts[0] = Monday … counts[6] = Sunday
   final List<int> counts;
 
-  const _WeeklyProgressChart({required this.counts});
+  const HomeWeeklyChart({super.key, required this.counts});
 
   static const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -40,10 +43,7 @@ class _WeeklyProgressChart extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   horizontalInterval: 1,
-                  getDrawingHorizontalLine: (_) => FlLine(
-                    color: p.border,
-                    strokeWidth: 0.8,
-                  ),
+                  getDrawingHorizontalLine: (_) => FlLine(color: p.border, strokeWidth: 0.8),
                 ),
                 borderData: FlBorderData(show: false),
                 titlesData: FlTitlesData(
@@ -56,10 +56,7 @@ class _WeeklyProgressChart extends StatelessWidget {
                       interval: 1,
                       getTitlesWidget: (value, meta) {
                         if (value != value.roundToDouble()) return const SizedBox.shrink();
-                        return Text(
-                          value.toInt().toString(),
-                          style: AppTheme.labelSmall.copyWith(fontSize: 10, color: p.textMuted),
-                        );
+                        return Text(value.toInt().toString(), style: AppTheme.labelSmall.copyWith(fontSize: 10, color: p.textMuted));
                       },
                     ),
                   ),
@@ -111,10 +108,7 @@ class _WeeklyProgressChart extends StatelessWidget {
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
-                        colors: [
-                          AppTheme.accent.withValues(alpha: 0.18),
-                          AppTheme.accent.withValues(alpha: 0.0),
-                        ],
+                        colors: [AppTheme.accent.withValues(alpha: 0.18), AppTheme.accent.withValues(alpha: 0.0)],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -130,11 +124,7 @@ class _WeeklyProgressChart extends StatelessWidget {
                       final count = s.y.toInt();
                       return LineTooltipItem(
                         '$day\n$count ${count == 1 ? 'test' : 'tests'}',
-                        GoogleFonts.spaceGrotesk(
-                          color: AppTheme.accent,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
+                        GoogleFonts.spaceGrotesk(color: AppTheme.accent, fontWeight: FontWeight.w700, fontSize: 12),
                       );
                     }).toList(),
                   ),

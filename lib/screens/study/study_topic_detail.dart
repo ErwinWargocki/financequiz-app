@@ -1,16 +1,21 @@
-part of 'study_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
+import 'study_topic_tile.dart';
 
 // ─── Topic Detail Bottom Sheet ────────────────────────────────────────────────
-class _TopicDetailSheet extends StatelessWidget {
+class StudyTopicDetailSheet extends StatelessWidget {
   final StudyTopic topic;
   final VoidCallback? onTakeQuiz;
 
-  const _TopicDetailSheet({required this.topic, this.onTakeQuiz});
+  const StudyTopicDetailSheet({super.key, required this.topic, this.onTakeQuiz});
 
   @override
   Widget build(BuildContext context) {
     final color = Color(topic.color);
-    final diffColor = _difficultyColor(topic.difficulty);
+    final diffColor = difficultyColor(topic.difficulty);
     final p = AppTheme.palette(context);
 
     return DraggableScrollableSheet(
@@ -29,10 +34,7 @@ class _TopicDetailSheet extends StatelessWidget {
               margin: const EdgeInsets.only(top: 12),
               width: 40,
               height: 4,
-              decoration: BoxDecoration(
-                color: p.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
+              decoration: BoxDecoration(color: p.border, borderRadius: BorderRadius.circular(2)),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -46,10 +48,7 @@ class _TopicDetailSheet extends StatelessWidget {
                         Container(
                           width: 56,
                           height: 56,
-                          decoration: BoxDecoration(
-                            color: color.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                          decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
                           child: Center(child: Text(topic.icon, style: const TextStyle(fontSize: 28))),
                         ),
                         AppSpacing.w14,
@@ -63,14 +62,8 @@ class _TopicDetailSheet extends StatelessWidget {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: diffColor.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      topic.difficulty,
-                                      style: AppTheme.labelSmall.copyWith(color: diffColor, fontSize: 10),
-                                    ),
+                                    decoration: BoxDecoration(color: diffColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
+                                    child: Text(topic.difficulty, style: AppTheme.labelSmall.copyWith(color: diffColor, fontSize: 10)),
                                   ),
                                   AppSpacing.w8,
                                   Text('· ${topic.readingTime}', style: AppTheme.bodyMedium.copyWith(fontSize: 12)),
@@ -89,10 +82,7 @@ class _TopicDetailSheet extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: color.withValues(alpha: 0.15)),
                       ),
-                      child: Text(
-                        topic.summary,
-                        style: AppTheme.bodyLarge.copyWith(height: 1.5),
-                      ),
+                      child: Text(topic.summary, style: AppTheme.bodyLarge.copyWith(height: 1.5)),
                     ),
                     AppSpacing.h24,
                     Text("What you'll learn", style: AppTheme.titleLarge.copyWith(fontSize: 16)),
@@ -123,10 +113,7 @@ class _TopicDetailSheet extends StatelessWidget {
                       children: [
                         const Icon(Icons.quiz_outlined, size: 20),
                         AppSpacing.w8,
-                        Text(
-                          'Take Quiz →',
-                          style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 16),
-                        ),
+                        Text('Take Quiz →', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 16)),
                       ],
                     ),
                   ),
@@ -139,7 +126,7 @@ class _TopicDetailSheet extends StatelessWidget {
   }
 }
 
-// ─── Lesson Card ──────────────────────────────────────────────────────────────
+// ─── Lesson Card (private — used only within this file) ───────────────────────
 class _LessonCard extends StatefulWidget {
   final int index;
   final StudyLesson lesson;
@@ -179,40 +166,24 @@ class _LessonCardState extends State<_LessonCard> {
                 Container(
                   width: 26,
                   height: 26,
-                  decoration: BoxDecoration(
-                    color: widget.color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
+                  decoration: BoxDecoration(color: widget.color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(7)),
                   child: Center(
                     child: Text(
                       '${widget.index}',
-                      style: GoogleFonts.spaceGrotesk(
-                        color: widget.color,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
-                      ),
+                      style: GoogleFonts.spaceGrotesk(color: widget.color, fontWeight: FontWeight.w700, fontSize: 12),
                     ),
                   ),
                 ),
                 AppSpacing.w10,
-                Expanded(
-                  child: Text(widget.lesson.heading, style: AppTheme.titleLarge.copyWith(fontSize: 14)),
-                ),
-                Icon(
-                  _expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                  color: p.textMuted,
-                  size: 20,
-                ),
+                Expanded(child: Text(widget.lesson.heading, style: AppTheme.titleLarge.copyWith(fontSize: 14))),
+                Icon(_expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: p.textMuted, size: 20),
               ],
             ),
             if (_expanded) ...[
               AppSpacing.h12,
               Container(height: 1, color: p.border),
               AppSpacing.h12,
-              Text(
-                widget.lesson.body,
-                style: AppTheme.bodyMedium.copyWith(height: 1.6, fontSize: 14),
-              ),
+              Text(widget.lesson.body, style: AppTheme.bodyMedium.copyWith(height: 1.6, fontSize: 14)),
             ],
           ],
         ),

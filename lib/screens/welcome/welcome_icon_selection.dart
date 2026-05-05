@@ -1,7 +1,10 @@
-part of 'welcome_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
 
 // ─── Icon Selection Step ──────────────────────────────────────────────────────
-class _IconSelectionStep extends StatelessWidget {
+class WelcomeIconSelectionStep extends StatelessWidget {
   final int selectedIconIndex;
   final ValueChanged<int> onSelectIcon;
   final String? error;
@@ -9,7 +12,8 @@ class _IconSelectionStep extends StatelessWidget {
   final VoidCallback onFinish;
   final VoidCallback onBack;
 
-  const _IconSelectionStep({
+  const WelcomeIconSelectionStep({
+    super.key,
     required this.selectedIconIndex, required this.onSelectIcon,
     required this.error, required this.isLoading,
     required this.onFinish, required this.onBack,

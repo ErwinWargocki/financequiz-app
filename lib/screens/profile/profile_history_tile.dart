@@ -1,9 +1,15 @@
-part of 'profile_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
+import '../../data/quiz_categories.dart';
 
 // ─── History Tile ─────────────────────────────────────────────────────────────
-class _HistoryTile extends StatelessWidget {
+class ProfileHistoryTile extends StatelessWidget {
   final QuizResult result;
-  const _HistoryTile({required this.result});
+  const ProfileHistoryTile({super.key, required this.result});
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +19,11 @@ class _HistoryTile extends StatelessWidget {
     );
     final color = Color(cat.color);
     final grade = result.grade;
-    final gradeColor = grade == 'S' || grade == 'A'
-        ? AppTheme.success
-        : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : AppTheme.danger;
     final p = AppTheme.palette(context);
+    final c = AppColors.of(context);
+    final gradeColor = grade == 'S' || grade == 'A'
+        ? c.success
+        : grade == 'B' || grade == 'C' ? AppTheme.accentWarm : c.danger;
 
     final date = result.completedAt;
     final dateStr = '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
@@ -33,7 +40,7 @@ class _HistoryTile extends StatelessWidget {
         children: [
           Container(
             width: 40, height: 40,
-            decoration: BoxDecoration(color: color.withValues(alpha:0.12), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
             child: Center(child: Text(cat.icon, style: const TextStyle(fontSize: 18))),
           ),
           AppSpacing.w12,
@@ -51,10 +58,9 @@ class _HistoryTile extends StatelessWidget {
             children: [
               Container(
                 width: 30, height: 30,
-                decoration: BoxDecoration(color: gradeColor.withValues(alpha:0.12), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: gradeColor.withValues(alpha: 0.12), shape: BoxShape.circle),
                 child: Center(child: Text(grade, style: GoogleFonts.spaceGrotesk(color: gradeColor, fontWeight: FontWeight.w800, fontSize: 13))),
               ),
-              const SizedBox(height: 2),
               Text('${result.correctAnswers}/${result.totalQuestions}', style: AppTheme.labelSmall.copyWith(color: p.textMuted)),
             ],
           ),

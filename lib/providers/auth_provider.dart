@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../database/database_helper.dart';
 import '../models/models.dart';
+import 'app_providers.dart';
 
 // Manages the currently logged-in user.
 // null  = not logged in
@@ -68,6 +69,17 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
   }
 
   // ── Quiz completion ──────────────────────────────────────────────────────────
+
+  // Updates the profile icon, persists it, and invalidates currentUserProvider.
+  Future<void> updateIcon(int userId, int iconIndex) async {
+    final db = DatabaseHelper.instance;
+    final user = await db.getUser(userId);
+    if (user == null) return;
+    final updated = user.copyWith(profileIconIndex: iconIndex);
+    await db.updateUser(updated);
+    state = AsyncData(updated);
+    ref.invalidate(currentUserProvider);
+  }
 
   // Persists the quiz result, updates user stats, and refreshes local state.
   Future<void> completeQuiz(QuizResult result) async {

@@ -1,7 +1,12 @@
-part of 'quiz_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
 
 // ─── Quiz Header ──────────────────────────────────────────────────────────────
-class _QuizHeader extends StatelessWidget {
+class QuizHeader extends StatelessWidget {
   final QuizCategory category;
   final int currentIndex;
   final int totalCount;
@@ -10,7 +15,8 @@ class _QuizHeader extends StatelessWidget {
   final double progress;
   final VoidCallback onExit;
 
-  const _QuizHeader({
+  const QuizHeader({
+    super.key,
     required this.category, required this.currentIndex, required this.totalCount,
     required this.score, required this.catColor, required this.progress, required this.onExit,
   });
@@ -66,12 +72,12 @@ class _QuizHeader extends StatelessWidget {
 }
 
 // ─── Timer Bar ────────────────────────────────────────────────────────────────
-class _TimerBar extends StatelessWidget {
+class QuizTimerBar extends StatelessWidget {
   final int timeLeft;
   final int timePerQuestion;
   final Color catColor;
 
-  const _TimerBar({required this.timeLeft, required this.timePerQuestion, required this.catColor});
+  const QuizTimerBar({super.key, required this.timeLeft, required this.timePerQuestion, required this.catColor});
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +96,7 @@ class _TimerBar extends StatelessWidget {
           ),
           child: Row(children: [
             Icon(Icons.timer_outlined, size: 15, color: timerColor),
-            const SizedBox(width: 5),
+            AppSpacing.xsH,
             Text('$timeLeft s', style: GoogleFonts.jetBrainsMono(color: timerColor, fontWeight: FontWeight.w700, fontSize: 14)),
           ]),
         ),
@@ -107,9 +113,9 @@ class _TimerBar extends StatelessWidget {
 }
 
 // ─── Question Card ────────────────────────────────────────────────────────────
-class _QuestionCard extends StatelessWidget {
+class QuizQuestionCard extends StatelessWidget {
   final QuizQuestion question;
-  const _QuestionCard({required this.question});
+  const QuizQuestionCard({super.key, required this.question});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +143,7 @@ class _QuestionCard extends StatelessWidget {
 }
 
 // ─── Option Tile ──────────────────────────────────────────────────────────────
-class _OptionTile extends StatelessWidget {
+class QuizOptionTile extends StatelessWidget {
   final QuizQuestion question;
   final int index;
   final Color catColor;
@@ -147,7 +153,8 @@ class _OptionTile extends StatelessWidget {
   final Animation<double> shakeAnimation;
   final ValueChanged<int> onSelect;
 
-  const _OptionTile({
+  const QuizOptionTile({
+    super.key,
     required this.question, required this.index, required this.catColor,
     required this.selectedOption, required this.firstAttemptSelection,
     required this.answered, required this.shakeAnimation, required this.onSelect,
@@ -246,10 +253,10 @@ class _OptionTile extends StatelessWidget {
 }
 
 // ─── Explanation Card ─────────────────────────────────────────────────────────
-class _ExplanationCard extends StatelessWidget {
+class QuizExplanationCard extends StatelessWidget {
   final QuizQuestion question;
   final int? selectedOption;
-  const _ExplanationCard({required this.question, required this.selectedOption});
+  const QuizExplanationCard({super.key, required this.question, required this.selectedOption});
 
   @override
   Widget build(BuildContext context) {
@@ -277,11 +284,11 @@ class _ExplanationCard extends StatelessWidget {
 }
 
 // ─── Next Button ──────────────────────────────────────────────────────────────
-class _NextButton extends StatelessWidget {
+class QuizNextButton extends StatelessWidget {
   final bool isLast;
   final Color catColor;
   final VoidCallback onNext;
-  const _NextButton({required this.isLast, required this.catColor, required this.onNext});
+  const QuizNextButton({super.key, required this.isLast, required this.catColor, required this.onNext});
 
   @override
   Widget build(BuildContext context) {

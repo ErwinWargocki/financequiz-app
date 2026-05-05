@@ -1,10 +1,14 @@
-part of 'result_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../models/models.dart';
 
 // ─── Review Tile ──────────────────────────────────────────────────────────────
-class _ReviewTile extends StatelessWidget {
+class ResultReviewTile extends StatelessWidget {
   final int index;
   final QuestionReview review;
-  const _ReviewTile({required this.index, required this.review});
+  const ResultReviewTile({super.key, required this.index, required this.review});
 
   void _showExplanationDialog(BuildContext context) {
     showDialog<void>(
@@ -67,7 +71,6 @@ class _ReviewTile extends StatelessWidget {
           AppSpacing.xs,
           Text('1st: ${review.firstAttemptAnswer ?? '—'}', style: AppTheme.bodyMedium.copyWith(color: p.textSub)),
           if (review.secondAttemptAnswer != null) ...[
-            const SizedBox(height: 2),
             Text('2nd: ${review.secondAttemptAnswer}', style: AppTheme.bodyMedium.copyWith(color: p.textSub)),
           ],
           AppSpacing.sm,

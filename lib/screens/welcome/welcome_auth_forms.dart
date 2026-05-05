@@ -1,10 +1,12 @@
-part of 'welcome_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 
 // ─── Shared Helpers ───────────────────────────────────────────────────────────
 
 // Renders a small all-caps field label (EMAIL, PASSWORD, etc.) used by
-// every form across the auth flow. Kept here so all form files can use it
-// without any extra import — they are all part of the same library.
+// every form across the auth flow.
 Widget _authLabel(String text) => Text(
   text,
   style: AppTheme.labelSmall.copyWith(color: AppTheme.textSecondary, letterSpacing: 1.5),
@@ -12,7 +14,7 @@ Widget _authLabel(String text) => Text(
 
 // ─── Login Step ───────────────────────────────────────────────────────────────
 // Collects email + password and provides links to register and forgot-password.
-class _LoginStep extends StatelessWidget {
+class WelcomeLoginStep extends StatelessWidget {
   final TextEditingController emailCtrl;
   final TextEditingController passwordCtrl;
   final bool obscurePassword;
@@ -24,7 +26,8 @@ class _LoginStep extends StatelessWidget {
   final VoidCallback onForgotPassword;
   final VoidCallback onBack;
 
-  const _LoginStep({
+  const WelcomeLoginStep({
+    super.key,
     required this.emailCtrl, required this.passwordCtrl,
     required this.obscurePassword, required this.onToggleObscure,
     required this.error, required this.isLoading,
@@ -111,4 +114,3 @@ class _LoginStep extends StatelessWidget {
     );
   }
 }
-// _RegisterStep has moved to welcome_register_form.dart

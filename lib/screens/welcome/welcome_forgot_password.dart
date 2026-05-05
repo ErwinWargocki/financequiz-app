@@ -1,18 +1,21 @@
-part of 'welcome_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
 
 // ─── Forgot Email Step ─────────────────────────────────────────────────────────
 // Step 1 of the password-reset flow: the user enters their registered email.
 // On submit, _forgotPasswordEmailSubmit() picks a random saved security
 // question and advances to the security-challenge screen.
-// _SecurityChallengeStep and _NewPasswordStep live in welcome_reset_password.dart.
-class _ForgotEmailStep extends StatelessWidget {
+// WelcomeSecurityChallengeStep and WelcomeNewPasswordStep live in welcome_reset_password.dart.
+class WelcomeForgotEmailStep extends StatelessWidget {
   final TextEditingController emailCtrl;
   final String? error;
   final bool isLoading;
   final VoidCallback onSubmit;
   final VoidCallback onBack;
 
-  const _ForgotEmailStep({
+  const WelcomeForgotEmailStep({
+    super.key,
     required this.emailCtrl,
     required this.error,
     required this.isLoading,
@@ -89,4 +92,3 @@ class _ForgotEmailStep extends StatelessWidget {
     );
   }
 }
-// _SecurityChallengeStep and _NewPasswordStep live in welcome_reset_password.dart

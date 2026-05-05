@@ -1,10 +1,21 @@
-part of 'welcome_screen.dart';
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/app_spacing.dart';
+
+// ─── Shared Helpers ───────────────────────────────────────────────────────────
+
+// Renders a small all-caps field label (EMAIL, PASSWORD, etc.) used by
+// every form across the auth flow.
+Widget _authLabel(String text) => Text(
+  text,
+  style: AppTheme.labelSmall.copyWith(color: AppTheme.textSecondary, letterSpacing: 1.5),
+);
 
 // ─── Register Step ────────────────────────────────────────────────────────────
 // Collects name, username, email, and password for a new account.
 // This is the first of three registration steps; submitting it leads to
 // icon selection, then security questions, then the onboarding carousel.
-class _RegisterStep extends StatelessWidget {
+class WelcomeRegisterStep extends StatelessWidget {
   final TextEditingController nameCtrl;
   final TextEditingController usernameCtrl;
   final TextEditingController emailCtrl;
@@ -17,7 +28,8 @@ class _RegisterStep extends StatelessWidget {
   final VoidCallback onGoToLogin;
   final VoidCallback onBack;
 
-  const _RegisterStep({
+  const WelcomeRegisterStep({
+    super.key,
     required this.nameCtrl, required this.usernameCtrl,
     required this.emailCtrl, required this.passwordCtrl,
     required this.obscurePassword, required this.onToggleObscure,

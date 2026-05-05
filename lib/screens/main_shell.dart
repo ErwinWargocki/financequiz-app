@@ -141,7 +141,6 @@ class _NavItem extends StatelessWidget {
               color: selected ? AppTheme.accent : muted,
               size: 24,
             ),
-            const SizedBox(height: 2),
             Text(
               label,
               style: AppTheme.labelSmall.copyWith(

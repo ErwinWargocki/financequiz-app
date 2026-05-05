@@ -8,8 +8,11 @@ import 'screens/intro/loading_screen.dart';
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/main_shell.dart';
 import 'screens/study/study_screen.dart';
+import 'screens/study/study_topics_list_screen.dart';
+import 'data/study_category_info.dart';
 import 'screens/all_categories_screen.dart';
 import 'screens/quiz/quiz_screen.dart';
+import 'screens/result/result_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +48,10 @@ class FinQuizApp extends ConsumerWidget {
         AppRoutes.studyTopics: (context) {
           final args = ModalRoute.of(context)!.settings.arguments as StudyCategoryInfo;
           return StudyTopicsListScreen(category: args);
+        },
+        AppRoutes.result: (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as ResultArgs;
+          return ResultScreen(result: args.result, category: args.category, reviews: args.reviews);
         },
       },
     );
