@@ -19,7 +19,7 @@ class DatabaseHelper {
     final path = join(dbPath, filePath);
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -40,7 +40,10 @@ class DatabaseHelper {
         quizzesCompleted INTEGER DEFAULT 0,
         currentStreak INTEGER DEFAULT 0,
         longestStreak INTEGER DEFAULT 0,
-        createdAt TEXT NOT NULL
+        createdAt TEXT NOT NULL,
+        lastStreakDate TEXT,
+        xpPoints INTEGER DEFAULT 0,
+        level INTEGER DEFAULT 1
       )
     ''');
 
@@ -83,6 +86,22 @@ class DatabaseHelper {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE category_bests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId INTEGER NOT NULL,
+        category TEXT NOT NULL,
+        bestScore INTEGER NOT NULL,
+        bestPercentage REAL NOT NULL,
+        achievedAt TEXT NOT NULL,
+        UNIQUE(userId, category),
+        FOREIGN KEY (userId) REFERENCES users (id)
+      )
+    ''');
+
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_results_user_date ON results (userId, completedAt)');
+
     await _seedQuestions(db);
   }
 
@@ -106,6 +125,27 @@ class DatabaseHelper {
           FOREIGN KEY (userId) REFERENCES users (id)
         )
       ''');
+    }
+    if (oldVersion < 4) {
+      await db.execute('ALTER TABLE users ADD COLUMN lastStreakDate TEXT');
+      await db.execute(
+          'ALTER TABLE users ADD COLUMN xpPoints INTEGER DEFAULT 0');
+      await db.execute(
+          'ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS category_bests (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          userId INTEGER NOT NULL,
+          category TEXT NOT NULL,
+          bestScore INTEGER NOT NULL,
+          bestPercentage REAL NOT NULL,
+          achievedAt TEXT NOT NULL,
+          UNIQUE(userId, category),
+          FOREIGN KEY (userId) REFERENCES users (id)
+        )
+      ''');
+      await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_results_user_date ON results (userId, completedAt)');
     }
   }
 
@@ -266,12 +306,16 @@ class DatabaseHelper {
     final totalScore = results.fold(0, (sum, r) => sum + r.score);
     final avgScore = results.map((r) => r.percentage).reduce((a, b) => a + b) /
         results.length;
-    final categoryCount = <String, int>{};
+    // Best category = highest average percentage, not most played
+    final categoryPercentages = <String, List<double>>{};
     for (final r in results) {
-      categoryCount[r.category] = (categoryCount[r.category] ?? 0) + 1;
+      categoryPercentages.putIfAbsent(r.category, () => []).add(r.percentage);
     }
-    final bestCategory =
-        categoryCount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    final bestCategory = categoryPercentages.entries
+        .map((e) => MapEntry(
+            e.key, e.value.reduce((a, b) => a + b) / e.value.length))
+        .reduce((a, b) => a.value > b.value ? a : b)
+        .key;
     final totalTime = results.fold(0, (sum, r) => sum + r.timeTakenSeconds);
     return {
       'totalScore': totalScore,
@@ -279,6 +323,50 @@ class DatabaseHelper {
       'bestCategory': bestCategory,
       'totalTime': totalTime,
     };
+  }
+
+  // ─── Category Bests ────────────────────────────────────────────────────────
+
+  /// Inserts or updates the personal best for [userId] in [category].
+  /// Only updates when the new [score] beats the stored one.
+  Future<void> upsertCategoryBest(
+      int userId, String category, int score, double percentage) async {
+    final db = await database;
+    final existing = await db.query(
+      'category_bests',
+      where: 'userId = ? AND category = ?',
+      whereArgs: [userId, category],
+    );
+    if (existing.isEmpty) {
+      await db.insert('category_bests', {
+        'userId': userId,
+        'category': category,
+        'bestScore': score,
+        'bestPercentage': percentage,
+        'achievedAt': DateTime.now().toIso8601String(),
+      });
+    } else if (score > (existing.first['bestScore'] as int)) {
+      await db.update(
+        'category_bests',
+        {
+          'bestScore': score,
+          'bestPercentage': percentage,
+          'achievedAt': DateTime.now().toIso8601String(),
+        },
+        where: 'userId = ? AND category = ?',
+        whereArgs: [userId, category],
+      );
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getCategoryBests(int userId) async {
+    final db = await database;
+    return await db.query(
+      'category_bests',
+      where: 'userId = ?',
+      whereArgs: [userId],
+      orderBy: 'bestPercentage DESC',
+    );
   }
 
   Future<void> close() async {

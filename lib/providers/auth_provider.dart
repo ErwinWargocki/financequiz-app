@@ -83,18 +83,47 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
 
   // Persists the quiz result, updates user stats, and refreshes local state.
   Future<void> completeQuiz(QuizResult result) async {
-    final db   = DatabaseHelper.instance;
+    final db = DatabaseHelper.instance;
     await db.insertResult(result);
     final user = await db.getUser(result.userId);
     if (user == null) return;
-    final newStreak = user.currentStreak + 1;
-    final updated   = user.copyWith(
-      totalScore:       user.totalScore       + result.score,
+
+    // Day-based streak: increment only on a new consecutive calendar day
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    int newStreak;
+    if (user.lastStreakDate == null) {
+      newStreak = 1;
+    } else {
+      final last = user.lastStreakDate!;
+      final lastDate = DateTime(last.year, last.month, last.day);
+      final diff = todayDate.difference(lastDate).inDays;
+      if (diff == 0) {
+        newStreak = user.currentStreak; // same day — no change
+      } else if (diff == 1) {
+        newStreak = user.currentStreak + 1; // consecutive day
+      } else {
+        newStreak = 1; // gap — reset
+      }
+    }
+
+    // XP: 10 points per correct answer; level caps at 10
+    final newXp = user.xpPoints + (result.correctAnswers * 10);
+    final newLevel = ((newXp ~/ 200) + 1).clamp(1, 10);
+
+    final updated = user.copyWith(
+      totalScore: user.totalScore + result.score,
       quizzesCompleted: user.quizzesCompleted + 1,
-      currentStreak:    newStreak,
-      longestStreak:    newStreak > user.longestStreak ? newStreak : user.longestStreak,
+      currentStreak: newStreak,
+      longestStreak: newStreak > user.longestStreak ? newStreak : user.longestStreak,
+      lastStreakDate: todayDate,
+      xpPoints: newXp,
+      level: newLevel,
     );
+
     await db.updateUser(updated);
+    await db.upsertCategoryBest(
+        result.userId, result.category, result.score, result.percentage);
     state = AsyncData(updated);
   }
 }

@@ -102,6 +102,9 @@ class UserModel {
   final int currentStreak;
   final int longestStreak;
   final DateTime createdAt;
+  final DateTime? lastStreakDate; // date of last quiz; drives day-based streak
+  final int xpPoints;             // 10 XP per correct answer
+  final int level;                // derived: (xpPoints ~/ 200) + 1, capped at 10
 
   UserModel({
     this.id,
@@ -117,6 +120,9 @@ class UserModel {
     this.currentStreak = 0,
     this.longestStreak = 0,
     DateTime? createdAt,
+    this.lastStreakDate,
+    this.xpPoints = 0,
+    this.level = 1,
   }) : createdAt = createdAt ?? DateTime.now();
 
   String get profileIcon => ProfileIcons.get(profileIconIndex);
@@ -136,6 +142,9 @@ class UserModel {
       'currentStreak': currentStreak,
       'longestStreak': longestStreak,
       'createdAt': createdAt.toIso8601String(),
+      'lastStreakDate': lastStreakDate?.toIso8601String(),
+      'xpPoints': xpPoints,
+      'level': level,
     };
   }
 
@@ -154,6 +163,11 @@ class UserModel {
       currentStreak: map['currentStreak'] ?? 0,
       longestStreak: map['longestStreak'] ?? 0,
       createdAt: DateTime.parse(map['createdAt']),
+      lastStreakDate: map['lastStreakDate'] != null
+          ? DateTime.parse(map['lastStreakDate'] as String)
+          : null,
+      xpPoints: map['xpPoints'] ?? 0,
+      level: map['level'] ?? 1,
     );
   }
 
@@ -171,6 +185,9 @@ class UserModel {
     int? currentStreak,
     int? longestStreak,
     DateTime? createdAt,
+    DateTime? lastStreakDate,
+    int? xpPoints,
+    int? level,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -186,6 +203,9 @@ class UserModel {
       currentStreak: currentStreak ?? this.currentStreak,
       longestStreak: longestStreak ?? this.longestStreak,
       createdAt: createdAt ?? this.createdAt,
+      lastStreakDate: lastStreakDate ?? this.lastStreakDate,
+      xpPoints: xpPoints ?? this.xpPoints,
+      level: level ?? this.level,
     );
   }
 }
